@@ -27,6 +27,7 @@ SiriusEngine* siriusEngine;
 int main() {
 	/* GLFW的初始化和配置 */
 	/* -------------------------------------------------------- */
+	// test
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
