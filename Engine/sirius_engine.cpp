@@ -25,7 +25,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
-    clearColor(0.1f, 0.8f, 0.1f) { }
+    clearColor(0.1f, 0.1f, 0.1f) { }
 
 SiriusEngine::~SiriusEngine() {
     delete gui;
@@ -56,6 +56,10 @@ void SiriusEngine::init() {
                                  true, "container_diffuse");
     ResourceManager::loadTexture("Resources/textures/container2_specular.png",
                                  true, "container_specular");
+    ResourceManager::loadTexture("Resources/textures/white_tiles.jpg",
+                                 false, "white_tiles");
+    ResourceManager::loadTexture("Resources/textures/pure_black.jpg",
+                                 false, "pure_black");
     ResourceManager::loadTexture("Resources/textures/brickwall.jpg",
                                  false, "brick_wall_diffuse");
 
@@ -72,10 +76,10 @@ void SiriusEngine::init() {
     cube = LoadPresets::loadCube(Wooden_Box, u8"木箱");
     sceneObjects.push_back(cube);
 
-    cube = new Cube("Brick Cube");
-    cube->diffuseTexture = ResourceManager::getTexture("brick_wall_diffuse");
-    cube->position = glm::vec3(1.0f, 1.0f, 1.0f);
-    cube->enabled = false;
+    cube = LoadPresets::loadCube(White_Box, u8"地板");
+    cube->position = glm::vec3(0.0f, -10.0f, 0.0f);
+    cube->rotation = glm::vec3(0.0f);
+    cube->scale = glm::vec3(50.0f, 1.0f, 50.0f);
     sceneObjects.push_back(cube);
 
     // 选中物体

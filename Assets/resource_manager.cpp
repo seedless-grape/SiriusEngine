@@ -13,7 +13,7 @@ std::map<std::string, Shader> ResourceManager::shaders;
 
 // ÔØÈëÔ¤ÉèÎïÌåÃû
 std::vector<std::string> ResourceManager::presetsObjects = {
-	u8"Ä¾Ïä"
+	u8"°×´É×©¿é", u8"Ä¾Ïä"
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
