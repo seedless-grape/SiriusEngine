@@ -177,7 +177,7 @@ void GUI::renderSceneInspector() {
             if (ImGui::BeginCombo("##presetsObjectCombo", ResourceManager::presetsObjects[addIndex].c_str())) {
                 for (unsigned int i = 0; i < ResourceManager::presetsObjects.size(); ++i) {
                     bool selected = (i == siriusEngine.currentAddObjectIndex);
-                    if (ImGui::Selectable(ResourceManager::presetsObjects[addIndex].c_str(), selected)) {
+                    if (ImGui::Selectable(ResourceManager::presetsObjects[i].c_str(), selected)) {
                         siriusEngine.currentAddObjectIndex = i;
                     }
                 }

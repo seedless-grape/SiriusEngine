@@ -6,7 +6,7 @@
 #include "cube.h"
 
 enum objectType {
-    Wooden_Box
+    White_Box, Wooden_Box
 };
 
 // 加载预设物体
@@ -17,8 +17,6 @@ public:
 
     // 加载立方体
     static Object* loadCube(objectType type, std::string name);
-
-
 
 };
 
