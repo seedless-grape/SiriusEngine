@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{5d27f63c-0422-4ec1-9ca6-ba1ac97d0e9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{bf7bc8af-ef56-48c3-a771-18dbebfc9c97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{4165f1ad-6182-463b-9ce7-293057bb3420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{6488b26f-6067-4692-8e44-e330730ef9b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Header File">
+      <UniqueIdentifier>{721f6b1b-3025-468d-948c-04f7831c79db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Source File">
+      <UniqueIdentifier>{8f1ef5a3-018b-4154-9632-5640f5dd5c2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Header File">
+      <UniqueIdentifier>{26c89c4c-37ce-41da-9a82-3bf88dc2d35b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Source File">
+      <UniqueIdentifier>{23b2e479-c041-4d20-9b13-ace15e159fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui">
+      <UniqueIdentifier>{25127ecd-6c7c-4990-b3d2-3d7442c968df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Header File">
+      <UniqueIdentifier>{918c769c-2d7e-4a74-b45a-8cf3a4cee653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Source File">
+      <UniqueIdentifier>{e7b9af5e-dcc8-41b6-ae94-cd799e27ada6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Lib File">
+      <UniqueIdentifier>{07130d95-db78-439e-bb3b-bf89cbe29792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{ea843286-81de-435a-8fc5-07ccc7039472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Header File">
+      <UniqueIdentifier>{8013c136-5135-4753-a41f-63b876705957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Source File">
+      <UniqueIdentifier>{092faba6-9a6b-4b3d-98c5-e6a8e90f4059}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Library\glad.c">
+      <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\sirius_engine.cpp">
+      <Filter>Engine\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\camera.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\light.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\object.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\shader.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\texture.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\renderer.cpp">
+      <Filter>Core\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\gui.cpp">
+      <Filter>Gui\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_demo.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_draw.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_impl_glfw.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_impl_opengl3.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_tables.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_widgets.cpp">
+      <Filter>Gui\Lib File</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\resource_manager.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\cube.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\loadPresets.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Library\stb_image.h">
+      <Filter>Library</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\sirius_engine.h">
+      <Filter>Engine\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\camera.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\object.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\texture.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\light.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\shader.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\renderer.h">
+      <Filter>Core\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\gui.h">
+      <Filter>Gui\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imconfig.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_impl_glfw.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_impl_opengl3.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_internal.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_rectpack.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_textedit.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_truetype.h">
+      <Filter>Gui\Lib File</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\resource_manager.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\cube.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\loadPresets.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\light_cube.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\object.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\object.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\object_bk.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\coordinate.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\coordinate.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\light_cube.frag">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
