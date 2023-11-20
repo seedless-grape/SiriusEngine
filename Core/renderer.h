@@ -15,6 +15,11 @@ class Object;
 class DirLight;
 class PointLight;
 
+// 渲染后期特效属性
+enum PostProcessing {
+	original, inverse, grayscale, sharpen, blur, edgeDetection, postProcessingCount
+};
+
 // 基础渲染类
 class Renderer {
 public:
@@ -31,6 +36,10 @@ public:
 	void updateRenderer(glm::mat4 spaceMatrix, glm::vec3 viewPos,
 						const DirLight& dirLight,
 						const std::vector<PointLight*>& pointLights);
+
+public:
+	// 后期特效
+	int postProcessing;
 
 protected:
 	Shader objectShader;

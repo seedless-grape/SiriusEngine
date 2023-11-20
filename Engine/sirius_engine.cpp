@@ -18,10 +18,11 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     window(_window), width(_width), height(_height),
     camera(), dirLight(), keysPressed(), keysProcessed(),
     // 状态机
-    isDepthTestOn(true), isStencilTestOn(false),
+    isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
     isObjectCoordinateShown(true),
+    postProcessing(original),
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
@@ -156,6 +157,8 @@ void SiriusEngine::render() {
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
                                  dirLight, scenePointLights);
 
+    cubeRenderer->postProcessing = this->postProcessing;
+
     // 物体绘制
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->enabled) {
@@ -177,6 +180,12 @@ void SiriusEngine::render() {
 void SiriusEngine::configureRenderSetup() {
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    if (isFaceCullingOn) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
+    } else
+        glDisable(GL_CULL_FACE);
 
     if (isDepthTestOn)
         glEnable(GL_DEPTH_TEST);
