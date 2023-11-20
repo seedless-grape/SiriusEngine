@@ -7,7 +7,7 @@
 
 // 基础场景渲染
 Renderer::Renderer(const Shader& shader) :
-    coordinateVAO(0) {
+    coordinateVAO(0), postProcessing(original) {
     this->objectShader = shader;
 
     // 创建坐标着色
@@ -55,13 +55,20 @@ void Renderer::updateRenderer(glm::mat4 spaceMatrix,
         this->objectShader.setFloat((sstr.str() + ".quadratic").c_str(), pointLights[i]->attenuationFactors.z);
         this->objectShader.setBool((sstr.str() + ".enabled").c_str(), pointLights[i]->enabled);
     }
-    
 
+    // 物体后期特效
+    this->objectShader.setInt("postProcessing", postProcessing);
+    
     // 坐标轴着色
     this->coordinateShader.setMat4("spaceMatrix", spaceMatrix, true);
 
     // 光源立方体着色
     this->lightCubeShader.setMat4("spaceMatrix", spaceMatrix, true);
+
+    // 光源立方体后期特效
+    this->lightCubeShader.setInt("postProcessing", postProcessing);
+
+    
 }
 
 void Renderer::initCoordinateRenderData() {
