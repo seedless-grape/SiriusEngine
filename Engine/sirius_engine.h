@@ -16,6 +16,9 @@
 #include "Core/object.h"
 #include "Core/light.h"
 
+// 后期特效
+enum PostProcessing;
+
 // 引擎类
 class SiriusEngine {
 public:
@@ -38,11 +41,14 @@ public:
 	// 状态机
 	bool isDepthTestOn;				// 深度测试
 	bool isStencilTestOn;			// 模板测试
+	bool isFaceCullingOn;			// 背面剔除
 	bool isMouseControlOn;			// 鼠标移动
 	bool isScrollControlOn;			// 滚轮操作
 	bool isFreeLookingModeOn;		// 自由视角
 	bool isObjectRotationModeOn;	// 镜头旋转
 	bool isObjectCoordinateShown;	// 展示物体坐标
+
+	int postProcessing;	// 后期特效
 
 	glm::vec3 clearColor;	// 屏幕背景颜色
 
