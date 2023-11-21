@@ -408,10 +408,16 @@ void GUI::renderExtraView() {
             ImGui::Text("Version: %d.%d.%d", majorVersion, minorVersion, revisionNumber);
             // color
             ImGui::ColorEdit3("Clear Color", glm::value_ptr(siriusEngine.clearColor));
-            // test
-            ImGui::Checkbox("Depth Test", &siriusEngine.isDepthTestOn);
+            // 选项
+            ImGui::Checkbox(u8"深度测试", &siriusEngine.isDepthTestOn);
             ImGui::SameLine();
-            ImGui::Checkbox("Stencil Test", &siriusEngine.isStencilTestOn);
+            ImGui::Checkbox(u8"模板测试", &siriusEngine.isStencilTestOn);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"背面剔除", &siriusEngine.isFaceCullingOn);
+            const char* postProcessingNames[postProcessingCount] = {u8"无特效", u8"反相", u8"灰度", u8"锐化", u8"模糊", u8"边缘"};
+            const char* postProcessingName = (siriusEngine.postProcessing >= 0 && siriusEngine.postProcessing < postProcessingCount) ?
+                postProcessingNames[siriusEngine.postProcessing] : u8"未知";
+            ImGui::SliderInt(u8"后期特效", &siriusEngine.postProcessing, 0, postProcessingCount - 1, postProcessingName);
         }
 
         // ImGui
