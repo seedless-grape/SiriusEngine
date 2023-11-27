@@ -30,7 +30,7 @@ public:
 	// 渲染
 	virtual void render(const Object& object, bool drawCoordinate = true) = 0;
 
-	virtual void render(const PointLight& pointLight) = 0;
+	virtual void render(const PointLight& pointLight);
 
 	// 更新渲染器
 	void updateRenderer(glm::mat4 spaceMatrix, glm::vec3 viewPos,
@@ -40,14 +40,15 @@ public:
 public:
 	// 后期特效
 	int postProcessing;
+	Shader objectShader;
 
 protected:
-	Shader objectShader;
+	
 	Shader coordinateShader;
 	Shader lightCubeShader;
 	unsigned int coordinateVAO;
 
-	virtual void initRenderData() = 0;
+	virtual void initRenderData() {};
 
 	// 坐标绘制数据
 	void initCoordinateRenderData();

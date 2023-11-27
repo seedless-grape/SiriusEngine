@@ -6,12 +6,15 @@
 #include "Core/light.h"
 #include "Assets/resource_manager.h"
 #include "Assets/loadPresets.h"
+#include "Assets/modelRenderer.h"
+
 
 #include <iostream>
 #include <vector>
 
 GUI* gui;
 CubeRenderer* cubeRenderer;
+ModelRenderer* modelRenderer;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -31,6 +34,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
 SiriusEngine::~SiriusEngine() {
     delete gui;
     delete cubeRenderer;
+    delete modelRenderer;
 
     // 清空屏幕内物体
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
@@ -51,6 +55,9 @@ void SiriusEngine::init() {
     ResourceManager::loadShader("Shader/object.vert",
                                 "Shader/object.frag",
                                 nullptr, "object");
+    ResourceManager::loadShader("Shader/model.vert",
+                                "Shader/model.frag",
+                                nullptr, "model");
 
     // 加载材质
     ResourceManager::loadTexture("Resources/textures/container2.png",
@@ -64,6 +71,13 @@ void SiriusEngine::init() {
     ResourceManager::loadTexture("Resources/textures/brickwall.jpg",
                                  false, "brick_wall_diffuse");
 
+    // 模型渲染
+
+    Object* objectModel;
+    objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
+    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    sceneObjects.push_back(objectModel);
+
     // 渲染
     cubeRenderer = new CubeRenderer(ResourceManager::getShader("object"));
 
@@ -71,17 +85,6 @@ void SiriusEngine::init() {
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
     scenePointLights.push_back(pointLight);
-
-    // 物体
-    Object* cube;
-    cube = LoadPresets::loadCube(Wooden_Box, u8"木箱");
-    sceneObjects.push_back(cube);
-
-    cube = LoadPresets::loadCube(White_Box, u8"地板");
-    cube->position = glm::vec3(0.0f, -10.0f, 0.0f);
-    cube->rotation = glm::vec3(0.0f);
-    cube->scale = glm::vec3(50.0f, 1.0f, 50.0f);
-    sceneObjects.push_back(cube);
 
     // 选中物体
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
@@ -92,6 +95,42 @@ void SiriusEngine::init() {
     // gui
     gui = new GUI(*this);
     gui->initStyle();
+}
+
+void SiriusEngine::render() {
+    this->configureRenderSetup();
+
+    // 投影变换矩阵
+    glm::mat4 spaceMatrix =
+        camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
+
+    // 更新渲染管线
+    cubeRenderer->updateRenderer(spaceMatrix, camera.position,
+                                 dirLight, scenePointLights);
+
+    modelRenderer->updateRenderer(spaceMatrix, camera.position,
+                                  dirLight, scenePointLights);
+
+    cubeRenderer->postProcessing = this->postProcessing;
+
+    modelRenderer->postProcessing = this->postProcessing;
+
+    // 物体绘制
+    for (unsigned int i = 0; i < sceneObjects.size(); i++) {
+        if (sceneObjects[i]->enabled) {
+            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);
+        }
+    }
+
+    // 光源方块绘制
+    for (unsigned int i = 0; i < scenePointLights.size(); i++) {
+        if (scenePointLights[i]->enabled) {
+            scenePointLights[i]->draw(*cubeRenderer);
+        }
+    }
+
+    // gui
+    gui->render();
 }
 
 void SiriusEngine::processKeyboardInput(float key) {
@@ -144,37 +183,6 @@ void SiriusEngine::processScrollInput(float offset) {
 void SiriusEngine::updateSelected(float key) {
     for (unsigned int i = 0; i < sceneObjects.size(); ++i)
         sceneObjects[i]->selected = (this->currentSelectedObjectIndex == i);
-}
-
-void SiriusEngine::render() {
-    this->configureRenderSetup();
-
-    // 投影变换矩阵
-    glm::mat4 spaceMatrix =
-        camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
-
-    // 更新渲染管线
-    cubeRenderer->updateRenderer(spaceMatrix, camera.position,
-                                 dirLight, scenePointLights);
-
-    cubeRenderer->postProcessing = this->postProcessing;
-
-    // 物体绘制
-    for (unsigned int i = 0; i < sceneObjects.size(); i++) {
-        if (sceneObjects[i]->enabled) {
-            sceneObjects[i]->draw(*cubeRenderer, isObjectCoordinateShown);
-        }
-    }
-
-    // 光源方块绘制
-    for (unsigned int i = 0; i < scenePointLights.size(); i++) {
-        if (scenePointLights[i]->enabled) {
-            scenePointLights[i]->draw(*cubeRenderer);
-        }
-    }
-
-    // gui
-    gui->render();
 }
 
 void SiriusEngine::configureRenderSetup() {

@@ -110,6 +110,15 @@
     <ClCompile Include="Assets\loadPresets.cpp">
       <Filter>Assets\Source File</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\model.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\mesh.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\modelRenderer.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\stb_image.h">
@@ -172,6 +181,15 @@
     <ClInclude Include="Assets\loadPresets.h">
       <Filter>Assets\Header File</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\mesh.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\model.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\modelRenderer.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\light_cube.vert">
@@ -183,9 +201,6 @@
     <None Include="Shader\object.vert">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shader\object_bk.frag">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="Shader\coordinate.frag">
       <Filter>Shader</Filter>
     </None>
@@ -193,6 +208,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\light_cube.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\model.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\model.vert">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include "Library/stb_image.h"
+
 #include <iostream>
 
 unsigned int textureFromFile(const char* path, const std::string& directory, bool gamma) {
@@ -30,7 +32,7 @@ unsigned int textureFromFile(const char* path, const std::string& directory, boo
 
 		// 解释纹理属性
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height,
-						0, format, GL_UNSIGNED_BYTE, data);
+					 0, format, GL_UNSIGNED_BYTE, data);
 
 		// 生成MipMap
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -51,21 +53,16 @@ unsigned int textureFromFile(const char* path, const std::string& directory, boo
 	return textureID;
 }
 
-// 模型
-
-Model::Model(std::string const& path, std::string _name, bool gamma) :
-	Object(_name), gammaCorrection(gamma) { }
-
-Model::Model(glm::vec3 _position, std::string const& path,
-			 std::string _name, bool gamma,
-			 glm::vec3 _rotaion, glm::vec3 _scale, glm::vec3 _color) :
-	Object(_position, _rotaion, _scale, _color, _name), gammaCorrection(gamma) { }
-
-void Model::draw(Renderer& renderer, bool drawCoordinate) {
-	renderer.render(*this, drawCoordinate);
+Model::Model(std::string name, std::string const& path, bool gamma) :
+	Object(name), gammaCorrection(gamma) {
+	loadModel(path);
 }
 
-// 模型渲染
+void Model::draw(Renderer& renderer, bool drawCoordinate) {
+	renderer.render(*this);
+	for (Mesh& mesh : meshes)
+		mesh.draw(renderer.objectShader);
+}
 
 void Model::loadModel(std::string const& path) {
 	// 加载场景对象——Assimp数据结构的根对象
@@ -103,7 +100,7 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
+	std::vector<TextureS> textures;
 
 	// 处理顶点、法线和纹理
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -132,7 +129,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			meshTexCoord.x = mesh->mTextureCoords[0][i].x;
 			meshTexCoord.y = mesh->mTextureCoords[0][i].y;
 			vertex.texCoords = std::move(meshTexCoord);
-			
+
 			// 切线方向
 			glm::vec3 meshTangent;
 			meshTangent.x = mesh->mTangents[i].x;
@@ -167,25 +164,25 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 		// 读取漫反射材质贴图
-		std::vector<Texture> diffuseMaps =
+		std::vector<TextureS> diffuseMaps =
 			loadMaterialTextures(material, aiTextureType_DIFFUSE,
 								 "textureDiffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		// 读取镜面反射材质贴图
-		std::vector<Texture> specularMaps =
+		std::vector<TextureS> specularMaps =
 			loadMaterialTextures(material, aiTextureType_SPECULAR,
 								 "textureSpecular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	
+
 		// 读取法线贴图
-		std::vector<Texture> normalMaps =
+		std::vector<TextureS> normalMaps =
 			loadMaterialTextures(material, aiTextureType_HEIGHT,
 								 "textureNormal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
 		// 读取顶点位移贴图
-		std::vector<Texture> heightMaps =
+		std::vector<TextureS> heightMaps =
 			loadMaterialTextures(material, aiTextureType_AMBIENT,
 								 "textureHeight");
 	}
@@ -194,10 +191,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
+std::vector<TextureS> Model::loadMaterialTextures(aiMaterial* mat,
 												 aiTextureType type,
 												 std::string typeName) {
-	std::vector<Texture> textures;
+	std::vector<TextureS> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString str;
 		mat->GetTexture(type, i, &str);
@@ -215,7 +212,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
 
 		// 如果该模型没有被加载过，则加载
 		if (!hasLoaded) {
-			Texture tex;
+			TextureS tex;
 			tex.id = textureFromFile(str.C_Str(), directory);
 			tex.type = typeName;
 			tex.path = str.C_Str();

@@ -13,7 +13,7 @@ std::map<std::string, Shader> ResourceManager::shaders;
 
 // 载入预设物体名
 std::vector<std::string> ResourceManager::presetsObjects = {
-	u8"白瓷砖块", u8"木箱"
+	u8"小黄鸭"
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
