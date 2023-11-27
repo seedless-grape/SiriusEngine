@@ -11,15 +11,9 @@ Renderer::Renderer(const Shader& shader) :
     this->objectShader = shader;
 
     // 创建坐标着色
-    ResourceManager::loadShader("Shader/coordinate.vert",
-                                "Shader/coordinate.frag",
-                                nullptr, "coordinate");
     this->coordinateShader = ResourceManager::getShader("coordinate");
 
     // 创建光源立方体着色
-    ResourceManager::loadShader("Shader/light_cube.vert",
-                                "Shader/light_cube.frag",
-                                nullptr, "light_cube");
     this->lightCubeShader = ResourceManager::getShader("light_cube");
 
     this->initCoordinateRenderData();

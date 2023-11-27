@@ -29,6 +29,7 @@ public:
 
 	std::vector<Object*> sceneObjects;			// 现有物体表
 	std::vector<PointLight*> scenePointLights;	// 现有点光源表
+	Object* skybox;								// 天空盒
 
 	Camera camera;
 	DirLight dirLight;
@@ -53,6 +54,8 @@ public:
 	int postProcessing;	// 后期特效
 
 	glm::vec3 clearColor;	// 屏幕背景颜色
+
+	Object* cube;
 
 public:
 	// 构造函数
@@ -80,9 +83,6 @@ public:
 private:
 	// 配置渲染
 	void configureRenderSetup();
-
-private:
-	Shader modelShader;
 
 };
 
