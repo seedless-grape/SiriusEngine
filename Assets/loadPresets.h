@@ -5,6 +5,7 @@
 
 #include "cube.h"
 #include "model.h"
+#include "skybox.h"
 
 enum objectType {
     White_Box, Wooden_Box
@@ -17,8 +18,14 @@ enum modelType {
 // 加载预设物体
 class LoadPresets {
 public:
+    // 预加载材质、着色器
+    static void preLoad();
+
     // 加载点光源
     static PointLight* loadPointLight();
+
+    // 加载天空盒
+    static Object* loadSkybox();
 
     // 加载立方体
     static Object* loadCube(objectType type, std::string name);

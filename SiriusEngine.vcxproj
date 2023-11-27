@@ -141,6 +141,7 @@
     <ClCompile Include="Assets\model.cpp" />
     <ClCompile Include="Assets\modelRenderer.cpp" />
     <ClCompile Include="Assets\resource_manager.cpp" />
+    <ClCompile Include="Assets\skybox.cpp" />
     <ClCompile Include="Core\camera.cpp" />
     <ClCompile Include="Core\light.cpp" />
     <ClCompile Include="Core\object.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Assets\model.h" />
     <ClInclude Include="Assets\modelRenderer.h" />
     <ClInclude Include="Assets\resource_manager.h" />
+    <ClInclude Include="Assets\skybox.h" />
     <ClInclude Include="Core\camera.h" />
     <ClInclude Include="Core\light.h" />
     <ClInclude Include="Core\object.h" />
@@ -193,6 +195,8 @@
     <None Include="Shader\model.vert" />
     <None Include="Shader\object.frag" />
     <None Include="Shader\object.vert" />
+    <None Include="Shader\skybox.frag" />
+    <None Include="Shader\skybox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

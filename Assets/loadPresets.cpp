@@ -2,10 +2,39 @@
 #include "resource_manager.h"
 #include "Core/light.h"
 
+void LoadPresets::preLoad() {
+	// 加载着色器
+	ResourceManager::loadShader("Shader/light_cube.vert", "Shader/light_cube.frag", nullptr, "light_cube");
+	ResourceManager::loadShader("Shader/object.vert", "Shader/object.frag", nullptr, "object");
+	ResourceManager::loadShader("Shader/model.vert", "Shader/model.frag", nullptr, "model");
+	ResourceManager::loadShader("Shader/coordinate.vert", "Shader/coordinate.frag", nullptr, "coordinate");
+	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
+
+	// 加载材质
+	ResourceManager::loadTexture("Resources/textures/container2.png", "container_diffuse");
+	ResourceManager::loadTexture("Resources/textures/container2_specular.png", "container_specular");
+
+	std::vector<std::string> skyboxFaces {
+		"Resources/skybox/kiara_dawn/right.png",
+		"Resources/skybox/kiara_dawn/left.png",
+		"Resources/skybox/kiara_dawn/top.png",
+		"Resources/skybox/kiara_dawn/bottom.png",
+		"Resources/skybox/kiara_dawn/front.png",
+		"Resources/skybox/kiara_dawn/back.png"
+	};
+	ResourceManager::loadTexture(skyboxFaces, "skybox");
+}
+
 PointLight* LoadPresets::loadPointLight() {
 	PointLight* pointLight = new PointLight();
 	pointLight->enabled = true;
 	return pointLight;
+}
+
+Object* LoadPresets::loadSkybox() {
+	Object* skybox = new Skybox();
+	skybox->diffuseTexture = ResourceManager::getTexture("skybox");
+	return skybox;
 }
 
 Object* LoadPresets::loadCube(objectType type, std::string name) {

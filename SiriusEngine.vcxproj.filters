@@ -119,6 +119,9 @@
     <ClCompile Include="Assets\modelRenderer.cpp">
       <Filter>Assets\Source File</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\skybox.cpp">
+      <Filter>Assets\Source File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\stb_image.h">
@@ -190,6 +193,9 @@
     <ClInclude Include="Assets\modelRenderer.h">
       <Filter>Assets\Header File</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\skybox.h">
+      <Filter>Assets\Header File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\light_cube.vert">
@@ -214,6 +220,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\model.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\skybox.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\skybox.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
