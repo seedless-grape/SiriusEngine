@@ -1,7 +1,7 @@
-/* 网格模型 */
-
 #ifndef MESH_H_
 #define MESH_H_
+
+/* 网格模型 */
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,13 +13,13 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Core/shader.h"
+
 #include <vector>
 #include <string>
 
 // 影响顶点的最大骨骼数
 #define MAX_BONE_INFLUENCE 4
-
-class Shader;
 
 // 顶点属性结构体
 struct Vertex {
@@ -34,7 +34,7 @@ struct Vertex {
 };
 
 // 纹理属性结构体
-struct Texture {
+struct TextureS {
 	unsigned int id; // 纹理id
 	std::string type; // 纹理类型
 	std::string path; // 纹理路径
@@ -46,13 +46,13 @@ public:
 	// 网格数据
 	std::vector<Vertex> vertices; // 顶点
 	std::vector<unsigned int> indices; // 图形(三角形)索引
-	std::vector<Texture> textures; // 纹理
+	std::vector<TextureS> textures; // 纹理
 
 public:
 	// 构造函数
 	Mesh(std::vector<Vertex> _vertices,
 		 std::vector<unsigned int> _indices,
-		 std::vector<Texture> _textures);
+		 std::vector<TextureS> _textures);
 
 	// 网格绘制
 	void draw(Shader& shader);

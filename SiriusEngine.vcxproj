@@ -137,6 +137,9 @@
   <ItemGroup>
     <ClCompile Include="Assets\cube.cpp" />
     <ClCompile Include="Assets\loadPresets.cpp" />
+    <ClCompile Include="Assets\mesh.cpp" />
+    <ClCompile Include="Assets\model.cpp" />
+    <ClCompile Include="Assets\modelRenderer.cpp" />
     <ClCompile Include="Assets\resource_manager.cpp" />
     <ClCompile Include="Core\camera.cpp" />
     <ClCompile Include="Core\light.cpp" />
@@ -159,6 +162,9 @@
   <ItemGroup>
     <ClInclude Include="Assets\cube.h" />
     <ClInclude Include="Assets\loadPresets.h" />
+    <ClInclude Include="Assets\mesh.h" />
+    <ClInclude Include="Assets\model.h" />
+    <ClInclude Include="Assets\modelRenderer.h" />
     <ClInclude Include="Assets\resource_manager.h" />
     <ClInclude Include="Core\camera.h" />
     <ClInclude Include="Core\light.h" />
@@ -183,9 +189,10 @@
     <None Include="Shader\coordinate.vert" />
     <None Include="Shader\light_cube.frag" />
     <None Include="Shader\light_cube.vert" />
+    <None Include="Shader\model.frag" />
+    <None Include="Shader\model.vert" />
     <None Include="Shader\object.frag" />
     <None Include="Shader\object.vert" />
-    <None Include="Shader\object_bk.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

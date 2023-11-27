@@ -4,9 +4,14 @@
 #define LOAD_PRESETS_H_
 
 #include "cube.h"
+#include "model.h"
 
 enum objectType {
     White_Box, Wooden_Box
+};
+
+enum modelType {
+    duck_model
 };
 
 // 加载预设物体
@@ -18,6 +23,8 @@ public:
     // 加载立方体
     static Object* loadCube(objectType type, std::string name);
 
+    // 加载模型
+    static Object* loadModel(modelType type, std::string name);
 };
 
 #endif
