@@ -81,7 +81,6 @@ public:
 private:
 	// ≈‰÷√‰÷»æ
 	void configureRenderSetup();
-
 };
 
 #endif // !_SIRIUS_ENGINE_H_
