@@ -15,12 +15,12 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadTexture("Resources/textures/container2_specular.png", "container_specular");
 
 	std::vector<std::string> skyboxFaces {
-		"Resources/skybox/kiara_dawn/right.png",
-		"Resources/skybox/kiara_dawn/left.png",
-		"Resources/skybox/kiara_dawn/top.png",
-		"Resources/skybox/kiara_dawn/bottom.png",
-		"Resources/skybox/kiara_dawn/front.png",
-		"Resources/skybox/kiara_dawn/back.png"
+		"Resources/skybox/cafe/right.jpg",
+		"Resources/skybox/cafe/left.jpg",
+		"Resources/skybox/cafe/top.jpg",
+		"Resources/skybox/cafe/bottom.jpg",
+		"Resources/skybox/cafe/front.jpg",
+		"Resources/skybox/cafe/back.jpg"
 	};
 	ResourceManager::loadTexture(skyboxFaces, "skybox");
 }

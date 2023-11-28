@@ -55,8 +55,6 @@ public:
 
 	glm::vec3 clearColor;	// 屏幕背景颜色
 
-	Object* cube;
-
 public:
 	// 构造函数
 	SiriusEngine(GLFWwindow* _window, unsigned int _width,

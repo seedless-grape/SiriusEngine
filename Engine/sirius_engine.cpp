@@ -62,10 +62,6 @@ void SiriusEngine::init() {
     sceneObjects.push_back(objectModel);
 
     // 天空盒与点光源方块渲染
-    /*------------------------------------*/
-    cube = LoadPresets::loadCube(Wooden_Box, u8"test");
-    /*------------------------------------*/
-
     skybox = LoadPresets::loadSkybox();
     skyboxRenderer = new SkyboxRenderer(ResourceManager::getShader("skybox"));
 
@@ -112,8 +108,6 @@ void SiriusEngine::render() {
 
     // 天空盒绘制
     skybox->draw(*skyboxRenderer);
-
-    cube->draw(*cubeRenderer);
 
     // 物体绘制
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
