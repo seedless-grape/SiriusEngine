@@ -14,7 +14,7 @@ public:
 
 	~Cube() override = default;
 
-	void draw(Renderer& renderer, bool drawCoordinate = true) override;
+	void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
 };
 
 // 立方体渲染类
@@ -25,10 +25,10 @@ public:
 	~CubeRenderer();
 
 	// 渲染立方体
-	void render(const Object& object, bool drawCoordinate = true) override;
+	void render(const Object& object, bool drawCoordinate = true, bool gamma = false) override;
 
 	// 渲染光源立方体
-	void render(const PointLight& pointLight) override;
+	void render(const PointLight& pointLight, bool gamma = false) override;
 
 private:
 	unsigned int cubeVAO;

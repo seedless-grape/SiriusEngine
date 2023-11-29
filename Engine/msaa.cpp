@@ -47,23 +47,23 @@ void MSAA::configureMSAASceenSetup() {
 }
 
 void MSAA::render() {
-    // 2. now blit multisampled buffer(s) to normal colorbuffer of intermediate FBO. Image is stored in screenTexture
+    // 将MSAAFBO转换为中间FBO的正常颜色缓冲区
     glBindFramebuffer(GL_READ_FRAMEBUFFER, this->MSAAFBO);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
     glBlitFramebuffer(0, 0, this->MSAAwidth, this->MSAAheight, 0, 0,
                       this->MSAAwidth, this->MSAAheight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-    // 3. now render quad with scene's visuals as its texture image
+    // 将渲染的场景作为其纹理图像
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
-    // draw Screen quad
+    // 绘制
     this->shader.use();
     glBindVertexArray(this->VAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->screenTexture); // use the now resolved color attachment as the quad's texture
+    glBindTexture(GL_TEXTURE_2D, this->screenTexture); // 使用解析的颜色附件作为四边形的纹理
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

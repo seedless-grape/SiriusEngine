@@ -5,8 +5,8 @@
 
 Skybox::Skybox(std::string _name) : Object(_name) {}
 
-void Skybox::draw(Renderer& renderer, bool drawCoordinate) {
-    renderer.render(*this, drawCoordinate);
+void Skybox::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+    renderer.render(*this, drawCoordinate, gamma);
 }
 
 // Ìì¿ÕºÐäÖÈ¾
@@ -21,11 +21,12 @@ SkyboxRenderer::~SkyboxRenderer() {
     glDeleteVertexArrays(1, &this->coordinateVAO);
 }
 
-void SkyboxRenderer::render(const Object& object, bool drawCoordinate) {
+void SkyboxRenderer::render(const Object& object, bool drawCoordinate, bool gamma) {
     glDepthFunc(GL_LEQUAL);
     this->objectShader.use();
 
     this->objectShader.setInt("skybox", 0);
+    this->objectShader.setBool("gamma", gamma);
 
     // ÎÆÀíÓ³Éä
     glBindVertexArray(this->skyboxVAO);

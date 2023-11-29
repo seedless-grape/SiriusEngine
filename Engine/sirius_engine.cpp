@@ -27,7 +27,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
-    isObjectCoordinateShown(true), isMSAA(false),
+    isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
@@ -92,7 +92,7 @@ void SiriusEngine::render() {
     this->configureRenderSetup();
 
     // MSAA帧屏幕缓冲空间配置
-    if (isMSAA)
+    if (isMSAAOn)
         msaa->configureMSAASceenSetup();
 
     // 投影变换矩阵
@@ -116,24 +116,24 @@ void SiriusEngine::render() {
     skyboxRenderer->postProcessing = this->postProcessing;
 
     // 天空盒绘制
-    skybox->draw(*skyboxRenderer);
+    skybox->draw(*skyboxRenderer, false, this->isGammaOn);
 
     // 物体绘制
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->enabled) {
-            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);
+            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown, this->isGammaOn);
         }
     }
 
     // 光源方块绘制
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
         if (scenePointLights[i]->enabled) {
-            scenePointLights[i]->draw(*cubeRenderer);
+            scenePointLights[i]->draw(*cubeRenderer, this->isGammaOn);
         }
     }
 
     // MSAA帧缓冲空间写入屏幕空间
-    if (isMSAA)
+    if (isMSAAOn)
         msaa->render();
 
     // gui
@@ -141,7 +141,7 @@ void SiriusEngine::render() {
 }
 
 void SiriusEngine::updateSceen() {
-    if (isMSAA) {
+    if (isMSAAOn) {
         msaa->updateSceen(width, height);
     }
 }
@@ -221,8 +221,8 @@ void SiriusEngine::configureRenderSetup() {
         glDisable(GL_STENCIL_TEST);
 
     // 抗锯齿
-    if (isMSAA && !msaa->enable)
+    if (isMSAAOn && !msaa->enable)
         msaa->turnON(width, height);
-    else if (!isMSAA && msaa->enable)
+    else if (!isMSAAOn && msaa->enable)
         msaa->turnOFF();
 }

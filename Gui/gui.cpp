@@ -403,7 +403,9 @@ void GUI::renderExtraView() {
             const char* postProcessingName = (siriusEngine.postProcessing >= 0 && siriusEngine.postProcessing < postProcessingCount) ?
                 postProcessingNames[siriusEngine.postProcessing] : u8"未知";
             ImGui::SliderInt(u8"后期特效", &siriusEngine.postProcessing, 0, postProcessingCount - 1, postProcessingName);
-            ImGui::Checkbox(u8"MSAA抗锯齿", &siriusEngine.isMSAA);
+            ImGui::Checkbox(u8"MSAA抗锯齿", &siriusEngine.isMSAAOn);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"Gamma矫正", &siriusEngine.isGammaOn);
         }
 
         // ImGui

@@ -3,7 +3,7 @@
 
 ModelRenderer::ModelRenderer(const Shader& shader) : Renderer(shader) {}
 
-void ModelRenderer::render(const Object& object, bool drawCoordinate) {
+void ModelRenderer::render(const Object& object, bool drawCoordinate, bool gamma) {
     // model±ä»»
     glm::mat4 modelMatrix;
 
@@ -36,4 +36,5 @@ void ModelRenderer::render(const Object& object, bool drawCoordinate) {
     this->objectShader.setMat4("modelMatrix", modelMatrix);
     this->objectShader.setVec3("objectColor", object.color);
     this->objectShader.setFloat("shininess", object.shininess);
+    this->objectShader.setBool("gamma", gamma);
 }

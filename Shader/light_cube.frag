@@ -2,10 +2,14 @@
 
 #version 330 core
 
+#define GAMMA 2.2
+
 out vec4 fragColor;
 
 uniform vec3 color;
 uniform int postProcessing;
+
+uniform bool gamma;
 
 void main()
 {
@@ -21,5 +25,8 @@ void main()
         default:
             fragColor = vec4(color, 1.0f);
     }
+
+    if (gamma)
+        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
     
 }

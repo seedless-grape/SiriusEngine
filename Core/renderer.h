@@ -28,9 +28,9 @@ public:
 	virtual ~Renderer() = default;
 
 	// äÖÈ¾
-	virtual void render(const Object& object, bool drawCoordinate = true) = 0;
+	virtual void render(const Object& object, bool drawCoordinate = true, bool gamma = false) = 0;
 
-	virtual void render(const PointLight& pointLight);
+	virtual void render(const PointLight& pointLight, bool gamma = false);
 
 	// ¸üĞÂäÖÈ¾Æ÷
 	void updateRenderer(glm::mat4 spaceMatrix, glm::vec3 viewPos,

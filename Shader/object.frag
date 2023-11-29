@@ -3,6 +3,7 @@
 #version 330 core
 
 #define MAX_POINT_LIGHTS 10
+#define GAMMA 2.2
 
 out vec4 fragColor;
 
@@ -48,6 +49,8 @@ uniform int pointLightsNum;
 uniform vec3 objectColor;
 uniform Material material;
 uniform int postProcessing;
+
+uniform bool gamma;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float kernel[9]);
@@ -120,6 +123,8 @@ void main()
         }
 
         fragColor = vec4(objectColor * result, 1.0f);
+        if (gamma)
+            fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
     }
 
 }

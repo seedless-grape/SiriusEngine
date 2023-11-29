@@ -57,7 +57,8 @@ public:
 	bool isFreeLookingModeOn;		// 自由视角
 	bool isObjectRotationModeOn;	// 镜头旋转
 	bool isObjectCoordinateShown;	// 展示物体坐标
-	bool isMSAA;					// MSAA抗锯齿
+	bool isMSAAOn;					// MSAA抗锯齿
+	bool isGammaOn;					// Gamma矫正
 
 
 	int postProcessing;	// 后期特效

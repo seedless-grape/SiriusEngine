@@ -36,9 +36,7 @@ public:
     Model(std::string name, std::string const& path, bool gamma = false);
 
     // 绘制模型
-    void draw(Shader& shader);
-
-    void draw(Renderer& renderer, bool drawCoordinate = true) override;
+    void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
 
 private:
     // 加载模型
