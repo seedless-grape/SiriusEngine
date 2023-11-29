@@ -24,6 +24,9 @@ public:
                              const char* geometryFile,
                              std::string name);
 
+    // 判断是否有某个着色器
+    static bool hasShader(std::string name);
+
     // 获取着色器对象
     static Shader getShader(std::string name);
 
@@ -32,6 +35,9 @@ public:
 
     static Texture loadTexture(const std::vector<std::string>& files,
                                std::string name);
+
+    // 判断是否有某个纹理
+    static bool hasTexture(std::string name);
 
     // 获取纹理对象
     static Texture getTexture(std::string name);

@@ -1,60 +1,12 @@
 #include "model.h"
 
 #include "Library/stb_image.h"
+#include "resource_manager.h"
 
 #include <iostream>
 
-unsigned int textureFromFile(const char* path, const std::string& directory, bool gamma) {
-	// 材质文件路径
-	std::string filename = std::string(path);
-	filename = directory + '/' + filename;
-
-	// 加载纹理图像宽、高和颜色通道
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width,
-									&height, &nrComponents, 0);
-
-	// 定义、生成纹理对象
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	if (data) { // 如果纹理图像加载成功
-		GLenum format; // OpenGL宏枚举体
-		if (nrComponents == 1) // 单通道
-			format = GL_RED;
-		else if (nrComponents == 3) // RGB
-			format = GL_RGB;
-		else if (nrComponents == 4) // RGBA;
-			format = GL_RGBA;
-
-		// 绑定纹理对象
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		// 解释纹理属性
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height,
-					 0, format, GL_UNSIGNED_BYTE, data);
-
-		// 生成MipMap
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		// 配置纹理属性参数
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		// 释放读取的图片内存
-		stbi_image_free(data);
-	} else {
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
-}
-
 Model::Model(std::string name, std::string const& path, bool gamma) :
-	Object(name), gammaCorrection(gamma) {
+	Object(name) {
 	loadModel(path);
 }
 
@@ -100,7 +52,7 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<TextureS> textures;
+	std::vector<Texture> textures;
 
 	// 处理顶点、法线和纹理
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -164,25 +116,25 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 		// 读取漫反射材质贴图
-		std::vector<TextureS> diffuseMaps =
+		std::vector<Texture> diffuseMaps =
 			loadMaterialTextures(material, aiTextureType_DIFFUSE,
 								 "textureDiffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		// 读取镜面反射材质贴图
-		std::vector<TextureS> specularMaps =
+		std::vector<Texture> specularMaps =
 			loadMaterialTextures(material, aiTextureType_SPECULAR,
 								 "textureSpecular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		// 读取法线贴图
-		std::vector<TextureS> normalMaps =
+		std::vector<Texture> normalMaps =
 			loadMaterialTextures(material, aiTextureType_HEIGHT,
 								 "textureNormal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
 		// 读取顶点位移贴图
-		std::vector<TextureS> heightMaps =
+		std::vector<Texture> heightMaps =
 			loadMaterialTextures(material, aiTextureType_AMBIENT,
 								 "textureHeight");
 	}
@@ -191,33 +143,29 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	return Mesh(vertices, indices, textures);
 }
 
-std::vector<TextureS> Model::loadMaterialTextures(aiMaterial* mat,
+std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
 												 aiTextureType type,
 												 std::string typeName) {
-	std::vector<TextureS> textures;
+	std::vector<Texture> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString str;
 		mat->GetTexture(type, i, &str);
 
 		// 检查该模型是否已经加载过了
 		bool hasLoaded = false;
-		for (unsigned int j = 0; j < texturesLoaded.size(); j++) {
-			// 遍历已加载模型数组，若检测到已经加载过，则直接加入避免重复加载
-			if (std::strcmp(texturesLoaded[j].path.data(), str.C_Str()) == 0) {
-				textures.push_back(texturesLoaded[j]);
-				hasLoaded = true;
-				break;
-			}
+		// 遍历已加载模型数组，若检测到已经加载过，则直接加入避免重复加载
+		if (ResourceManager::hasTexture(str.C_Str())) {
+			textures.push_back(ResourceManager::getTexture(str.C_Str()));
+			hasLoaded = true;
 		}
 
 		// 如果该模型没有被加载过，则加载
 		if (!hasLoaded) {
-			TextureS tex;
-			tex.id = textureFromFile(str.C_Str(), directory);
+			Texture tex;
+			tex = ResourceManager::loadTexture((directory + '/' + str.C_Str()).c_str(), str.C_Str());
 			tex.type = typeName;
 			tex.path = str.C_Str();
 			textures.push_back(tex);
-			texturesLoaded.push_back(tex);
 		}
 	}
 	return textures;

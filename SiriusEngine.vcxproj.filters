@@ -122,6 +122,9 @@
     <ClCompile Include="Assets\skybox.cpp">
       <Filter>Assets\Source File</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\msaa.cpp">
+      <Filter>Engine\Source File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\stb_image.h">
@@ -196,6 +199,9 @@
     <ClInclude Include="Assets\skybox.h">
       <Filter>Assets\Header File</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\msaa.h">
+      <Filter>Engine\Header File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\light_cube.vert">
@@ -226,6 +232,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\skybox.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\msaa.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\msaa.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

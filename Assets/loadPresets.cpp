@@ -14,6 +14,7 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadTexture("Resources/textures/container2.png", "container_diffuse");
 	ResourceManager::loadTexture("Resources/textures/container2_specular.png", "container_specular");
 
+
 	std::vector<std::string> skyboxFaces {
 		"Resources/skybox/cafe/right.jpg",
 		"Resources/skybox/cafe/left.jpg",
