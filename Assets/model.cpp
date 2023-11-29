@@ -10,8 +10,8 @@ Model::Model(std::string name, std::string const& path, bool gamma) :
 	loadModel(path);
 }
 
-void Model::draw(Renderer& renderer, bool drawCoordinate) {
-	renderer.render(*this);
+void Model::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+	renderer.render(*this, drawCoordinate, gamma);
 	for (Mesh& mesh : meshes)
 		mesh.draw(renderer.objectShader);
 }

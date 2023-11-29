@@ -7,8 +7,8 @@ Cube::Cube(glm::vec3 _position, glm::vec3 _rotaion,
 		   glm::vec3 _scale, glm::vec3 _color, std::string _name) :
 	Object(_position, _rotaion, _scale, _color, _name) {}
 
-void Cube::draw(Renderer& renderer, bool drawCoordinate) {
-	renderer.render(*this, drawCoordinate);
+void Cube::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+	renderer.render(*this, drawCoordinate, gamma);
 }
 
 // 立方体物体渲染
@@ -23,7 +23,7 @@ CubeRenderer::~CubeRenderer() {
     glDeleteVertexArrays(1, &this->coordinateVAO);
 }
 
-void CubeRenderer::render(const Object& object, bool drawCoordinate) {
+void CubeRenderer::render(const Object& object, bool drawCoordinate, bool gamma) {
     this->objectShader.use();
 
     // model变换
@@ -43,6 +43,7 @@ void CubeRenderer::render(const Object& object, bool drawCoordinate) {
     this->objectShader.setInt("material.diffuse", 0);
     this->objectShader.setInt("material.specular", 1);
     this->objectShader.setFloat("material.shininess", object.shininess);
+    this->objectShader.setBool("gamma", gamma);
 
     // 纹理映射
     glActiveTexture(GL_TEXTURE0);
@@ -73,7 +74,7 @@ void CubeRenderer::render(const Object& object, bool drawCoordinate) {
     }
 }
 
-void CubeRenderer::render(const PointLight& pointLight) {
+void CubeRenderer::render(const PointLight& pointLight, bool gamma) {
     this->lightCubeShader.use();
 
     // model变换
@@ -83,6 +84,7 @@ void CubeRenderer::render(const PointLight& pointLight) {
     model = glm::scale(model, glm::vec3(0.1f));
     this->lightCubeShader.setMat4("modelMatrix", model);
     this->lightCubeShader.setVec3("color", pointLight.diffuse);
+    this->lightCubeShader.setBool("gamma", gamma);
 
     // 光源立方体绘制
     glBindVertexArray(this->cubeVAO);

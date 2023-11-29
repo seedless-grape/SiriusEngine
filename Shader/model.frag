@@ -3,6 +3,7 @@
 #version 330 core
 
 #define MAX_POINT_LIGHTS 10
+#define GAMMA 2.2
 
 // 定向光
 struct DirLight {
@@ -47,6 +48,8 @@ uniform float shininess;
 
 uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
+
+uniform bool gamma;
 
 // 函数前向声明
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -120,6 +123,9 @@ void main() {
 
         fragColor = vec4(objectColor * result, 1.0f);
     }
+    if (gamma)
+        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
+        
 }
 
 // 定向光计算

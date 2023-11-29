@@ -19,7 +19,7 @@ Renderer::Renderer(const Shader& shader) :
     this->initCoordinateRenderData();
 }
 
-void Renderer::render(const PointLight& pointLight) {}
+void Renderer::render(const PointLight& pointLight, bool gamma) {}
 
 void Renderer::updateRenderer(glm::mat4 spaceMatrix,
                               glm::vec3 viewPos,

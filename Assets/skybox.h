@@ -12,7 +12,7 @@ public:
 
 	~Skybox() override = default;
 
-	void draw(Renderer& renderer, bool drawCoordinate = false) override;
+	void draw(Renderer& renderer, bool drawCoordinate = false, bool gamma = false) override;
 };
 
 // Ìì¿ÕºĞäÖÈ¾Àà
@@ -23,7 +23,7 @@ public:
 	~SkyboxRenderer();
 
 	// äÖÈ¾Ìì¿ÕºĞ
-	void render(const Object& object, bool drawCoordinate = false) override;
+	void render(const Object& object, bool drawCoordinate = false, bool gamma = false) override;
 
 	// ÖØĞ´äÖÈ¾¸üĞÂÂß¼­
 	void updateRenderer(glm::mat4 spaceMatrix);

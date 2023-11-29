@@ -19,7 +19,7 @@ DirLight::DirLight(float x, float y, float z,
 				   glm::vec3 _specular) :
 	Light(_ambient, _diffuse, _specular), direction(x, y, z) {}
 
-void DirLight::draw(Renderer& renderer) {}
+void DirLight::draw(Renderer& renderer, bool gamma) {}
 
 void DirLight::reset() {
 	direction = DIRECTION;
@@ -46,8 +46,8 @@ PointLight::PointLight(float x, float y, float z,
 	Light(_ambient, _diffuse, _specular), position(x, y, z),
 	attenuationFactors(_attenuationFactors) {}
 
-void PointLight::draw(Renderer& renderer) {
-	renderer.render(*this);
+void PointLight::draw(Renderer& renderer, bool gamma) {
+	renderer.render(*this, gamma);
 }
 
 void PointLight::reset() {
