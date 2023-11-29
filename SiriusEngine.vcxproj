@@ -148,6 +148,7 @@
     <ClCompile Include="Core\renderer.cpp" />
     <ClCompile Include="Core\shader.cpp" />
     <ClCompile Include="Core\texture.cpp" />
+    <ClCompile Include="Engine\msaa.cpp" />
     <ClCompile Include="Engine\sirius_engine.cpp" />
     <ClCompile Include="Gui\gui.cpp" />
     <ClCompile Include="Gui\imgui.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Core\renderer.h" />
     <ClInclude Include="Core\shader.h" />
     <ClInclude Include="Core\texture.h" />
+    <ClInclude Include="Engine\msaa.h" />
     <ClInclude Include="Engine\sirius_engine.h" />
     <ClInclude Include="Gui\gui.h" />
     <ClInclude Include="Gui\imconfig.h" />
@@ -193,6 +195,8 @@
     <None Include="Shader\light_cube.vert" />
     <None Include="Shader\model.frag" />
     <None Include="Shader\model.vert" />
+    <None Include="Shader\msaa.frag" />
+    <None Include="Shader\msaa.vert" />
     <None Include="Shader\object.frag" />
     <None Include="Shader\object.vert" />
     <None Include="Shader\skybox.frag" />

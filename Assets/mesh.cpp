@@ -3,7 +3,7 @@
 
 Mesh::Mesh(std::vector<Vertex> _vertices,
 		   std::vector<unsigned int> _indices,
-		   std::vector<TextureS> _textures) :
+		   std::vector<Texture> _textures) :
 	vertices(_vertices), indices(_indices), textures(_textures) {
 	setupMesh();
 }
@@ -34,7 +34,7 @@ void Mesh::draw(Shader& shader) {
 
 		// 传入GPU，绑定纹理
 		shader.setInt((name + number).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
 
 	// 绘制网格
