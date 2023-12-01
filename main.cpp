@@ -105,7 +105,6 @@ int main() {
 		// ½»»»ÑÕÉ«»º³å
 		glfwSwapBuffers(window);
 	}
-
 	delete siriusEngine;
 
 	return 0;

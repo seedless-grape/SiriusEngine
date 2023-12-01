@@ -24,7 +24,7 @@ void ModelRenderer::render(const Object& object, bool drawCoordinate, bool gamma
 
     this->objectShader.use();
     modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, object.position);  // translate
+    modelMatrix = glm::translate(modelMatrix, object.position);
     modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.x),
                               glm::vec3(1.0f, 0.0f, 0.0f));
     modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.z),

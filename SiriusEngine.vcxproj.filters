@@ -50,6 +50,12 @@
     <Filter Include="Assets\Source File">
       <UniqueIdentifier>{092faba6-9a6b-4b3d-98c5-e6a8e90f4059}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\vertice">
+      <UniqueIdentifier>{30c70659-417d-4b9e-b3c9-d6e76e6774ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\fragment">
+      <UniqueIdentifier>{d13c2dee-141a-4074-9ee8-e851e4d796f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -123,6 +129,9 @@
       <Filter>Assets\Source File</Filter>
     </ClCompile>
     <ClCompile Include="Engine\msaa.cpp">
+      <Filter>Engine\Source File</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\shadow.cpp">
       <Filter>Engine\Source File</Filter>
     </ClCompile>
   </ItemGroup>
@@ -202,43 +211,58 @@
     <ClInclude Include="Engine\msaa.h">
       <Filter>Engine\Header File</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\shadow.h">
+      <Filter>Engine\Header File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\light_cube.vert">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\object.frag">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\object.vert">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\coordinate.frag">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="Shader\coordinate.vert">
-      <Filter>Shader</Filter>
+      <Filter>Shader\vertice</Filter>
     </None>
-    <None Include="Shader\light_cube.frag">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\model.frag">
-      <Filter>Shader</Filter>
+    <None Include="Shader\light_cube.vert">
+      <Filter>Shader\vertice</Filter>
     </None>
     <None Include="Shader\model.vert">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\skybox.vert">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Shader\skybox.frag">
-      <Filter>Shader</Filter>
+      <Filter>Shader\vertice</Filter>
     </None>
     <None Include="Shader\msaa.vert">
-      <Filter>Shader</Filter>
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\object.vert">
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\skybox.vert">
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\coordinate.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\light_cube.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\model.frag">
+      <Filter>Shader\fragment</Filter>
     </None>
     <None Include="Shader\msaa.frag">
-      <Filter>Shader</Filter>
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\object.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\skybox.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\shadow.vert">
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\shadow.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\test.vert">
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\test.frag">
+      <Filter>Shader\fragment</Filter>
     </None>
   </ItemGroup>
 </Project>

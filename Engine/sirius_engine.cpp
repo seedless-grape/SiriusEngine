@@ -9,6 +9,9 @@
 #include "Assets/modelRenderer.h"
 #include "Assets/skybox.h"
 #include "msaa.h" 
+#include "shadow.h"
+
+#include "Library/stb_image.h"
 
 #include <iostream>
 #include <vector>
@@ -16,8 +19,10 @@
 GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
+ModelRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
+Shadow* shadow;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -25,14 +30,16 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     camera(), dirLight(), keysPressed(), keysProcessed(),
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
-    isMouseControlOn(true), isScrollControlOn(true),
+    isMouseControlOn(true), isScrollControlOn(true), isShadowOn(false),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
     isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
-    clearColor(0.1f, 0.1f, 0.1f) { }
+    clearColor(0.1f, 0.1f, 0.1f) { 
+    cubeVAO = 0; cubeVBO = 0;
+}
 
 SiriusEngine::~SiriusEngine() {
     delete gui;
@@ -56,11 +63,12 @@ void SiriusEngine::init() {
     // 预加载(模型、材质、着色器)
     LoadPresets::preLoad();
 
-    // 模型渲染
+    // 模型与模型阴影渲染
     Object* objectModel;
     objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
-    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     sceneObjects.push_back(objectModel);
+    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    modelShadowRenderer = new ModelRenderer(ResourceManager::getShader("shadow"));
 
     // 天空盒与点光源方块渲染
     skybox = LoadPresets::loadSkybox();
@@ -83,9 +91,18 @@ void SiriusEngine::init() {
     msaa = new MSAA();
     msaa->turnON(this->width, this->height);
 
+    // 阴影映射
+    shadow = new Shadow();
+
     // gui
     gui = new GUI(*this);
     gui->initStyle();
+
+    woodTexture = ResourceManager::getTexture("test");
+
+    shader = ResourceManager::getShader("test");
+    shader.setInt("diffuseTexture", 0, true);
+    shader.setBool("shadowMap", 1);
 }
 
 void SiriusEngine::render() {
@@ -94,6 +111,47 @@ void SiriusEngine::render() {
     // MSAA帧屏幕缓冲空间配置
     if (isMSAAOn)
         msaa->configureMSAASceenSetup();
+
+    // 阴影映射
+    if (isShadowOn) {
+        // 需要计算定向光半径
+        dirLight.updatePosition();
+
+        // 获取并传入定向光的空间坐标转换矩阵
+        glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
+        shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
+
+        glViewport(0, 0, 1024, 1024);
+        glBindFramebuffer(GL_FRAMEBUFFER, shadow->depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, woodTexture.ID);
+        renderScene(shadow->shader);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // reset viewport
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader.use();
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 view = camera.getViewMatrix();
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        // set light uniforms
+        shader.setVec3("viewPos", camera.position);
+        shader.setVec3("lightPos", lightPos);
+        shader.setMat4("lightSpaceMatrix", dirLight.getLightSpaceMatrix());
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, woodTexture.ID);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, shadow->depthMap);
+
+        renderScene(shader);
+    }
+
+
 
     // 投影变换矩阵
     glm::mat4 projectionMatrix = camera.getProjectionMatrix(this->width, this->height);
@@ -138,6 +196,8 @@ void SiriusEngine::render() {
 
     // gui
     gui->render();
+
+
 }
 
 void SiriusEngine::updateSceen() {
@@ -226,3 +286,100 @@ void SiriusEngine::configureRenderSetup() {
     else if (!isMSAAOn && msaa->enable)
         msaa->turnOFF();
 }
+
+
+/*----------------------------------------------------------*/
+void SiriusEngine::renderScene(Shader& shader) {
+    // floor
+    glm::mat4 model;
+    // cubes
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    renderCube();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+    model = glm::scale(model, glm::vec3(0.5f));
+    shader.setMat4("model", model);
+    renderCube();
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::scale(model, glm::vec3(0.25));
+    shader.setMat4("model", model);
+    renderCube();
+}
+
+
+
+void SiriusEngine::renderCube() {
+    // initialize (if necessary)
+    
+    if (cubeVAO == 0) {
+        float vertices[] = {
+            // back face
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+            // front face
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+            // left face
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            // right face
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+             // bottom face
+             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+              1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+             -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+             // top face
+             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+              1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+              1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+              1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+             -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
+        };
+        glGenVertexArrays(1, &cubeVAO);
+        glGenBuffers(1, &cubeVBO);
+        // fill buffer
+        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        // link vertex attributes
+        glBindVertexArray(cubeVAO);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+    // render Cube
+    glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+}
+

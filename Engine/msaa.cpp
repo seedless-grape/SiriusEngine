@@ -16,12 +16,7 @@ void MSAA::turnON(unsigned int width, unsigned int height) {
     this->MSAAFBO = configureMSAAFBO();  
     this->intermediateFBO = configureIntermediateFBO();
 
-    if (ResourceManager::hasShader("msaa"))
-        this->shader = ResourceManager::getShader("msaa");
-    else
-        this->shader = ResourceManager::loadShader("Shader/msaa.vert",
-                                                   "Shader/msaa.frag",
-                                                   nullptr, "msaa");
+    this->shader = ResourceManager::getShader("msaa");
 
     configureShader();
 }

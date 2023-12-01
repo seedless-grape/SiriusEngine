@@ -339,6 +339,7 @@ void GUI::renderSceneInspector() {
                     ImGui::Separator();
 
                     ImGui::DragFloat3(u8"∑ΩœÚ", glm::value_ptr(dirLight.direction), IMGUI_DRAG_SPEED_SLOW);
+                    ImGui::SliderFloat(u8"∞Îæ∂", &dirLight.radius, DIR_RADIUS_MIN, DIR_RADIUS_MAX, "%.1f");
 
                     ImGui::EndTabItem();
                 }
@@ -406,6 +407,8 @@ void GUI::renderExtraView() {
             ImGui::Checkbox(u8"MSAAøπæ‚≥›", &siriusEngine.isMSAAOn);
             ImGui::SameLine();
             ImGui::Checkbox(u8"GammaΩ√’˝", &siriusEngine.isGammaOn);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"“ı”∞”≥…‰", &siriusEngine.isShadowOn);
         }
 
         // ImGui
