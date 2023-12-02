@@ -44,6 +44,7 @@ public:
 	std::vector<Object*> sceneObjects;			// 现有物体表
 	std::vector<PointLight*> scenePointLights;	// 现有点光源表
 	Object* skybox;								// 天空盒
+	Shadow* shadow;								// 阴影
 
 	Camera camera;
 	DirLight dirLight;
@@ -66,9 +67,6 @@ public:
 	bool isObjectCoordinateShown;	// 展示物体坐标
 	bool isMSAAOn;					// MSAA抗锯齿
 	bool isGammaOn;					// Gamma矫正
-	bool isBiasShadowOn;			// bia优化硬阴影
-	bool isCullShadowOn;			// 正面剔除优化硬阴影
-
 
 	int postProcessing;	// 后期特效
 

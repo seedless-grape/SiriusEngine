@@ -8,7 +8,6 @@
 
 #include "Engine/sirius_engine.h"
 #include "Assets/resource_manager.h"
-#include "Core/object.h"
 #include "Assets/loadPresets.h"
 
 #include <iostream>
@@ -388,12 +387,14 @@ void GUI::renderExtraView() {
 
         // OpenGL
         if (ImGui::CollapsingHeader("OpenGL", ImGuiTreeNodeFlags_DefaultOpen)) {
-            // version
+            // 版本
             int majorVersion, minorVersion, revisionNumber;
             glfwGetVersion(&majorVersion, &minorVersion, &revisionNumber);
-            ImGui::Text("Version: %d.%d.%d", majorVersion, minorVersion, revisionNumber);
-            // color
+            ImGui::Text(u8"版本: %d.%d.%d", majorVersion, minorVersion, revisionNumber);
+
+            // 屏幕颜色
             ImGui::ColorEdit3("Clear Color", glm::value_ptr(siriusEngine.clearColor));
+
             // 选项
             ImGui::Checkbox(u8"深度测试", &siriusEngine.isDepthTestOn);
             ImGui::SameLine();
@@ -408,12 +409,17 @@ void GUI::renderExtraView() {
             ImGui::SameLine();
             ImGui::Checkbox(u8"Gamma矫正", &siriusEngine.isGammaOn);
 
-            ImGui::Separator();
-            
-            ImGui::Checkbox(u8"bias优化硬阴影", &siriusEngine.isBiasShadowOn);
-            ImGui::SameLine();
-            ImGui::Checkbox(u8"正面剔除优化硬阴影", &siriusEngine.isCullShadowOn);
+            ImGui::Separator();  
 
+            ImGui::Text(u8"阴影");
+            ImGui::SameLine();
+            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 70.0f, ImGui::GetCursorPos().y));
+            ImGui::Checkbox(u8"开启", &siriusEngine.shadow->isShadowOn);
+            ImGui::Checkbox(u8"bias优化", &siriusEngine.shadow->isBias);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"正面剔除优化", &siriusEngine.shadow->isCull);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"PCF软阴影", &siriusEngine.shadow->isSoft);
         }
 
         // ImGui

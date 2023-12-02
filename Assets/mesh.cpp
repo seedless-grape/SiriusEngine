@@ -44,7 +44,7 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		shader.setInt("shadowMap", i);
 
-		glBindTexture(GL_TEXTURE_2D, shadow->depthMap);
+		glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
 	} else {
 		shader.setBool("shadowOn", false);
 	}
@@ -120,7 +120,7 @@ void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader.setInt("shadowMap", i);
 
-	glBindTexture(GL_TEXTURE_2D, shadow->depthMap);
+	glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
 
 	// »æÖÆÍø¸ñ
 	glBindVertexArray(VAO);
