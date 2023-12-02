@@ -22,8 +22,8 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     camera(), dirLight(), keysPressed(), keysProcessed(),
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
-    isMouseControlOn(true), isScrollControlOn(true), isShadowOn(false),
-    isFreeLookingModeOn(false), isObjectRotationModeOn(false),
+    isMouseControlOn(true), isScrollControlOn(true), isBiasShadowOn(false),
+    isFreeLookingModeOn(false), isObjectRotationModeOn(false), isCullShadowOn(false),
     isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
@@ -131,7 +131,13 @@ void SiriusEngine::render() {
     }
 
     // 是否开启阴影
-    if (isShadowOn) {
+    if (isBiasShadowOn || isCullShadowOn) {
+        // 正面剔除优化阴影
+        if (isCullShadowOn) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+        }
+
 		// 需要计算定向光半径
 		dirLight.updatePosition();
 
@@ -147,6 +153,12 @@ void SiriusEngine::render() {
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->shadowDraw(*modelShadowRenderer);
+
+        if (isCullShadowOn) {
+            glCullFace(GL_BACK);
+            if (!isFaceCullingOn)
+                glDisable(GL_CULL_FACE);
+        }
 
         // 解绑阴影缓冲区，恢复默认缓冲区
         shadow->unbindShadowFBO(0, this->width, this->height);
@@ -258,8 +270,14 @@ void SiriusEngine::configureRenderSetup() {
         msaa->turnOFF();
 
     // 阴影
-    if (shadow)
+    if (isBiasShadowOn) {
         modelRenderer->objectShader.setBool("shadowOn", true, true);
-    else
+        modelRenderer->objectShader.setFloat("biasValue", 0.005f);
+    }
+    else if (isCullShadowOn) {
+        modelRenderer->objectShader.setBool("shadowOn", true, true);
+        modelRenderer->objectShader.setFloat("biasValue", 0.000f);
+    } else {
         modelRenderer->objectShader.setBool("shadowOn", false, true);
+    }
 }

@@ -407,8 +407,13 @@ void GUI::renderExtraView() {
             ImGui::Checkbox(u8"MSAA抗锯齿", &siriusEngine.isMSAAOn);
             ImGui::SameLine();
             ImGui::Checkbox(u8"Gamma矫正", &siriusEngine.isGammaOn);
+
+            ImGui::Separator();
+            
+            ImGui::Checkbox(u8"bias优化硬阴影", &siriusEngine.isBiasShadowOn);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"阴影映射", &siriusEngine.isShadowOn);
+            ImGui::Checkbox(u8"正面剔除优化硬阴影", &siriusEngine.isCullShadowOn);
+
         }
 
         // ImGui

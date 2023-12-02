@@ -54,6 +54,7 @@ uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
 
 uniform sampler2D shadowMap;    // 阴影贴图
 uniform bool shadowOn;          // 是否开启阴影
+uniform float biasValue;        // 阴影偏移量
 
 uniform bool gamma;
 
@@ -148,12 +149,8 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
     float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
 
     // shadow
-    float shadow;
-    if (shadowOn)
-        shadow = CalcShadow(fs_in.fragPosLightSpace); 
-    else
-        shadow = 0.0f;               
-    
+    float shadow = shadowOn ? CalcShadow(fs_in.fragPosLightSpace) : 0.0f;
+
     // result
     vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
@@ -288,9 +285,11 @@ float CalcShadow(vec4 fragPosLightSpace) {
     // 获取当前片元的深度信息，就是z值
     float currentDepth = projCoords.z;
     // 阴影偏移
-    float bias = 0.005;
+    float bias = biasValue;
     // 当前片元的深度信息大于阴影图中的深度信息(加上一个偏移量)时，产生阴影
     float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-    
+    // 解决超出光远平面的着色
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
     return shadow;
 }
