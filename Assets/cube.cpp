@@ -7,7 +7,7 @@ Cube::Cube(glm::vec3 _position, glm::vec3 _rotaion,
 		   glm::vec3 _scale, glm::vec3 _color, std::string _name) :
 	Object(_position, _rotaion, _scale, _color, _name) {}
 
-void Cube::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+void Cube::draw(Renderer& renderer, Shadow* shadow, bool drawCoordinate, bool gamma) {
 	renderer.render(*this, drawCoordinate, gamma);
 }
 

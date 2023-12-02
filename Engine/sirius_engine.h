@@ -13,9 +13,7 @@
 #include <vector>
 
 #include "Core/camera.h"
-#include "Core/object.h"
 #include "Core/light.h"
-#include "Core/shader.h"
 #include "Assets/model.h"
 
 // 后期特效
@@ -25,7 +23,7 @@ enum PostProcessing;
 class SiriusEngine {
 	/*-----------------*/
 public:
-
+	unsigned int planeVAO;
 
 	glm::vec3 lightPos;
 

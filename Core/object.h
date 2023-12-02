@@ -9,6 +9,7 @@
 #include <string>
 
 #include "texture.h"
+#include "shadow.h"
 
 // 渲染前向声明
 class Renderer;
@@ -44,7 +45,12 @@ public:
 	virtual ~Object() = default;
 
 	// 物体绘制(纯虚函数)
-	virtual void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) = 0;
+	virtual void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = true, bool gamma = false) = 0;
+
+	// 阴影绘制
+	virtual void shadowDraw(Renderer& renderer);
+
+	virtual void shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordinate = true, bool gamma = false) {}
 
 	// 重置物体
 	void reset();

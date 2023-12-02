@@ -5,8 +5,7 @@ out vec3 texCoords;
 
 uniform mat4 spaceMatrix;
 
-void main()
-{
+void main() {
     texCoords = aPos;
     vec4 pos = spaceMatrix * vec4(aPos, 1.0);
     gl_Position = pos.xyww;

@@ -34,6 +34,8 @@ struct Vertex {
 	float mWeights[MAX_BONE_INFLUENCE]; // 影响该顶点的骨骼影响权重
 };
 
+class Shadow;
+
 // 网格类
 class Mesh {
 public:
@@ -49,7 +51,13 @@ public:
 		 std::vector<Texture> _textures);
 
 	// 网格绘制
-	void draw(Shader& shader);
+	void draw(Shader& shader, Shadow* shadow);
+
+	// 阴影绘制
+	void shadowDraw(Shader& shader);
+
+	// 网格阴影绘制
+	void shadowModelDraw(Shader& shader, Shadow* shadow);
 
 private:
 	// 渲染数据

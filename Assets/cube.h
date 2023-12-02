@@ -2,6 +2,7 @@
 #include "Core/object.h"
 #include "Core/renderer.h"
 
+// 立方体类
 class Cube : public Object {
 public:
 	Cube(std::string _name = "Cube");
@@ -14,7 +15,7 @@ public:
 
 	~Cube() override = default;
 
-	void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
+	void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = true, bool gamma = false) override;
 };
 
 // 立方体渲染类

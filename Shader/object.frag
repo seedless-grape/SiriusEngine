@@ -60,8 +60,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float kernel[9]);
 
 
-void main()
-{
+void main() {
     vec3 norm = normalize(fs_in.normal);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
 
@@ -132,8 +131,7 @@ void main()
 }
 
 // 定向光计算
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
-{
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse

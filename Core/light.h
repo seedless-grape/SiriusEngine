@@ -15,10 +15,10 @@
 class Renderer;
 
 // 基础光源类
-const glm::vec3 LIGHT_POSITION(0.0f);
-const glm::vec3 AMBIENT(0.1f);
-const glm::vec3 DIFFUSE(0.6f);
-const glm::vec3 SPECULAR(1.0f);
+static constexpr glm::vec3 LIGHT_POSITION(0.0f);
+static constexpr glm::vec3 AMBIENT(0.1f);
+static constexpr glm::vec3 DIFFUSE(0.6f);
+static constexpr glm::vec3 SPECULAR(1.0f);
 
 class Light {
 public:
@@ -50,11 +50,11 @@ public:
 };
 
 // 全局定向光照类
-const glm::vec3 DIRECTION(0.0f, 0.0f, -1.0f);
-const float DIR_RADIUS = 100;
+static constexpr glm::vec3 DIRECTION(0.0f, 0.0f, -1.0f);
+static constexpr float DIR_RADIUS = 20.0f;
 
-const float	DIR_RADIUS_MIN = 10.0f;		// 最小定向光半径
-const float	DIR_RADIUS_MAX = 1000.0f;	// 最大定向光半径
+static constexpr float	DIR_RADIUS_MIN = 10.0f;		// 最小定向光半径
+static constexpr float	DIR_RADIUS_MAX = 100.0f;	// 最大定向光半径
 
 class DirLight : public Light {
 public:
@@ -86,8 +86,8 @@ public:
 };
 
 // 点光源类
-const glm::vec3 POINT_LIGHT_POSITION(2.5f, 2.0f, -0.2f);
-const glm::vec3 ATTENUATION_FACTORS(1.0f, 0.0f, 0.0f);
+static constexpr glm::vec3 POINT_LIGHT_POSITION(2.5f, 2.0f, -0.2f);
+static constexpr glm::vec3 ATTENUATION_FACTORS(1.0f, 0.0f, 0.0f);
 
 class PointLight : public Light {
 public:
