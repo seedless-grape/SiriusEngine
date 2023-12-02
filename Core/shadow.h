@@ -4,15 +4,14 @@ shadow：用于实现物体阴影映射
 	比较深度大于深度贴图的像素位置为阴影位置
 */
 
-
 #ifndef SHADOW_H_
 #define SHADOW_H_
 
 #include "Core/shader.h"
 #include "Core/renderer.h"
 
-const unsigned int SHADOW_WIDTH = 1024;
-const unsigned int SHADOW_HEIGHT = 1024;
+const unsigned int SHADOW_WIDTH = 2048;
+const unsigned int SHADOW_HEIGHT = 2048;
 
 // 阴影类
 class Shadow {

@@ -66,7 +66,8 @@ public:
 	bool isObjectCoordinateShown;	// 展示物体坐标
 	bool isMSAAOn;					// MSAA抗锯齿
 	bool isGammaOn;					// Gamma矫正
-	bool isShadowOn;				// 阴影
+	bool isBiasShadowOn;			// bia优化硬阴影
+	bool isCullShadowOn;			// 正面剔除优化硬阴影
 
 
 	int postProcessing;	// 后期特效
