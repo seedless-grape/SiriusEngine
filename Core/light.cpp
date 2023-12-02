@@ -34,7 +34,7 @@ glm::mat4 DirLight::getLightSpaceMatrix() {
 }
 
 void DirLight::updatePosition() {
-	position = radius * glm::normalize(direction);
+	position = radius * glm::normalize(-direction);
 }
 
 void DirLight::reset() {

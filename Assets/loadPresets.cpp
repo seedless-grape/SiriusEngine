@@ -10,8 +10,6 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadShader("Shader/coordinate.vert", "Shader/coordinate.frag", nullptr, "coordinate");
 	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
 	ResourceManager::loadShader("Shader/msaa.vert", "Shader/msaa.frag", nullptr, "msaa");
-
-	ResourceManager::loadShader("Shader/test.vert", "Shader/test.frag", nullptr, "test");
 	ResourceManager::loadShader("Shader/shadow.vert", "Shader/shadow.frag", nullptr, "shadow");
 
 	// ¼ÓÔØ²ÄÖÊ

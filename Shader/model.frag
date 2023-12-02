@@ -17,12 +17,12 @@ struct DirLight {
 // 点光源
 struct PointLight {
     bool enabled;
-    vec3 position;
 
     float constant;
     float linear;
     float quadratic;
 
+    vec3 position;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -53,7 +53,7 @@ uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
 
 uniform sampler2D shadowMap;    // 阴影贴图
-uniform bool shadowOn;           // 是否开启阴影
+uniform bool shadowOn;          // 是否开启阴影
 
 uniform bool gamma;
 
@@ -65,18 +65,11 @@ vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
-
     vec3 norm = normalize(fs_in.normal);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
 
     vec3 result = vec3(0.0f);
     
-    float shadow;
-    if (shadowOn)
-        shadow = CalcShadow(fs_in.fragPosLightSpace);    
-    else     
-        shadow = 0.0f;             
-
     if (postProcessing <= 2) {  // 非核处理
         // 定向光
         if (dirLight.enabled)
@@ -144,8 +137,7 @@ void main() {
 }
 
 // 定向光计算
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
-{
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse
@@ -154,13 +146,20 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
+
+    // shadow
+    float shadow;
+    if (shadowOn)
+        shadow = CalcShadow(fs_in.fragPosLightSpace); 
+    else
+        shadow = 0.0f;               
     
     // result
     vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
     vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords));
 
-    return (ambient + diffuse + specular);
+    return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
 // 定向光加核计算
@@ -288,8 +287,10 @@ float CalcShadow(vec4 fragPosLightSpace) {
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     // 获取当前片元的深度信息，就是z值
     float currentDepth = projCoords.z;
-    // 当前片元的深度信息大于阴影图中的深度信息时，产生阴影
-    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
-
+    // 阴影偏移
+    float bias = 0.005;
+    // 当前片元的深度信息大于阴影图中的深度信息(加上一个偏移量)时，产生阴影
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    
     return shadow;
 }

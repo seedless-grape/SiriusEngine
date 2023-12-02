@@ -13,18 +13,14 @@
 #include <assimp/postprocess.h>
 
 #include "mesh.h"
-#include "Core/shader.h"
-#include "modelRenderer.h"
 #include "Core/object.h"
+#include "Core/renderer.h"
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
-
-// 从文件中读取材质贴图
-//unsigned int textureFromFile(const char* path, const std::string& directory);
 
 // 模型类
 class Model : public Object {
@@ -36,7 +32,13 @@ public:
     Model(std::string name, std::string const& path, bool gamma = false);
 
     // 绘制模型
-    void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
+    void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = true, bool gamma = false) override;
+
+    // 阴影绘制
+    void shadowDraw(Renderer& renderer) override;
+
+    // 阴影模型绘制
+    void shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordinate = true, bool gamma = false) override;
 
 private:
     // 加载模型
@@ -52,6 +54,18 @@ private:
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat,
                                               aiTextureType type,
                                               std::string typeName);
+};
+
+// 模型渲染类
+class ModelRenderer : public Renderer {
+public:
+    // 构造/析构函数
+    ModelRenderer(const Shader& shader);
+
+    ~ModelRenderer() override = default;
+
+    // 渲染
+    void render(const Object& object, bool drawCoordinate = true, bool gamma = false) override;
 };
 
 #endif

@@ -14,8 +14,7 @@ out VS_OUT {
 uniform mat4 modelMatrix;
 uniform mat4 spaceMatrix;  // projection * view
 
-void main()
-{
+void main() {
     vs_out.fragPos = vec3(modelMatrix * vec4(aPos, 1.0f));  // reduce from 4 to 3
     vs_out.normal = mat3(transpose(inverse(modelMatrix))) * aNormal;  // normal matrix
     vs_out.texCoords = aTexCoords;

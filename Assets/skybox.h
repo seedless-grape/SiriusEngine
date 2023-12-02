@@ -12,7 +12,7 @@ public:
 
 	~Skybox() override = default;
 
-	void draw(Renderer& renderer, bool drawCoordinate = false, bool gamma = false) override;
+	void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = false, bool gamma = false) override;
 };
 
 // Ìì¿ÕºĞäÖÈ¾Àà

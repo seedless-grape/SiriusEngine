@@ -1,5 +1,6 @@
 #include "mesh.h"
-#include <iostream>
+
+#include "Core/shadow.h"
 
 Mesh::Mesh(std::vector<Vertex> _vertices,
 		   std::vector<unsigned int> _indices,
@@ -8,15 +9,16 @@ Mesh::Mesh(std::vector<Vertex> _vertices,
 	setupMesh();
 }
 
-void Mesh::draw(Shader& shader) {
+void Mesh::draw(Shader& shader, Shadow* shadow) {
 	// 纹理映射目标
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
-	unsigned int normalNr = 1;
-	unsigned int heightNr = 1;
+	//unsigned int normalNr = 1;
+	//unsigned int heightNr = 1;
 
 	// 将纹理数组中的所有纹理都映射
-	for (unsigned int i = 0; i < textures.size(); i++) {
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
 		// 激活对应的纹理单元
 		glActiveTexture(GL_TEXTURE0 + i);
 
@@ -27,15 +29,26 @@ void Mesh::draw(Shader& shader) {
 			number = std::to_string(diffuseNr++);
 		else if (name == "textureSpecular")
 			number = std::to_string(specularNr++);
-		else if (name == "textureNormal")
-			number = std::to_string(normalNr++);
-		else if (name == "textureHeight")
-			number = std::to_string(heightNr++);
+		//else if (name == "textureNormal")
+		//	number = std::to_string(normalNr++);
+		//else if (name == "textureHeight")
+		//	number = std::to_string(heightNr++);
 
 		// 传入GPU，绑定纹理
 		shader.setInt((name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
+
+	// 绑定传递阴影材质
+	if (shadow) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		shader.setInt("shadowMap", i);
+
+		glBindTexture(GL_TEXTURE_2D, shadow->depthMap);
+	} else {
+		shader.setBool("shadowOn", false);
+	}
+
 
 	// 绘制网格
 	glBindVertexArray(VAO);
@@ -45,6 +58,78 @@ void Mesh::draw(Shader& shader) {
 
 	// 将纹理激活设置回归为默认值
 	glActiveTexture(GL_TEXTURE0);
+}
+
+void Mesh::shadowDraw(Shader& shader) {
+	// 将纹理数组中的漫反射纹理映射
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		// 获取纹理序号和纹理类型
+		std::string name = textures[i].type;
+		if (name == "textureDiffuse") {
+			glActiveTexture(GL_TEXTURE0);
+
+			// 绑定纹理
+			glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+			break;
+		}
+	}
+
+	// 绘制网格
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
+				   GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// 将纹理激活设置回归为默认值
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE0);
+
+}
+
+void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
+	// 纹理映射目标
+	unsigned int diffuseNr = 1;
+	unsigned int specularNr = 1;
+	//unsigned int normalNr = 1;
+	//unsigned int heightNr = 1;
+
+	// 将纹理数组中的所有纹理都映射
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
+		// 激活对应的纹理单元
+		glActiveTexture(GL_TEXTURE0 + i);
+
+		// 获取纹理序号和纹理类型
+		std::string number;
+		std::string name = textures[i].type;
+		if (name == "textureDiffuse")
+			number = std::to_string(diffuseNr++);
+		else if (name == "textureSpecular")
+			number = std::to_string(specularNr++);
+		//else if (name == "textureNormal")
+		//	number = std::to_string(normalNr++);
+		//else if (name == "textureHeight")
+		//	number = std::to_string(heightNr++);
+
+		// 传入GPU，绑定纹理
+		shader.setInt((name + number).c_str(), i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+	}
+
+	// 绑定传递阴影材质
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader.setInt("shadowMap", i);
+
+	glBindTexture(GL_TEXTURE_2D, shadow->depthMap);
+
+	// 绘制网格
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
+				   GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// 将纹理激活设置回归为默认值
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mesh::setupMesh() {

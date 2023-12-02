@@ -122,17 +122,14 @@
     <ClCompile Include="Assets\mesh.cpp">
       <Filter>Assets\Source File</Filter>
     </ClCompile>
-    <ClCompile Include="Assets\modelRenderer.cpp">
-      <Filter>Assets\Source File</Filter>
-    </ClCompile>
     <ClCompile Include="Assets\skybox.cpp">
       <Filter>Assets\Source File</Filter>
     </ClCompile>
     <ClCompile Include="Engine\msaa.cpp">
       <Filter>Engine\Source File</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\shadow.cpp">
-      <Filter>Engine\Source File</Filter>
+    <ClCompile Include="Core\shadow.cpp">
+      <Filter>Core\Source File</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,17 +199,14 @@
     <ClInclude Include="Assets\model.h">
       <Filter>Assets\Header File</Filter>
     </ClInclude>
-    <ClInclude Include="Assets\modelRenderer.h">
-      <Filter>Assets\Header File</Filter>
-    </ClInclude>
     <ClInclude Include="Assets\skybox.h">
       <Filter>Assets\Header File</Filter>
     </ClInclude>
     <ClInclude Include="Engine\msaa.h">
       <Filter>Engine\Header File</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\shadow.h">
-      <Filter>Engine\Header File</Filter>
+    <ClInclude Include="Core\shadow.h">
+      <Filter>Core\Header File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -256,12 +250,6 @@
       <Filter>Shader\vertice</Filter>
     </None>
     <None Include="Shader\shadow.frag">
-      <Filter>Shader\fragment</Filter>
-    </None>
-    <None Include="Shader\test.vert">
-      <Filter>Shader\vertice</Filter>
-    </None>
-    <None Include="Shader\test.frag">
       <Filter>Shader\fragment</Filter>
     </None>
   </ItemGroup>
