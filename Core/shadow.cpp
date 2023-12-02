@@ -3,11 +3,16 @@
 #include <iostream>
 
 Shadow::Shadow(unsigned int _width, unsigned int _height) :
-	width(_width), height(_height) {
+	width(_width), height(_height),
+	isShadowOn(false), isBias(false), isCull(false), isSoft(false) {
 	// ≈‰÷√“ı”∞ø’º‰æÿ’Û
 	shader = ResourceManager::getShader("shadow");
 	configureDepthFBO();
 
+}
+
+unsigned int Shadow::getDepthMap() {
+	return depthMap;
 }
 
 void Shadow::setLightSpaceMatrix(glm::mat4 lightSpaceMatrix) {

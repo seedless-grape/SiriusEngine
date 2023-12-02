@@ -14,7 +14,6 @@ ModelRenderer* modelRenderer;
 ShadowRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
-Shadow* shadow;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -22,8 +21,8 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     camera(), dirLight(), keysPressed(), keysProcessed(),
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
-    isMouseControlOn(true), isScrollControlOn(true), isBiasShadowOn(false),
-    isFreeLookingModeOn(false), isObjectRotationModeOn(false), isCullShadowOn(false),
+    isMouseControlOn(true), isScrollControlOn(true),
+    isFreeLookingModeOn(false), isObjectRotationModeOn(false),
     isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
@@ -130,10 +129,24 @@ void SiriusEngine::render() {
         }
     }
 
-    // 是否开启阴影
-    if (isBiasShadowOn || isCullShadowOn) {
-        // 正面剔除优化阴影
-        if (isCullShadowOn) {
+    // 开启阴影
+    if (shadow->isShadowOn) {
+        modelRenderer->objectShader.setBool("shadowOn", true, true);
+
+        // Bias优化
+        if(shadow->isBias)
+            modelRenderer->objectShader.setFloat("biasValue", 0.005f);
+        else
+            modelRenderer->objectShader.setFloat("biasValue", 0.000f);
+
+        // PCF软阴影
+        if (shadow->isSoft)
+            modelRenderer->objectShader.setBool("softShadow", true);
+        else
+            modelRenderer->objectShader.setBool("softShadow", false);
+
+        // 正面剔除优化
+        if (shadow->isCull) {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_FRONT);
         }
@@ -154,7 +167,7 @@ void SiriusEngine::render() {
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->shadowDraw(*modelShadowRenderer);
 
-        if (isCullShadowOn) {
+        if (shadow->isCull) {
             glCullFace(GL_BACK);
             if (!isFaceCullingOn)
                 glDisable(GL_CULL_FACE);
@@ -169,6 +182,8 @@ void SiriusEngine::render() {
                 sceneObjects[i]->draw(*modelRenderer, shadow, isObjectCoordinateShown, isGammaOn);
 
     } else { // 不开启阴影
+        modelRenderer->objectShader.setBool("shadowOn", false, true);
+
         // 物体绘制
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
@@ -268,16 +283,4 @@ void SiriusEngine::configureRenderSetup() {
         msaa->turnON(width, height);
     else if (!isMSAAOn && msaa->enable)
         msaa->turnOFF();
-
-    // 阴影
-    if (isBiasShadowOn) {
-        modelRenderer->objectShader.setBool("shadowOn", true, true);
-        modelRenderer->objectShader.setFloat("biasValue", 0.005f);
-    }
-    else if (isCullShadowOn) {
-        modelRenderer->objectShader.setBool("shadowOn", true, true);
-        modelRenderer->objectShader.setFloat("biasValue", 0.000f);
-    } else {
-        modelRenderer->objectShader.setBool("shadowOn", false, true);
-    }
 }

@@ -8,6 +8,7 @@
 // 定向光
 struct DirLight {
     bool enabled;
+
     vec3 direction;
     vec3 ambient;
     vec3 diffuse;
@@ -54,6 +55,7 @@ uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
 
 uniform sampler2D shadowMap;    // 阴影贴图
 uniform bool shadowOn;          // 是否开启阴影
+uniform bool softShadow;        // PCF软阴影
 uniform float biasValue;        // 阴影偏移量
 
 uniform bool gamma;
@@ -280,14 +282,32 @@ float CalcShadow(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // 将深度值范围转换至[0, 1]
     projCoords = projCoords * 0.5 + 0.5;
-    // 从阴影图中采集当前位置的深度信息(该信息为当前坐标下的最近深度)
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+
     // 获取当前片元的深度信息，就是z值
     float currentDepth = projCoords.z;
     // 阴影偏移
     float bias = biasValue;
-    // 当前片元的深度信息大于阴影图中的深度信息(加上一个偏移量)时，产生阴影
-    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+
+    float shadow;
+    // PCF软阴影
+    if (softShadow) {
+        shadow = 0.0f;
+        vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
+        // 阴影贴图3x3范围内取深度信息
+        for(int x = -1; x <= 1; x++) {
+            for(int y = -1; y <= 1; y++) {
+                float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+            }
+        }
+        shadow /= 9.0f;
+    } else {
+        // 从阴影图中采集当前位置的深度信息(该信息为当前坐标下的最近深度)
+        float closestDepth = texture(shadowMap, projCoords.xy).r; 
+        // 当前片元的深度信息大于阴影图中的深度信息(加上一个偏移量)时，产生阴影
+        shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
+    }
+
     // 解决超出光远平面的着色
     if(projCoords.z > 1.0)
         shadow = 0.0;
