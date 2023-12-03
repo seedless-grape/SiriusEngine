@@ -32,9 +32,9 @@ struct PointLight {
 // 输入
 in VS_OUT {
     vec3 fragPos;
-    vec3 normal;
     vec2 texCoords;  
-    vec4 fragPosLightSpace;  
+    vec4 fragPosLightSpace; 
+    mat3 TBN; 
 } fs_in;
 
 // 输出
@@ -52,6 +52,7 @@ uniform float shininess;
 
 uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
+uniform sampler2D textureNormal1;
 
 uniform sampler2D shadowMap;    // 阴影贴图
 uniform bool shadowOn;          // 是否开启阴影
@@ -68,7 +69,9 @@ vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
-    vec3 norm = normalize(fs_in.normal);
+    vec3 norm = texture(textureNormal1, fs_in.texCoords).rgb;
+    norm = normalize(norm * 2.0 - 1.0);   
+    norm = normalize(fs_in.TBN * norm);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
 
     vec3 result = vec3(0.0f);

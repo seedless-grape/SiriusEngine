@@ -72,7 +72,10 @@ Object* LoadPresets::loadModel(modelType type, std::string name) {
 
 	// ÔØÈëĞ¡»ÆÑ¼
 	if (type == duck_model) {
-		model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
+		//model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
+		model = new Model(name, path + "wooden_display_shelves/wooden_display_shelves_01_1k.obj");
+
+		
 		model->position = glm::vec3(0.0f, 0.0f, -3.0f);
 		model->shininess = 64.0f;
 	}
