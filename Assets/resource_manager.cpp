@@ -4,13 +4,16 @@
 #include <fstream>
 #include <sstream>
 
-// ¾²Ì¬±äÁ¿³õÊ¼»¯
+
+// é¢„åŠ è½½
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Shader> ResourceManager::shaders;
 
-// ÔØÈëÔ¤ÉèÎïÌåÃû
+// è½½å…¥é¢„è®¾ç‰©ä½“å
 std::vector<std::string> ResourceManager::presetsObjects = {
-	u8"Ğ¡»ÆÑ¼", u8"±³¾°°å"
+
+	u8"å°é»„é¸­"
+
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
@@ -64,7 +67,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	if (geometryFile != nullptr)
 		std::cout << "  ---> " << geometryFile << std::endl;
 
-	// ´ÓÎÄ¼şÖĞ¼ÓÔØ×ÅÉ«Æ÷´úÂë
+	// ä»æ–‡ä»¶ä¸­åŠ è½½ç€è‰²å™¨ä»£ç 
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
@@ -78,7 +81,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	const char* fragmentSource = fragmentCode.c_str();
 	const char* geometrySource = geometryCode.c_str();
 
-	// ´´½¨×ÅÉ«Æ÷¶ÔÏó
+	// åˆ›å»ºç€è‰²å™¨å¯¹è±¡
 	Shader shader;
 	shader.compile(vertexSource, fragmentSource,
 				   geometryFile != nullptr ? geometrySource : nullptr);
@@ -108,21 +111,22 @@ std::string ResourceManager::getSourceCodeFromPath(const char* shaderPath,
 	return shaderCode;
 }
 
+
 Texture ResourceManager::loadTextureFromFile(const char* file) {
-	// ´´½¨ÎÆÀí¶ÔÏó
+	// åˆ›å»ºçº¹ç†å¯¹è±¡
 	Texture texture;
 
-	// ¼ÓÔØÍ¼Æ¬
+	// ç”Ÿæˆçº¹ç†
 	texture.generate(file);
 
 	return texture;
 }
 
 Texture ResourceManager::loadTextureFromFile(const std::vector<std::string>& files) {
-	// ´´½¨ÎÆÀí¶ÔÏó
+	// åˆ›å»ºçº¹ç†å¯¹è±¡
 	Texture texture;
 
-	// ¼ÓÔØÍ¼Æ¬
+	// ç”Ÿæˆçº¹ç†
 	texture.generate(files);
 
 	return texture;
