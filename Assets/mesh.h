@@ -40,6 +40,8 @@ struct Vertex {
 };
 
 
+class Shadow;
+
 // 网格类
 class Mesh {
 public:
@@ -55,8 +57,15 @@ public:
 
 		 std::vector<Texture> _textures);
 
-	// 网格绘制
-	void draw(Shader& shader);
+
+	// �������
+	void draw(Shader& shader, Shadow* shadow);
+
+	// ��Ӱ����
+	void shadowDraw(Shader& shader);
+
+	// ������Ӱ����
+	void shadowModelDraw(Shader& shader, Shadow* shadow);
 
 private:
 	// 渲染数据

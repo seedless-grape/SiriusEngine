@@ -14,19 +14,15 @@
 
 #include "mesh.h"
 
-#include "Core/shader.h"
-#include "modelRenderer.h"
+
 #include "Core/object.h"
+#include "Core/renderer.h"
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
-
-
-// 从文件中读取材质贴图
-//unsigned int textureFromFile(const char* path, const std::string& directory);
 
 
 // 模型类
@@ -45,8 +41,15 @@ public:
     Model(std::string name, std::string const& path, bool gamma = false);
 
 
-    //  绘制模型
-    void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
+    // 绘制模型
+    void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = true, bool gamma = false) override;
+
+    // ��Ӱ����
+    void shadowDraw(Renderer& renderer) override;
+
+    // ��Ӱģ�ͻ���
+    void shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordinate = true, bool gamma = false) override;
+
 
 private:
     // 加载模型
@@ -64,6 +67,18 @@ private:
                                               aiTextureType type,
                                               std::string typeName);
 
+};
+
+// ģ����Ⱦ��
+class ModelRenderer : public Renderer {
+public:
+    // ����/��������
+    ModelRenderer(const Shader& shader);
+
+    ~ModelRenderer() override = default;
+
+    // ��Ⱦ
+    void render(const Object& object, bool drawCoordinate = true, bool gamma = false) override;
 };
 
 #endif

@@ -11,8 +11,7 @@ uniform int postProcessing;
 
 uniform bool gamma;
 
-void main()
-{
+void main() {
     switch (postProcessing) {
         case 1:
             fragColor = vec4(vec3(1.0f - color), 1.0f);

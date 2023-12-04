@@ -12,10 +12,22 @@ Model::Model(std::string name, std::string const& path, bool gamma) :
 	loadModel(path);
 }
 
-void Model::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+void Model::draw(Renderer& renderer, Shadow* shadow, bool drawCoordinate, bool gamma) {
 	renderer.render(*this, drawCoordinate, gamma);
 	for (Mesh& mesh : meshes)
-		mesh.draw(renderer.objectShader);
+		mesh.draw(renderer.objectShader, shadow);
+}
+
+void Model::shadowDraw(Renderer& renderer) {
+	renderer.render(*this, false, false);
+	for (Mesh& mesh : meshes)
+		mesh.shadowDraw(renderer.objectShader);
+}
+
+void Model::shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordinate, bool gamma) {
+	renderer.render(*this, drawCoordinate, gamma);
+	for (Mesh& mesh : meshes)
+		mesh.shadowModelDraw(renderer.objectShader, shadow);
 }
 
 
@@ -187,4 +199,42 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
 		}
 	}
 	return textures;
+}
+
+ModelRenderer::ModelRenderer(const Shader& shader) : Renderer(shader) {}
+
+void ModelRenderer::render(const Object& object, bool drawCoordinate, bool gamma) {
+	// model±ä»»
+	glm::mat4 modelMatrix;
+
+	// ×ø±ê»æÖÆ
+	if (object.selected && drawCoordinate) {
+		this->coordinateShader.use();
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, object.position);
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.x),
+								  glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.z),
+								  glm::vec3(0.0f, 0.0f, 1.0f));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.y),
+								  glm::vec3(0.0f, 1.0f, 0.0f));
+		this->coordinateShader.setMat4("modelMatrix", modelMatrix);
+		this->renderCoordinate();
+	}
+
+	this->objectShader.use();
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, object.position);
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.x),
+							  glm::vec3(1.0f, 0.0f, 0.0f));
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.z),
+							  glm::vec3(0.0f, 0.0f, 1.0f));
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(object.rotation.y),
+							  glm::vec3(0.0f, 1.0f, 0.0f));
+	modelMatrix = glm::scale(modelMatrix, object.scale);
+
+	this->objectShader.setMat4("modelMatrix", modelMatrix);
+	this->objectShader.setVec3("objectColor", object.color);
+	this->objectShader.setFloat("shininess", object.shininess);
+	this->objectShader.setBool("gamma", gamma);
 }

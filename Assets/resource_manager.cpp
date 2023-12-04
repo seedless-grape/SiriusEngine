@@ -58,8 +58,6 @@ void ResourceManager::clear() {
 		glDeleteTextures(1, &iter.second.ID);
 }
 
-
-
 Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 										   const char* fragmentFile,
 										   const char* geometryFile) {

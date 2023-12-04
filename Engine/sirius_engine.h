@@ -13,9 +13,7 @@
 #include <vector>
 
 #include "Core/camera.h"
-#include "Core/object.h"
 #include "Core/light.h"
-#include "Core/shader.h"
 #include "Assets/model.h"
 
 // 后期特效
@@ -26,12 +24,21 @@ enum PostProcessing;
 
 // 引擎类
 class SiriusEngine {
+	/*-----------------*/
 public:
-	unsigned int framebuffer;
-	Shader screenShader;
-	unsigned int intermediateFBO;
-	unsigned int quadVAO;
-	unsigned int screenTexture;
+	unsigned int planeVAO;
+
+	glm::vec3 lightPos;
+
+	unsigned int cubeVAO;
+	unsigned int cubeVBO;
+
+	Texture woodTexture;
+
+	void renderScene(Shader& shader);
+	void renderCube();
+
+	/*-----------------*/
 
 public:
 	unsigned int width, height;
@@ -40,6 +47,7 @@ public:
 	std::vector<Object*> sceneObjects;			// 现有物体表
 	std::vector<PointLight*> scenePointLights;	// 现有点光源表
 	Object* skybox;								// 天空盒
+	Shadow* shadow;								// 阴影
 
 	Camera camera;
 	DirLight dirLight;
@@ -63,10 +71,11 @@ public:
 	bool isMSAAOn;					// MSAA抗锯齿
 	bool isGammaOn;					// Gamma矫正
 
-
 	int postProcessing;	// 后期特效
 
 	glm::vec3 clearColor;	// 屏幕背景颜色
+
+	Shader shader;
 
 public:
 	// 构造函数

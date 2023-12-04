@@ -15,6 +15,8 @@ Object::Object(glm::vec3 _position, glm::vec3 _rotation,
 	scale(_scale), color(_color), enabled(true), selected(false),
 	diffuseTexture(), specularTexture(), shininess(32.0f) {}
 
+void Object::shadowDraw(Renderer& renderer) {}
+
 void Object::reset() {
 	position = glm::vec3(0.0f);
 	rotation = glm::vec3(0.0f);

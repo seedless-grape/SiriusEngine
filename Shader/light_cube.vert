@@ -7,7 +7,6 @@ layout (location = 0) in vec3 aPos;
 uniform mat4 modelMatrix;
 uniform mat4 spaceMatrix;
 
-void main()
-{
+void main() {
     gl_Position = spaceMatrix * modelMatrix * vec4(aPos, 1.0f);
 }

@@ -2,15 +2,13 @@
 #include "skybox.h"
 
 // Ìì¿ÕºÐ
-
 Skybox::Skybox(std::string _name) : Object(_name) {}
 
-void Skybox::draw(Renderer& renderer, bool drawCoordinate, bool gamma) {
+void Skybox::draw(Renderer& renderer, Shadow* shadow, bool drawCoordinate, bool gamma) {
     renderer.render(*this, drawCoordinate, gamma);
 }
 
 // Ìì¿ÕºÐäÖÈ¾
-
 SkyboxRenderer::SkyboxRenderer(const Shader& shader) :
     Renderer(shader), skyboxVAO(0) {
     this->initRenderData();

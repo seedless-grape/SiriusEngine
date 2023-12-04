@@ -9,10 +9,13 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadShader("Shader/model.vert", "Shader/model.frag", nullptr, "model");
 	ResourceManager::loadShader("Shader/coordinate.vert", "Shader/coordinate.frag", nullptr, "coordinate");
 	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
+	ResourceManager::loadShader("Shader/msaa.vert", "Shader/msaa.frag", nullptr, "msaa");
+	ResourceManager::loadShader("Shader/shadow.vert", "Shader/shadow.frag", nullptr, "shadow");
 
 	// º”‘ÿ≤ƒ÷ 
 	ResourceManager::loadTexture("Resources/textures/container2.png", "container_diffuse");
 	ResourceManager::loadTexture("Resources/textures/container2_specular.png", "container_specular");
+	ResourceManager::loadTexture("Resources/textures/brickwall.jpg", "test");
 
 
 	std::vector<std::string> skyboxFaces {
@@ -71,6 +74,12 @@ Object* LoadPresets::loadModel(modelType type, std::string name) {
 	if (type == duck_model) {
 		model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
 		model->position = glm::vec3(0.0f, 0.0f, -3.0f);
+		model->shininess = 64.0f;
+	}
+
+	// ‘ÿ»Î±≥æ∞∞Â
+	if (type == background_model) {
+		model = new Model(name, path + "background/background.obj");
 		model->shininess = 64.0f;
 	}
 

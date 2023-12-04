@@ -139,7 +139,6 @@
     <ClCompile Include="Assets\loadPresets.cpp" />
     <ClCompile Include="Assets\mesh.cpp" />
     <ClCompile Include="Assets\model.cpp" />
-    <ClCompile Include="Assets\modelRenderer.cpp" />
     <ClCompile Include="Assets\resource_manager.cpp" />
     <ClCompile Include="Assets\skybox.cpp" />
     <ClCompile Include="Core\camera.cpp" />
@@ -147,6 +146,7 @@
     <ClCompile Include="Core\object.cpp" />
     <ClCompile Include="Core\renderer.cpp" />
     <ClCompile Include="Core\shader.cpp" />
+    <ClCompile Include="Core\shadow.cpp" />
     <ClCompile Include="Core\texture.cpp" />
     <ClCompile Include="Engine\msaa.cpp" />
     <ClCompile Include="Engine\sirius_engine.cpp" />
@@ -166,7 +166,6 @@
     <ClInclude Include="Assets\loadPresets.h" />
     <ClInclude Include="Assets\mesh.h" />
     <ClInclude Include="Assets\model.h" />
-    <ClInclude Include="Assets\modelRenderer.h" />
     <ClInclude Include="Assets\resource_manager.h" />
     <ClInclude Include="Assets\skybox.h" />
     <ClInclude Include="Core\camera.h" />
@@ -174,6 +173,7 @@
     <ClInclude Include="Core\object.h" />
     <ClInclude Include="Core\renderer.h" />
     <ClInclude Include="Core\shader.h" />
+    <ClInclude Include="Core\shadow.h" />
     <ClInclude Include="Core\texture.h" />
     <ClInclude Include="Engine\msaa.h" />
     <ClInclude Include="Engine\sirius_engine.h" />
@@ -199,6 +199,8 @@
     <None Include="Shader\msaa.vert" />
     <None Include="Shader\object.frag" />
     <None Include="Shader\object.vert" />
+    <None Include="Shader\shadow.frag" />
+    <None Include="Shader\shadow.vert" />
     <None Include="Shader\skybox.frag" />
     <None Include="Shader\skybox.vert" />
   </ItemGroup>

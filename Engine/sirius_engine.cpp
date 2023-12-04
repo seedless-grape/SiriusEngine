@@ -1,21 +1,17 @@
 #include "sirius_engine.h"
 
 #include "Gui/gui.h"
-#include "Core/object.h"
-#include "Core/renderer.h"
-#include "Core/light.h"
 #include "Assets/resource_manager.h"
 #include "Assets/loadPresets.h"
-#include "Assets/modelRenderer.h"
 #include "Assets/skybox.h"
 #include "msaa.h" 
 
-#include <iostream>
-#include <vector>
+#include "Library/stb_image.h"
 
 GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
+ShadowRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
 
@@ -32,12 +28,15 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
-    clearColor(0.1f, 0.1f, 0.1f) { }
+    clearColor(0.1f, 0.1f, 0.1f) { 
+    cubeVAO = 0; cubeVBO = 0;
+}
 
 SiriusEngine::~SiriusEngine() {
     delete gui;
     delete cubeRenderer;
     delete modelRenderer;
+    delete modelShadowRenderer;
     delete skyboxRenderer;
     delete msaa;
 
@@ -58,8 +57,10 @@ void SiriusEngine::init() {
 
     Object* objectModel;
     objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
-    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+
     sceneObjects.push_back(objectModel);
+    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
 
     skybox = LoadPresets::loadSkybox();
@@ -83,6 +84,9 @@ void SiriusEngine::init() {
     msaa = new MSAA();
     msaa->turnON(this->width, this->height);
 
+    // ��Ӱӳ��
+    shadow = new Shadow();
+
     // gui
     gui = new GUI(*this);
     gui->initStyle();
@@ -96,8 +100,10 @@ void SiriusEngine::render() {
     if (isMSAAOn)
         msaa->configureMSAASceenSetup();
 
-    //投影变换矩阵
-    glm::mat4 projectionMatrix = camera.getProjectionMatrix(this->width, this->height);
+
+    // 投影变换矩阵
+    glm::mat4 projectionMatrix = camera.getProjectionMatrix(static_cast<float>(this->width),
+
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
 
@@ -119,22 +125,75 @@ void SiriusEngine::render() {
 
 
     // 天空盒绘制
-    skybox->draw(*skyboxRenderer, false, this->isGammaOn);
+    skybox->draw(*skyboxRenderer, nullptr, false, this->isGammaOn);
 
-
-    // 物体绘制
-
-    for (unsigned int i = 0; i < sceneObjects.size(); i++) {
-        if (sceneObjects[i]->enabled) {
-            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown, this->isGammaOn);
-        }
-    }
 
     // 光源方块绘制
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
         if (scenePointLights[i]->enabled) {
             scenePointLights[i]->draw(*cubeRenderer, this->isGammaOn);
         }
+    }
+
+    // ������Ӱ
+    if (shadow->isShadowOn) {
+        modelRenderer->objectShader.setBool("shadowOn", true, true);
+
+        // Bias�Ż�
+        if(shadow->isBias)
+            modelRenderer->objectShader.setFloat("biasValue", 0.005f);
+        else
+            modelRenderer->objectShader.setFloat("biasValue", 0.000f);
+
+        // PCF����Ӱ
+        if (shadow->isSoft)
+            modelRenderer->objectShader.setBool("softShadow", true);
+        else
+            modelRenderer->objectShader.setBool("softShadow", false);
+
+        // �����޳��Ż�
+        if (shadow->isCull) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_FRONT);
+        }
+
+		// ��Ҫ���㶨���뾶
+		dirLight.updatePosition();
+
+		// ��ȡ�����붨���Ŀռ�����ת������
+		glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
+        shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
+        modelRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
+
+        // ����Ӱ������
+        shadow->bindShadowFBO();
+
+        // ������Ӱ����
+        for (unsigned int i = 0; i < sceneObjects.size(); i++)
+            if (sceneObjects[i]->enabled)
+                sceneObjects[i]->shadowDraw(*modelShadowRenderer);
+
+        if (shadow->isCull) {
+            glCullFace(GL_BACK);
+            if (!isFaceCullingOn)
+                glDisable(GL_CULL_FACE);
+        }
+
+        // �����Ӱ���������ָ�Ĭ�ϻ�����
+        shadow->unbindShadowFBO(0, this->width, this->height);
+
+        // �������
+        for (unsigned int i = 0; i < sceneObjects.size(); i++)
+            if (sceneObjects[i]->enabled)
+                sceneObjects[i]->draw(*modelRenderer, shadow, isObjectCoordinateShown, isGammaOn);
+
+    } else { // ��������Ӱ
+        modelRenderer->objectShader.setBool("shadowOn", false, true);
+
+        // �������
+        for (unsigned int i = 0; i < sceneObjects.size(); i++)
+            if (sceneObjects[i]->enabled)
+                sceneObjects[i]->draw(*modelRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
     }
 
     // MSAA֡����ռ�д����Ļ�ռ�

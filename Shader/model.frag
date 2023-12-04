@@ -8,6 +8,7 @@
 // 定向光
 struct DirLight {
     bool enabled;
+
     vec3 direction;
     vec3 ambient;
     vec3 diffuse;
@@ -17,21 +18,24 @@ struct DirLight {
 // 点光源
 struct PointLight {
     bool enabled;
-    vec3 position;
 
     float constant;
     float linear;
     float quadratic;
 
+    vec3 position;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
 
 // 输入
-in vec3 fragPos;
-in vec3 normal;
-in vec2 texCoords;
+in VS_OUT {
+    vec3 fragPos;
+    vec3 normal;
+    vec2 texCoords;  
+    vec4 fragPosLightSpace;  
+} fs_in;
 
 // 输出
 out vec4 fragColor; // 片段着色
@@ -49,6 +53,11 @@ uniform float shininess;
 uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
 
+uniform sampler2D shadowMap;    // 阴影贴图
+uniform bool shadowOn;          // 是否开启阴影
+uniform bool softShadow;        // PCF软阴影
+uniform float biasValue;        // 阴影偏移量
+
 uniform bool gamma;
 
 // 函数前向声明
@@ -56,13 +65,14 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float kernel[9]);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float kernel[9]);
+float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
-    vec3 norm = normalize(normal);
-    vec3 viewDir = normalize(viewPos - fragPos);
+    vec3 norm = normalize(fs_in.normal);
+    vec3 viewDir = normalize(viewPos - fs_in.fragPos);
 
     vec3 result = vec3(0.0f);
-
+    
     if (postProcessing <= 2) {  // 非核处理
         // 定向光
         if (dirLight.enabled)
@@ -71,7 +81,7 @@ void main() {
         // 点光源
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
-                result += CalcPointLight(pointLights[i], norm, fragPos, viewDir);
+                result += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir);
         }
         
         // 反相
@@ -118,19 +128,19 @@ void main() {
         // 点光源
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
-                result += CalcPointLightKernel(pointLights[i], norm, fragPos, viewDir, kernel);
+                result += CalcPointLightKernel(pointLights[i], norm, fs_in.fragPos, viewDir, kernel);
         }
 
         fragColor = vec4(objectColor * result, 1.0f);
     }
+
     if (gamma)
         fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
         
 }
 
 // 定向光计算
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
-{
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse
@@ -139,13 +149,16 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
-    
-    // result
-    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, texCoords));
 
-    return (ambient + diffuse + specular);
+    // shadow
+    float shadow = shadowOn ? CalcShadow(fs_in.fragPosLightSpace) : 0.0f;
+
+    // result
+    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
+    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords));
+
+    return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
 // 定向光加核计算
@@ -178,9 +191,9 @@ vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float kernel[9]
     
     // result
     for(int i = 0; i < 9; i++) {
-        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, texCoords + offsets[i]));
-        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, texCoords + offsets[i]));
-        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, texCoords + offsets[i]));
+        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
+        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
+        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords + offsets[i]));
         sampleTex[i] = ambient + diffuse + specular;
     }
 
@@ -207,9 +220,9 @@ vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir) {
     float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     
     // result
-    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, texCoords));
+    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
+    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords));
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -251,9 +264,9 @@ vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDi
     
     // result
     for(int i = 0; i < 9; i++) {
-        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, texCoords + offsets[i]));
-        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, texCoords + offsets[i]));
-        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, texCoords + offsets[i]));
+        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
+        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
+        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords + offsets[i]));
         sampleTex[i] = (ambient + diffuse + specular) * attenuation;
     }
 
@@ -262,4 +275,41 @@ vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDi
         tempRes += sampleTex[i] * kernel[i];
 
     return tempRes;
+}
+
+float CalcShadow(vec4 fragPosLightSpace) {
+    // 透视分割(将裁剪空间坐标[-w,w]变换成[-1,1])
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // 将深度值范围转换至[0, 1]
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // 获取当前片元的深度信息，就是z值
+    float currentDepth = projCoords.z;
+    // 阴影偏移
+    float bias = biasValue;
+
+    float shadow;
+    // PCF软阴影
+    if (softShadow) {
+        shadow = 0.0f;
+        vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
+        // 阴影贴图3x3范围内取深度信息
+        for(int x = -1; x <= 1; x++) {
+            for(int y = -1; y <= 1; y++) {
+                float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+            }
+        }
+        shadow /= 9.0f;
+    } else {
+        // 从阴影图中采集当前位置的深度信息(该信息为当前坐标下的最近深度)
+        float closestDepth = texture(shadowMap, projCoords.xy).r; 
+        // 当前片元的深度信息大于阴影图中的深度信息(加上一个偏移量)时，产生阴影
+        shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
+    }
+
+    // 解决超出光远平面的着色
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+    return shadow;
 }
