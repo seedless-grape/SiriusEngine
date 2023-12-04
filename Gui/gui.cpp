@@ -408,6 +408,7 @@ void GUI::renderExtraView() {
             ImGui::Checkbox(u8"MSAA¿¹¾â³Ý", &siriusEngine.isMSAAOn);
             ImGui::SameLine();
             ImGui::Checkbox(u8"Gamma½ÃÕý", &siriusEngine.isGammaOn);
+            ImGui::Checkbox(u8"hdr", &siriusEngine.isHDROn);
 
             ImGui::Separator();  
 

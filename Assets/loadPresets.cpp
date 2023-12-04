@@ -11,6 +11,7 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
 	ResourceManager::loadShader("Shader/msaa.vert", "Shader/msaa.frag", nullptr, "msaa");
 	ResourceManager::loadShader("Shader/shadow.vert", "Shader/shadow.frag", nullptr, "shadow");
+	ResourceManager::loadShader("Shader/hdr.vert", "Shader/hdr.frag", nullptr, "hdr");
 
 	// ¼ÓÔØ²ÄÖÊ
 	ResourceManager::loadTexture("Resources/textures/container2.png", "container_diffuse");
