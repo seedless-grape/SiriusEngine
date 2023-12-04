@@ -6,18 +6,21 @@
 #include "Core/light.h"
 #include "Assets/resource_manager.h"
 #include "Assets/loadPresets.h"
+#include "Assets/modelRenderer.h"
+
 
 #include <iostream>
 #include <vector>
 
 GUI* gui;
 CubeRenderer* cubeRenderer;
+ModelRenderer* modelRenderer;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
     window(_window), width(_width), height(_height),
     camera(), dirLight(), keysPressed(), keysProcessed(),
-    // ×´Ì¬»ú
+    // çŠ¶æ€æœº
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
@@ -31,28 +34,32 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
 SiriusEngine::~SiriusEngine() {
     delete gui;
     delete cubeRenderer;
+    delete modelRenderer;
 
-    // Çå¿ÕÆÁÄ»ÄÚÎïÌå
+    // æ¸…ç©ºå±å¹•å†…ç‰©ä½“
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
         delete sceneObjects[i];
     sceneObjects.clear();
 
-    // Çå¿ÕÆÁÄ»ÄÚµã¹âÔ´
+    // æ¸…ç©ºå±å¹•å†…ç‚¹å…‰æº
     for (unsigned int i = 0; i < scenePointLights.size(); i++)
         delete scenePointLights[i];
     scenePointLights.clear();
 }
 
 void SiriusEngine::init() {
-    // ¼ÓÔØ×ÅÉ«Æ÷
+    // åŠ è½½ç€è‰²å™¨
     ResourceManager::loadShader("Shader/light_cube.vert",
                                 "Shader/light_cube.frag",
                                 nullptr, "light_cube");
     ResourceManager::loadShader("Shader/object.vert",
                                 "Shader/object.frag",
                                 nullptr, "object");
+    ResourceManager::loadShader("Shader/model.vert",
+                                "Shader/model.frag",
+                                nullptr, "model");
 
-    // ¼ÓÔØ²ÄÖÊ
+    // åŠ è½½æè´¨
     ResourceManager::loadTexture("Resources/textures/container2.png",
                                  true, "container_diffuse");
     ResourceManager::loadTexture("Resources/textures/container2_specular.png",
@@ -64,29 +71,26 @@ void SiriusEngine::init() {
     ResourceManager::loadTexture("Resources/textures/brickwall.jpg",
                                  false, "brick_wall_diffuse");
 
-    // äÖÈ¾
+    // æ¨¡å‹æ¸²æŸ“
+
+    Object* objectModel;
+    objectModel = LoadPresets::loadModel(duck_model, u8"å°é»„é¸­");
+    modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    sceneObjects.push_back(objectModel);
+
+    // æ¸²æŸ“
     cubeRenderer = new CubeRenderer(ResourceManager::getShader("object"));
 
-    // µã¹âÔ´
+    // ç‚¹å…‰æº
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
     scenePointLights.push_back(pointLight);
 
-    // ÎïÌå
-    Object* cube;
-    cube = LoadPresets::loadCube(Wooden_Box, u8"Ä¾Ïä");
-    sceneObjects.push_back(cube);
 
-    cube = LoadPresets::loadCube(White_Box, u8"µØ°å");
-    cube->position = glm::vec3(0.0f, -10.0f, 0.0f);
-    cube->rotation = glm::vec3(0.0f);
-    cube->scale = glm::vec3(50.0f, 1.0f, 50.0f);
-    sceneObjects.push_back(cube);
-
-    // Ñ¡ÖĞÎïÌå
+    // é€‰ä¸­ç‰©ä½“
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
 
-    // Ñ¡ÖĞµã¹âÔ´
+    // é€‰ä¸­ç‚¹å…‰æº
     currentSelectedPointLightIndex = scenePointLights.size() ? 0 : -1;
 
     // gui
@@ -94,12 +98,48 @@ void SiriusEngine::init() {
     gui->initStyle();
 }
 
+void SiriusEngine::render() {
+    this->configureRenderSetup();
+
+    // æŠ•å½±å˜æ¢çŸ©é˜µ
+    glm::mat4 spaceMatrix =
+        camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
+
+    // æ›´æ–°æ¸²æŸ“ç®¡çº¿
+    cubeRenderer->updateRenderer(spaceMatrix, camera.position,
+                                 dirLight, scenePointLights);
+
+    modelRenderer->updateRenderer(spaceMatrix, camera.position,
+                                  dirLight, scenePointLights);
+
+    cubeRenderer->postProcessing = this->postProcessing;
+
+    modelRenderer->postProcessing = this->postProcessing;
+
+    // ç‰©ä½“ç»˜åˆ¶
+    for (unsigned int i = 0; i < sceneObjects.size(); i++) {
+        if (sceneObjects[i]->enabled) {
+            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);
+        }
+    }
+
+    // å…‰æºæ–¹å—ç»˜åˆ¶
+    for (unsigned int i = 0; i < scenePointLights.size(); i++) {
+        if (scenePointLights[i]->enabled) {
+            scenePointLights[i]->draw(*cubeRenderer);
+        }
+    }
+
+    // gui
+    gui->render();
+}
+
 void SiriusEngine::processKeyboardInput(float key) {
-    // ´°¿Ú¹Ø±Õ
+    // çª—å£å…³é—­
     if (keysPressed[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
 
-    // WASDÒÆ¶¯
+    // WASDç§»åŠ¨
     if (keysPressed[GLFW_KEY_W])
         camera.processKeyboard(FORWARD, key);
     if (keysPressed[GLFW_KEY_S])
@@ -109,17 +149,17 @@ void SiriusEngine::processKeyboardInput(float key) {
     if (keysPressed[GLFW_KEY_D])
         camera.processKeyboard(RIGHT, key);
 
-    // Space & CtrlÒÆ¶¯
+    // Space & Ctrlç§»åŠ¨
     if (keysPressed[GLFW_KEY_SPACE])
         camera.processKeyboard(UP, key);
     if (keysPressed[GLFW_KEY_LEFT_CONTROL])
         camera.processKeyboard(DOWN, key);
 
-    // ×ÔÓÉÊÓ½Ç
+    // è‡ªç”±è§†è§’
     this->isFreeLookingModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_RIGHT];
 
-    // ¾µÍ·Ğı×ª
+    // é•œå¤´æ—‹è½¬
     this->isObjectRotationModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_LEFT] &&
         keysPressed[GLFW_KEY_LEFT_SHIFT];
@@ -144,37 +184,6 @@ void SiriusEngine::processScrollInput(float offset) {
 void SiriusEngine::updateSelected(float key) {
     for (unsigned int i = 0; i < sceneObjects.size(); ++i)
         sceneObjects[i]->selected = (this->currentSelectedObjectIndex == i);
-}
-
-void SiriusEngine::render() {
-    this->configureRenderSetup();
-
-    // Í¶Ó°±ä»»¾ØÕó
-    glm::mat4 spaceMatrix =
-        camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
-
-    // ¸üĞÂäÖÈ¾¹ÜÏß
-    cubeRenderer->updateRenderer(spaceMatrix, camera.position,
-                                 dirLight, scenePointLights);
-
-    cubeRenderer->postProcessing = this->postProcessing;
-
-    // ÎïÌå»æÖÆ
-    for (unsigned int i = 0; i < sceneObjects.size(); i++) {
-        if (sceneObjects[i]->enabled) {
-            sceneObjects[i]->draw(*cubeRenderer, isObjectCoordinateShown);
-        }
-    }
-
-    // ¹âÔ´·½¿é»æÖÆ
-    for (unsigned int i = 0; i < scenePointLights.size(); i++) {
-        if (scenePointLights[i]->enabled) {
-            scenePointLights[i]->draw(*cubeRenderer);
-        }
-    }
-
-    // gui
-    gui->render();
 }
 
 void SiriusEngine::configureRenderSetup() {

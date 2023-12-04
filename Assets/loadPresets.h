@@ -1,22 +1,33 @@
-/* ÔØÈëÔ¤ÉèÎïÌå */
+/* è½½å…¥é¢„è®¾ç‰©ä½“ */
 
 #ifndef LOAD_PRESETS_H_
 #define LOAD_PRESETS_H_
 
 #include "cube.h"
+#include "model.h"
 
 enum objectType {
     White_Box, Wooden_Box
+
 };
 
-// ¼ÓÔØÔ¤ÉèÎïÌå
+enum modelType {
+    duck_model
+
+};
+
+// åŠ è½½é¢„è®¾ç‰©ä½“
 class LoadPresets {
 public:
-    // ¼ÓÔØµã¹âÔ´
+    // åŠ è½½ç‚¹å…‰æº
     static PointLight* loadPointLight();
 
-    // ¼ÓÔØÁ¢·½Ìå
+    // åŠ è½½ç«‹æ–¹ä½“
     static Object* loadCube(objectType type, std::string name);
+
+
+    // åŠ è½½æ¨¡å‹
+    static Object* loadModel(modelType type, std::string name);
 
 };
 

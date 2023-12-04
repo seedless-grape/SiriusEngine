@@ -153,20 +153,20 @@ void GUI::renderSceneInspector() {
                 }
                 ImGui::PopStyleColor(3);
 
-                // 材质小图
-                ImVec2 uv_min = ImVec2(0.0f, 0.0f);                 
-                ImVec2 uv_max = ImVec2(1.0f, 1.0f);               
+                //// 材质小图
+                //ImVec2 uv_min = ImVec2(0.0f, 0.0f);                 
+                //ImVec2 uv_max = ImVec2(1.0f, 1.0f);               
 
-                ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  
-                ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
+                //ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  
+                //ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
 
-                ImGui::Text(u8"漫反射材质:");
-                ImGui::SameLine();
-                ImGui::Image((void*)(intptr_t)currentObject->diffuseTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
-                ImGui::SameLine();
-                ImGui::Text(u8"镜面反射材质:");
-                ImGui::SameLine();
-                ImGui::Image((void*)(intptr_t)currentObject->specularTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
+                //ImGui::Text(u8"漫反射材质:");
+                //ImGui::SameLine();
+                //ImGui::Image((void*)(intptr_t)currentObject->diffuseTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
+                //ImGui::SameLine();
+                //ImGui::Text(u8"镜面反射材质:");
+                //ImGui::SameLine();
+                //ImGui::Image((void*)(intptr_t)currentObject->specularTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
             }
 
             ImGui::Separator();
@@ -189,7 +189,7 @@ void GUI::renderSceneInspector() {
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 80.0f, ImGui::GetCursorPos().y));
             if (ImGui::Button(u8"添加物体", ImVec2(80.0f, 0.0f))) {
-                Object* obj = LoadPresets::loadCube((objectType)addIndex, ResourceManager::presetsObjects[addIndex]);
+                Object* obj = LoadPresets::loadModel((modelType)addIndex, ResourceManager::presetsObjects[addIndex]);
                 siriusEngine.sceneObjects.push_back(obj);
                 siriusEngine.currentSelectedObjectIndex = siriusEngine.sceneObjects.size() - 1;
             }

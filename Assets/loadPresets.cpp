@@ -33,3 +33,17 @@ Object* LoadPresets::loadCube(objectType type, std::string name) {
 	return cube;
 }
 
+Object* LoadPresets::loadModel(modelType type, std::string name) {
+	Object* model = nullptr;
+	std::string path = "Resources/model/";
+
+	// ÔØÈëÐ¡»ÆÑ¼
+	if (type == duck_model) {
+		model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
+		model->position = glm::vec3(0.0f, 0.0f, -3.0f);
+		model->shininess = 64.0f;
+	}
+
+	return model;
+}
+

@@ -15,6 +15,11 @@
 #include "Core/camera.h"
 #include "Core/object.h"
 #include "Core/light.h"
+#include "Core/shader.h"
+#include "Assets/model.h"
+
+// 后期特效
+enum PostProcessing;
 
 // 后期特效
 enum PostProcessing;
@@ -78,6 +83,9 @@ public:
 private:
 	// 配置渲染
 	void configureRenderSetup();
+
+private:
+	Shader modelShader;
 
 };
 

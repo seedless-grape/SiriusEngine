@@ -7,13 +7,15 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Library/stb_image.h"
 
-// ¾²Ì¬±äÁ¿³õÊ¼»¯
+// é™æ€å˜é‡åˆå§‹åŒ–
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Shader> ResourceManager::shaders;
 
-// ÔØÈëÔ¤ÉèÎïÌåÃû
+// è½½å…¥é¢„è®¾ç‰©ä½“å
 std::vector<std::string> ResourceManager::presetsObjects = {
-	u8"°×´É×©¿é", u8"Ä¾Ïä"
+
+	u8"å°é»„é¸­"
+
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
@@ -56,7 +58,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	if (geometryFile != nullptr)
 		std::cout << "  ---> " << geometryFile << std::endl;
 
-	// ´ÓÎÄ¼şÖĞ¼ÓÔØ×ÅÉ«Æ÷´úÂë
+	// ä»æ–‡ä»¶ä¸­åŠ è½½ç€è‰²å™¨ä»£ç 
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
@@ -70,7 +72,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	const char* fragmentSource = fragmentCode.c_str();
 	const char* geometrySource = geometryCode.c_str();
 
-	// ´´½¨×ÅÉ«Æ÷¶ÔÏó
+	// åˆ›å»ºç€è‰²å™¨å¯¹è±¡
 	Shader shader;
 	shader.compile(vertexSource, fragmentSource,
 				   geometryFile != nullptr ? geometrySource : nullptr);
@@ -101,14 +103,14 @@ std::string ResourceManager::getSourceCodeFromPath(const char* shaderPath,
 }
 
 Texture ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
-	// ´´½¨ÎÆÀí¶ÔÏó
+	// åˆ›å»ºçº¹ç†å¯¹è±¡
 	Texture texture;
-	if (alpha) {	// Èç¹ûÎÆÀí°üº¬Í¸Ã÷¶ÈÍ¨µÀ
+	if (alpha) {	// å¦‚æœçº¹ç†åŒ…å«é€æ˜åº¦é€šé“
 		texture.internalFormat = GL_RGBA;
 		texture.imageFormat = GL_RGBA;
 	}
 
-	// ¼ÓÔØÍ¼Æ¬
+	// åŠ è½½å›¾ç‰‡
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(file, &width, &height,
 									&nrChannels, 0);
@@ -119,7 +121,7 @@ Texture ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
 			<< file << std::endl;
 	}
 
-	// »ØÊÕ
+	// å›æ”¶
 	stbi_image_free(data);
 
 	return texture;
