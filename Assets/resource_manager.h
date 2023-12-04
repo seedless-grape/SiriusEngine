@@ -28,7 +28,9 @@ public:
     static Shader getShader(std::string name);
 
     // 加载并生成纹理
-    static Texture loadTexture(const char* file, bool alpha,
+    static Texture loadTexture(const char* file, std::string name);
+
+    static Texture loadTexture(const std::vector<std::string>& files,
                                std::string name);
 
     // 获取纹理对象
@@ -51,7 +53,9 @@ private:
                                              std::string type);
 
     // 从文件中加载并生成纹理
-    static Texture loadTextureFromFile(const char* file, bool alpha);
+    static Texture loadTextureFromFile(const char* file);
+
+    static Texture loadTextureFromFile(const std::vector<std::string>& files);
 };
 
 #endif //_RESOURCE_MANAGER_H_

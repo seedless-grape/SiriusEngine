@@ -32,6 +32,7 @@ public:
 
 	std::vector<Object*> sceneObjects;			// 现有物体表
 	std::vector<PointLight*> scenePointLights;	// 现有点光源表
+	Object* skybox;								// 天空盒
 
 	Camera camera;
 	DirLight dirLight;
@@ -83,10 +84,6 @@ public:
 private:
 	// 配置渲染
 	void configureRenderSetup();
-
-private:
-	Shader modelShader;
-
 };
 
 #endif // !_SIRIUS_ENGINE_H_

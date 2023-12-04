@@ -7,7 +7,7 @@
 #include "Assets/resource_manager.h"
 #include "Assets/loadPresets.h"
 #include "Assets/modelRenderer.h"
-
+#include "Assets/skybox.h"
 
 #include <iostream>
 #include <vector>
@@ -15,6 +15,7 @@
 GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
+SkyboxRenderer* skyboxRenderer;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -29,12 +30,15 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
-    clearColor(0.1f, 0.1f, 0.1f) { }
+    clearColor(0.1f, 0.1f, 0.1f) {
+    skybox = LoadPresets::loadCube(Wooden_Box, u8"test");
+}
 
 SiriusEngine::~SiriusEngine() {
     delete gui;
     delete cubeRenderer;
     delete modelRenderer;
+    delete skyboxRenderer;
 
     // 清空屏幕内物体
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
@@ -48,38 +52,19 @@ SiriusEngine::~SiriusEngine() {
 }
 
 void SiriusEngine::init() {
-    // 加载着色器
-    ResourceManager::loadShader("Shader/light_cube.vert",
-                                "Shader/light_cube.frag",
-                                nullptr, "light_cube");
-    ResourceManager::loadShader("Shader/object.vert",
-                                "Shader/object.frag",
-                                nullptr, "object");
-    ResourceManager::loadShader("Shader/model.vert",
-                                "Shader/model.frag",
-                                nullptr, "model");
 
-    // 加载材质
-    ResourceManager::loadTexture("Resources/textures/container2.png",
-                                 true, "container_diffuse");
-    ResourceManager::loadTexture("Resources/textures/container2_specular.png",
-                                 true, "container_specular");
-    ResourceManager::loadTexture("Resources/textures/white_tiles.jpg",
-                                 false, "white_tiles");
-    ResourceManager::loadTexture("Resources/textures/pure_black.jpg",
-                                 false, "pure_black");
-    ResourceManager::loadTexture("Resources/textures/brickwall.jpg",
-                                 false, "brick_wall_diffuse");
-
-    // 模型渲染
+    LoadPresets::preLoad();
 
     Object* objectModel;
     objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     sceneObjects.push_back(objectModel);
 
-    // 渲染
-    cubeRenderer = new CubeRenderer(ResourceManager::getShader("object"));
+
+    skybox = LoadPresets::loadSkybox();
+    skyboxRenderer = new SkyboxRenderer(ResourceManager::getShader("skybox"));
+
+    cubeRenderer = new CubeRenderer(ResourceManager::getShader("light_cube"));
 
     // 点光源
     PointLight* pointLight;
@@ -101,9 +86,12 @@ void SiriusEngine::init() {
 void SiriusEngine::render() {
     this->configureRenderSetup();
 
+
     // 投影变换矩阵
-    glm::mat4 spaceMatrix =
-        camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
+    glm::mat4 projectionMatrix = camera.getProjectionMatrix(this->width, this->height);
+    glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
+    glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
+
 
     // 更新渲染管线
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
@@ -112,11 +100,19 @@ void SiriusEngine::render() {
     modelRenderer->updateRenderer(spaceMatrix, camera.position,
                                   dirLight, scenePointLights);
 
+    skyboxRenderer->updateRenderer(skyboxSpaceMatrix);
+
     cubeRenderer->postProcessing = this->postProcessing;
 
     modelRenderer->postProcessing = this->postProcessing;
 
+    skyboxRenderer->postProcessing = this->postProcessing;
+
+    // 天空盒绘制
+    skybox->draw(*skyboxRenderer);
+
     // 物体绘制
+
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->enabled) {
             sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);

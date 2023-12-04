@@ -290,7 +290,7 @@ void GUI::renderSceneInspector() {
 							currentPointLight->reset();
 						}
 
-                        // 添加指定物体
+                        // 添加点光源
                         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f - 120.0f, ImGui::GetCursorPos().y));
                         if (ImGui::Button(u8"添加点光源", ImVec2(100.0f, 0.0f))) {
                             PointLight* light = LoadPresets::loadPointLight();

@@ -4,10 +4,8 @@
 #include <fstream>
 #include <sstream>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "Library/stb_image.h"
 
-// 静态变量初始化
+// 预加载
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Shader> ResourceManager::shaders;
 
@@ -30,9 +28,14 @@ Shader ResourceManager::getShader(std::string name) {
 	return shaders[name];
 }
 
-Texture ResourceManager::loadTexture(const char* file, bool alpha,
+Texture ResourceManager::loadTexture(const char* file, std::string name) {
+	textures[name] = loadTextureFromFile(file);
+	return textures[name];
+}
+
+Texture ResourceManager::loadTexture(const std::vector<std::string>& files,
 									 std::string name) {
-	textures[name] = loadTextureFromFile(file, alpha);
+	textures[name] = loadTextureFromFile(files);
 	return textures[name];
 }
 
@@ -102,27 +105,23 @@ std::string ResourceManager::getSourceCodeFromPath(const char* shaderPath,
 	return shaderCode;
 }
 
-Texture ResourceManager::loadTextureFromFile(const char* file, bool alpha) {
+
+Texture ResourceManager::loadTextureFromFile(const char* file) {
 	// 创建纹理对象
 	Texture texture;
-	if (alpha) {	// 如果纹理包含透明度通道
-		texture.internalFormat = GL_RGBA;
-		texture.imageFormat = GL_RGBA;
-	}
 
-	// 加载图片
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(file, &width, &height,
-									&nrChannels, 0);
-	if (data) {
-		texture.generate(width, height, data);
-	} else {
-		std::cout << "Texture failed to load at path: "
-			<< file << std::endl;
-	}
+	// 生成纹理
+	texture.generate(file);
 
-	// 回收
-	stbi_image_free(data);
+	return texture;
+}
+
+Texture ResourceManager::loadTextureFromFile(const std::vector<std::string>& files) {
+	// 创建纹理对象
+	Texture texture;
+
+	// 生成纹理
+	texture.generate(files);
 
 	return texture;
 }
