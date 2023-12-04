@@ -102,7 +102,7 @@ unsigned int MSAA::configureMSAAFBO() {
     unsigned int textureColorBufferMultiSampled;
     glGenTextures(1, &textureColorBufferMultiSampled);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);   // 多重采样
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB,
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA,
                             this->MSAAwidth, this->MSAAheight, GL_TRUE);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D_MULTISAMPLE,
@@ -151,8 +151,8 @@ unsigned int MSAA::configureSceenTexture() {
     unsigned texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->MSAAwidth, this->MSAAheight,
-                 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->MSAAwidth, this->MSAAheight,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -160,6 +160,5 @@ unsigned int MSAA::configureSceenTexture() {
 }
 
 void MSAA::configureShader() {
-    shader.use();
-    shader.setInt("screenTexture", 0);
+    shader.setInt("screenTexture", 0, true);
 }
