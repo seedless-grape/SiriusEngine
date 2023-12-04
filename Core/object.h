@@ -44,7 +44,7 @@ public:
 	virtual ~Object() = default;
 
 	// 物体绘制(纯虚函数)
-	virtual void draw(Renderer& renderer, bool drawCoordinate = true) = 0;
+	virtual void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) = 0;
 
 	// 重置物体
 	void reset();

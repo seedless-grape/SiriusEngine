@@ -12,8 +12,9 @@
 // 纹理类
 class Texture {
 public:
-	// 纹理ID
-	unsigned ID;
+	unsigned ID;		// 纹理ID
+	std::string type;	// 纹理路径
+	std::string path;	// 纹理路径
 
 public:
 	// 构造函数

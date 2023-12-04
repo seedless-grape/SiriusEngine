@@ -42,7 +42,7 @@ int main() {
 	/* -------------------------------------------------------- */
 
 	// 创建一个窗口对象
-	GLFWwindow* window = glfwCreateWindow(1080, 920, "OpenGLTest", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "OpenGLTest", NULL, NULL);
 	if (window == NULL) { // 创建失败则终止GLFW
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -116,6 +116,7 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	// 更新引擎尺寸
 	siriusEngine->width = checkIfRunInRetina(window) ? width / 2 : width;
 	siriusEngine->height = checkIfRunInRetina(window) ? height / 2 : height;
+	siriusEngine->updateSceen();
 
 	std::cout << "SIZE UPDATE: "
 		<< siriusEngine->width << " x " << siriusEngine->height << " (window) |"

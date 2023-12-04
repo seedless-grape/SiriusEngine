@@ -27,10 +27,12 @@ public:
 
 	virtual ~Renderer() = default;
 
-	// 渲染
-	virtual void render(const Object& object, bool drawCoordinate = true) = 0;
 
-	virtual void render(const PointLight& pointLight);
+	// 渲染
+	virtual void render(const Object& object, bool drawCoordinate = true, bool gamma = false) = 0;
+
+
+	virtual void render(const PointLight& pointLight, bool gamma = false);
 
 	// 更新渲染器
 	void updateRenderer(glm::mat4 spaceMatrix, glm::vec3 viewPos,

@@ -8,6 +8,7 @@
 #include "Assets/loadPresets.h"
 #include "Assets/modelRenderer.h"
 #include "Assets/skybox.h"
+#include "msaa.h" 
 
 #include <iostream>
 #include <vector>
@@ -16,6 +17,7 @@ GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
 SkyboxRenderer* skyboxRenderer;
+MSAA* msaa;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -25,20 +27,19 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
-    isObjectCoordinateShown(true),
+    isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
     currentSelectedPointLightIndex(-1),
-    clearColor(0.1f, 0.1f, 0.1f) {
-    skybox = LoadPresets::loadCube(Wooden_Box, u8"test");
-}
+    clearColor(0.1f, 0.1f, 0.1f) { }
 
 SiriusEngine::~SiriusEngine() {
     delete gui;
     delete cubeRenderer;
     delete modelRenderer;
     delete skyboxRenderer;
+    delete msaa;
 
     // 清空屏幕内物体
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
@@ -78,6 +79,10 @@ void SiriusEngine::init() {
     // 选中点光源
     currentSelectedPointLightIndex = scenePointLights.size() ? 0 : -1;
 
+    // �����
+    msaa = new MSAA();
+    msaa->turnON(this->width, this->height);
+
     // gui
     gui = new GUI(*this);
     gui->initStyle();
@@ -87,7 +92,11 @@ void SiriusEngine::render() {
     this->configureRenderSetup();
 
 
-    // 投影变换矩阵
+    // MSAA֡抗锯齿
+    if (isMSAAOn)
+        msaa->configureMSAASceenSetup();
+
+    //投影变换矩阵
     glm::mat4 projectionMatrix = camera.getProjectionMatrix(this->width, this->height);
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
@@ -108,26 +117,38 @@ void SiriusEngine::render() {
 
     skyboxRenderer->postProcessing = this->postProcessing;
 
+
     // 天空盒绘制
-    skybox->draw(*skyboxRenderer);
+    skybox->draw(*skyboxRenderer, false, this->isGammaOn);
+
 
     // 物体绘制
 
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->enabled) {
-            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);
+            sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown, this->isGammaOn);
         }
     }
 
     // 光源方块绘制
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
         if (scenePointLights[i]->enabled) {
-            scenePointLights[i]->draw(*cubeRenderer);
+            scenePointLights[i]->draw(*cubeRenderer, this->isGammaOn);
         }
     }
 
+    // MSAA֡����ռ�д����Ļ�ռ�
+    if (isMSAAOn)
+        msaa->render();
+
     // gui
     gui->render();
+}
+
+void SiriusEngine::updateSceen() {
+    if (isMSAAOn) {
+        msaa->updateSceen(width, height);
+    }
 }
 
 void SiriusEngine::processKeyboardInput(float key) {
@@ -185,13 +206,16 @@ void SiriusEngine::updateSelected(float key) {
 void SiriusEngine::configureRenderSetup() {
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    
+    // ���ڴ���
     if (isFaceCullingOn) {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
     } else
         glDisable(GL_CULL_FACE);
-
+    
+    // ���/ģ�����
     if (isDepthTestOn)
         glEnable(GL_DEPTH_TEST);
     else
@@ -200,4 +224,10 @@ void SiriusEngine::configureRenderSetup() {
         glEnable(GL_STENCIL_TEST);
     else
         glDisable(GL_STENCIL_TEST);
+
+    // �����
+    if (isMSAAOn && !msaa->enable)
+        msaa->turnON(width, height);
+    else if (!isMSAAOn && msaa->enable)
+        msaa->turnOFF();
 }

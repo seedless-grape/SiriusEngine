@@ -15,7 +15,7 @@ public:
 	~ModelRenderer() override = default;
 
 	// ‰÷»æ
-	void render(const Object& object, bool drawCoordinate = true) override;
+	void render(const Object& object, bool drawCoordinate = true, bool gamma = false) override;
 };
 
 #endif // !MODEL_RENDERER_H_

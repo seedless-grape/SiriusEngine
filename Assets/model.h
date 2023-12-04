@@ -26,12 +26,15 @@
 
 
 // 从文件中读取材质贴图
-unsigned int textureFromFile(const char* path, const std::string& directory,
-                             bool gamma = false);
+//unsigned int textureFromFile(const char* path, const std::string& directory);
+
 
 // 模型类
 class Model : public Object {
 public:
+
+    std::vector<Mesh> meshes; // 网格数组
+    std::string directory; // 模型目录
 
     std::vector<TextureS> texturesLoaded; // 记录已加载的模型
     std::vector<Mesh> meshes; // 模型网格
@@ -41,11 +44,9 @@ public:
     // 构造函数
     Model(std::string name, std::string const& path, bool gamma = false);
 
-    // 绘制模型
-    void draw(Shader& shader);
 
-
-    void draw(Renderer& renderer, bool drawCoordinate = true) override;
+    //  绘制模型
+    void draw(Renderer& renderer, bool drawCoordinate = true, bool gamma = false) override;
 
 private:
     // 加载模型
@@ -57,9 +58,9 @@ private:
     // 处理结点网格
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
-    // 加载材质贴图
 
-    std::vector<TextureS> loadMaterialTextures(aiMaterial* mat,
+    // 加载材质贴图
+    std::vector<Texture> loadMaterialTextures(aiMaterial* mat,
                                               aiTextureType type,
                                               std::string typeName);
 

@@ -17,6 +17,7 @@
 
 
 #include "Core/shader.h"
+#include "Core/texture.h"
 
 #include <vector>
 #include <string>
@@ -38,14 +39,6 @@ struct Vertex {
 	float mWeights[MAX_BONE_INFLUENCE]; // 影响该顶点的骨骼影响权重
 };
 
-// 纹理属性结构体
-
-struct TextureS {
-
-	unsigned int id; // 纹理id
-	std::string type; // 纹理类型
-	std::string path; // 纹理路径
-};
 
 // 网格类
 class Mesh {
@@ -53,17 +46,14 @@ public:
 	// 网格数据
 	std::vector<Vertex> vertices; // 顶点
 	std::vector<unsigned int> indices; // 图形(三角形)索引
-
-	std::vector<TextureS> textures; // 纹理
-
+	std::vector<Texture> textures; //  纹理
 
 public:
 	// 构造函数
 	Mesh(std::vector<Vertex> _vertices,
 		 std::vector<unsigned int> _indices,
 
-		 std::vector<TextureS> _textures);
-
+		 std::vector<Texture> _textures);
 
 	// 网格绘制
 	void draw(Shader& shader);

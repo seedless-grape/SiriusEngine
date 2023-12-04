@@ -27,6 +27,13 @@ enum PostProcessing;
 // 引擎类
 class SiriusEngine {
 public:
+	unsigned int framebuffer;
+	Shader screenShader;
+	unsigned int intermediateFBO;
+	unsigned int quadVAO;
+	unsigned int screenTexture;
+
+public:
 	unsigned int width, height;
 	GLFWwindow* window;
 
@@ -53,6 +60,9 @@ public:
 	bool isFreeLookingModeOn;		// 自由视角
 	bool isObjectRotationModeOn;	// 镜头旋转
 	bool isObjectCoordinateShown;	// 展示物体坐标
+	bool isMSAAOn;					// MSAA抗锯齿
+	bool isGammaOn;					// Gamma矫正
+
 
 	int postProcessing;	// 后期特效
 
@@ -80,6 +90,9 @@ public:
 	void updateSelected(float key);
 
 	void render();
+
+	// 更新屏幕分辨率
+	void updateSceen();
 
 private:
 	// 配置渲染

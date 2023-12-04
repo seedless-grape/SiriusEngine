@@ -152,21 +152,6 @@ void GUI::renderSceneInspector() {
                     }
                 }
                 ImGui::PopStyleColor(3);
-
-                //// 材质小图
-                //ImVec2 uv_min = ImVec2(0.0f, 0.0f);                 
-                //ImVec2 uv_max = ImVec2(1.0f, 1.0f);               
-
-                //ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  
-                //ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
-
-                //ImGui::Text(u8"漫反射材质:");
-                //ImGui::SameLine();
-                //ImGui::Image((void*)(intptr_t)currentObject->diffuseTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
-                //ImGui::SameLine();
-                //ImGui::Text(u8"镜面反射材质:");
-                //ImGui::SameLine();
-                //ImGui::Image((void*)(intptr_t)currentObject->specularTexture.ID, ImVec2(38, 38), uv_min, uv_max, tint_col, border_col);
             }
 
             ImGui::Separator();
@@ -418,6 +403,9 @@ void GUI::renderExtraView() {
             const char* postProcessingName = (siriusEngine.postProcessing >= 0 && siriusEngine.postProcessing < postProcessingCount) ?
                 postProcessingNames[siriusEngine.postProcessing] : u8"未知";
             ImGui::SliderInt(u8"后期特效", &siriusEngine.postProcessing, 0, postProcessingCount - 1, postProcessingName);
+            ImGui::Checkbox(u8"MSAA抗锯齿", &siriusEngine.isMSAAOn);
+            ImGui::SameLine();
+            ImGui::Checkbox(u8"Gamma矫正", &siriusEngine.isGammaOn);
         }
 
         // ImGui

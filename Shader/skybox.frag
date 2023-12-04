@@ -1,11 +1,18 @@
 #version 330 core
-out vec4 FragColor;
 
-in vec3 TexCoords;
+#define GAMMA 2.2
+
+out vec4 fragColor;
+
+in vec3 texCoords;
 
 uniform samplerCube skybox;
+uniform bool gamma;
 
 void main()
 {    
-    FragColor = texture(skybox, TexCoords);
+    fragColor = texture(skybox, texCoords);
+    if (gamma)
+        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
+    
 }

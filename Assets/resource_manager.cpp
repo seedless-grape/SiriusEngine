@@ -24,12 +24,16 @@ Shader ResourceManager::loadShader(const char* vertexFile,
 	return shaders[name];
 }
 
+bool ResourceManager::hasShader(std::string name) {
+	return shaders.find(name) != shaders.end();
+}
+
 Shader ResourceManager::getShader(std::string name) {
 	return shaders[name];
 }
 
 Texture ResourceManager::loadTexture(const char* file, std::string name) {
-	textures[name] = loadTextureFromFile(file);
+	textures[name] = loadTextureFromFile(file);	  
 	return textures[name];
 }
 
@@ -37,6 +41,10 @@ Texture ResourceManager::loadTexture(const std::vector<std::string>& files,
 									 std::string name) {
 	textures[name] = loadTextureFromFile(files);
 	return textures[name];
+}
+
+bool ResourceManager::hasTexture(std::string name) {
+	return textures.find(name) != textures.end();
 }
 
 Texture ResourceManager::getTexture(std::string name) {

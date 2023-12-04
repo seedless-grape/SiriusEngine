@@ -35,7 +35,7 @@ public:
 	virtual ~Light() = default;
 
 	// 光源绘制纯虚函数
-	virtual void draw(Renderer& renderer) = 0;
+	virtual void draw(Renderer& renderer, bool gamma = false) = 0;
 
 	// 光源重置纯虚函数
 	virtual void reset() = 0;
@@ -61,7 +61,7 @@ public:
 
 	~DirLight() override = default;
 
-	void draw(Renderer& renderer) override;
+	void draw(Renderer& renderer, bool gamma = false) override;
 
 	void reset() override;
 };
@@ -95,7 +95,7 @@ public:
 
 	~PointLight() override = default;
 
-	void draw(Renderer& renderer) override;
+	void draw(Renderer& renderer, bool gamma = false) override;
 
 	void reset() override;
 };
