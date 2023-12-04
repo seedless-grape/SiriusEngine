@@ -21,6 +21,9 @@
 // 后期特效
 enum PostProcessing;
 
+// 后期特效
+enum PostProcessing;
+
 // 引擎类
 class SiriusEngine {
 public:

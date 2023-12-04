@@ -20,7 +20,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
     window(_window), width(_width), height(_height),
     camera(), dirLight(), keysPressed(), keysProcessed(),
-    // ×´Ì¬»ú
+    // çŠ¶æ€æœº
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
@@ -36,19 +36,19 @@ SiriusEngine::~SiriusEngine() {
     delete cubeRenderer;
     delete modelRenderer;
 
-    // Çå¿ÕÆÁÄ»ÄÚÎïÌå
+    // æ¸…ç©ºå±å¹•å†…ç‰©ä½“
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
         delete sceneObjects[i];
     sceneObjects.clear();
 
-    // Çå¿ÕÆÁÄ»ÄÚµã¹âÔ´
+    // æ¸…ç©ºå±å¹•å†…ç‚¹å…‰æº
     for (unsigned int i = 0; i < scenePointLights.size(); i++)
         delete scenePointLights[i];
     scenePointLights.clear();
 }
 
 void SiriusEngine::init() {
-    // ¼ÓÔØ×ÅÉ«Æ÷
+    // åŠ è½½ç€è‰²å™¨
     ResourceManager::loadShader("Shader/light_cube.vert",
                                 "Shader/light_cube.frag",
                                 nullptr, "light_cube");
@@ -59,7 +59,7 @@ void SiriusEngine::init() {
                                 "Shader/model.frag",
                                 nullptr, "model");
 
-    // ¼ÓÔØ²ÄÖÊ
+    // åŠ è½½æè´¨
     ResourceManager::loadTexture("Resources/textures/container2.png",
                                  true, "container_diffuse");
     ResourceManager::loadTexture("Resources/textures/container2_specular.png",
@@ -71,25 +71,26 @@ void SiriusEngine::init() {
     ResourceManager::loadTexture("Resources/textures/brickwall.jpg",
                                  false, "brick_wall_diffuse");
 
-    // Ä£ĞÍäÖÈ¾
+    // æ¨¡å‹æ¸²æŸ“
 
     Object* objectModel;
-    objectModel = LoadPresets::loadModel(duck_model, u8"Ğ¡»ÆÑ¼");
+    objectModel = LoadPresets::loadModel(duck_model, u8"å°é»„é¸­");
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     sceneObjects.push_back(objectModel);
 
-    // äÖÈ¾
+    // æ¸²æŸ“
     cubeRenderer = new CubeRenderer(ResourceManager::getShader("object"));
 
-    // µã¹âÔ´
+    // ç‚¹å…‰æº
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
     scenePointLights.push_back(pointLight);
 
-    // Ñ¡ÖĞÎïÌå
+
+    // é€‰ä¸­ç‰©ä½“
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
 
-    // Ñ¡ÖĞµã¹âÔ´
+    // é€‰ä¸­ç‚¹å…‰æº
     currentSelectedPointLightIndex = scenePointLights.size() ? 0 : -1;
 
     // gui
@@ -100,11 +101,11 @@ void SiriusEngine::init() {
 void SiriusEngine::render() {
     this->configureRenderSetup();
 
-    // Í¶Ó°±ä»»¾ØÕó
+    // æŠ•å½±å˜æ¢çŸ©é˜µ
     glm::mat4 spaceMatrix =
         camera.getProjectionMatrix(this->width, this->height) * camera.getViewMatrix();
 
-    // ¸üĞÂäÖÈ¾¹ÜÏß
+    // æ›´æ–°æ¸²æŸ“ç®¡çº¿
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
                                  dirLight, scenePointLights);
 
@@ -115,14 +116,14 @@ void SiriusEngine::render() {
 
     modelRenderer->postProcessing = this->postProcessing;
 
-    // ÎïÌå»æÖÆ
+    // ç‰©ä½“ç»˜åˆ¶
     for (unsigned int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->enabled) {
             sceneObjects[i]->draw(*modelRenderer, isObjectCoordinateShown);
         }
     }
 
-    // ¹âÔ´·½¿é»æÖÆ
+    // å…‰æºæ–¹å—ç»˜åˆ¶
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
         if (scenePointLights[i]->enabled) {
             scenePointLights[i]->draw(*cubeRenderer);
@@ -134,11 +135,11 @@ void SiriusEngine::render() {
 }
 
 void SiriusEngine::processKeyboardInput(float key) {
-    // ´°¿Ú¹Ø±Õ
+    // çª—å£å…³é—­
     if (keysPressed[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
 
-    // WASDÒÆ¶¯
+    // WASDç§»åŠ¨
     if (keysPressed[GLFW_KEY_W])
         camera.processKeyboard(FORWARD, key);
     if (keysPressed[GLFW_KEY_S])
@@ -148,17 +149,17 @@ void SiriusEngine::processKeyboardInput(float key) {
     if (keysPressed[GLFW_KEY_D])
         camera.processKeyboard(RIGHT, key);
 
-    // Space & CtrlÒÆ¶¯
+    // Space & Ctrlç§»åŠ¨
     if (keysPressed[GLFW_KEY_SPACE])
         camera.processKeyboard(UP, key);
     if (keysPressed[GLFW_KEY_LEFT_CONTROL])
         camera.processKeyboard(DOWN, key);
 
-    // ×ÔÓÉÊÓ½Ç
+    // è‡ªç”±è§†è§’
     this->isFreeLookingModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_RIGHT];
 
-    // ¾µÍ·Ğı×ª
+    // é•œå¤´æ—‹è½¬
     this->isObjectRotationModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_LEFT] &&
         keysPressed[GLFW_KEY_LEFT_SHIFT];
