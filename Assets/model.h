@@ -1,7 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-/* Ä£ĞÍ */
+/* æ¨¡å‹ */
 
 #include <glad/glad.h> 
 
@@ -13,6 +13,7 @@
 #include <assimp/postprocess.h>
 
 #include "mesh.h"
+
 #include "Core/shader.h"
 #include "modelRenderer.h"
 #include "Core/object.h"
@@ -23,40 +24,45 @@
 #include <iostream>
 #include <vector>
 
-// ´ÓÎÄ¼şÖĞ¶ÁÈ¡²ÄÖÊÌùÍ¼
+
+// ä»æ–‡ä»¶ä¸­è¯»å–æè´¨è´´å›¾
 unsigned int textureFromFile(const char* path, const std::string& directory,
                              bool gamma = false);
 
-// Ä£ĞÍÀà
+// æ¨¡å‹ç±»
 class Model : public Object {
 public:
-    std::vector<TextureS> texturesLoaded; // ¼ÇÂ¼ÒÑ¼ÓÔØµÄÄ£ĞÍ
-    std::vector<Mesh> meshes; // Ä£ĞÍÍø¸ñ
-    std::string directory; // Ä£ĞÍÎÄ¼şÂ·¾¶
-    bool gammaCorrection; // £¿
 
-    // ¹¹Ôìº¯Êı
+    std::vector<TextureS> texturesLoaded; // è®°å½•å·²åŠ è½½çš„æ¨¡å‹
+    std::vector<Mesh> meshes; // æ¨¡å‹ç½‘æ ¼
+    std::string directory; // æ¨¡å‹æ–‡ä»¶è·¯å¾„
+    bool gammaCorrection; // ï¼Ÿ
+
+    // æ„é€ å‡½æ•°
     Model(std::string name, std::string const& path, bool gamma = false);
 
-    // »æÖÆÄ£ĞÍ
+    // ç»˜åˆ¶æ¨¡å‹
     void draw(Shader& shader);
+
 
     void draw(Renderer& renderer, bool drawCoordinate = true) override;
 
 private:
-    // ¼ÓÔØÄ£ĞÍ
+    // åŠ è½½æ¨¡å‹
     void loadModel(std::string const& path);
 
-    // ´¦Àí½áµã
+    // å¤„ç†ç»“ç‚¹
     void processNode(aiNode* node, const aiScene* scene);
 
-    // ´¦Àí½áµãÍø¸ñ
+    // å¤„ç†ç»“ç‚¹ç½‘æ ¼
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
-    // ¼ÓÔØ²ÄÖÊÌùÍ¼
+    // åŠ è½½æè´¨è´´å›¾
+
     std::vector<TextureS> loadMaterialTextures(aiMaterial* mat,
                                               aiTextureType type,
                                               std::string typeName);
+
 };
 
 #endif
