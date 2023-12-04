@@ -131,6 +131,9 @@
     <ClCompile Include="Core\shadow.cpp">
       <Filter>Core\Source File</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\hdr.cpp">
+      <Filter>Engine\Source File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Library\stb_image.h">
@@ -208,6 +211,9 @@
     <ClInclude Include="Core\shadow.h">
       <Filter>Core\Header File</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\hdr.h">
+      <Filter>Engine\Header File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\coordinate.vert">
@@ -250,6 +256,12 @@
       <Filter>Shader\vertice</Filter>
     </None>
     <None Include="Shader\shadow.frag">
+      <Filter>Shader\fragment</Filter>
+    </None>
+    <None Include="Shader\hdr.vert">
+      <Filter>Shader\vertice</Filter>
+    </None>
+    <None Include="Shader\hdr.frag">
       <Filter>Shader\fragment</Filter>
     </None>
   </ItemGroup>

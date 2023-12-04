@@ -5,6 +5,7 @@
 #include "Assets/loadPresets.h"
 #include "Assets/skybox.h"
 #include "msaa.h" 
+#include "hdr.h"
 
 #include "Library/stb_image.h"
 
@@ -14,6 +15,7 @@ ModelRenderer* modelRenderer;
 ShadowRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
+HDR* hdr;
 
 SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
@@ -21,15 +23,14 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     camera(), dirLight(), keysPressed(), keysProcessed(),
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
-    isMouseControlOn(true), isScrollControlOn(true),
+    isMouseControlOn(true), isScrollControlOn(true), isHDROn(false),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
-    isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(true),
+    isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(false),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
     currentAddObjectIndex(0),
-    currentSelectedPointLightIndex(-1),
+    currentSelectedPointLightIndex(-1), 
     clearColor(0.1f, 0.1f, 0.1f) { 
-    cubeVAO = 0; cubeVBO = 0;
 }
 
 SiriusEngine::~SiriusEngine() {
@@ -84,7 +85,10 @@ void SiriusEngine::init() {
     msaa = new MSAA();
     msaa->turnON(this->width, this->height);
 
-    // ��Ӱӳ��
+    // HDR
+    hdr = new HDR();
+    hdr->turnON(this->width, this->height);
+  
     shadow = new Shadow();
 
     // gui
@@ -94,12 +98,6 @@ void SiriusEngine::init() {
 
 void SiriusEngine::render() {
     this->configureRenderSetup();
-
-
-    // MSAA֡抗锯齿
-    if (isMSAAOn)
-        msaa->configureMSAASceenSetup();
-
 
     // 投影变换矩阵
     glm::mat4 projectionMatrix = camera.getProjectionMatrix(static_cast<float>(this->width),
@@ -123,8 +121,13 @@ void SiriusEngine::render() {
 
     skyboxRenderer->postProcessing = this->postProcessing;
 
+    // MSAA֡��Ļ����ռ�����
+    if (isMSAAOn)
+        msaa->configureMSAASceenSetup();
 
-    // 天空盒绘制
+    if (isHDROn)
+        hdr->configureHDRSceenSetup();
+                                                            
     skybox->draw(*skyboxRenderer, nullptr, false, this->isGammaOn);
 
 
@@ -200,14 +203,21 @@ void SiriusEngine::render() {
     if (isMSAAOn)
         msaa->render();
 
+    // HDR֡����ռ�д����Ļ�ռ�
+    if (isHDROn) {
+        hdr->render();
+    }
+
     // gui
     gui->render();
 }
 
 void SiriusEngine::updateSceen() {
-    if (isMSAAOn) {
+    if (isMSAAOn)
         msaa->updateSceen(width, height);
-    }
+
+    if (isHDROn)
+        hdr->updateSceen(width, height);
 }
 
 void SiriusEngine::processKeyboardInput(float key) {
@@ -289,4 +299,10 @@ void SiriusEngine::configureRenderSetup() {
         msaa->turnON(width, height);
     else if (!isMSAAOn && msaa->enable)
         msaa->turnOFF();
+
+    // HDR
+    if (isHDROn && !hdr->enable)
+        hdr->turnON(width, height);
+    else if (!isHDROn && hdr->enable)
+        hdr->turnOFF();
 }

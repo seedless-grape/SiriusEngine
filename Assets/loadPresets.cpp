@@ -11,6 +11,7 @@ void LoadPresets::preLoad() {
 	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
 	ResourceManager::loadShader("Shader/msaa.vert", "Shader/msaa.frag", nullptr, "msaa");
 	ResourceManager::loadShader("Shader/shadow.vert", "Shader/shadow.frag", nullptr, "shadow");
+	ResourceManager::loadShader("Shader/hdr.vert", "Shader/hdr.frag", nullptr, "hdr");
 
 	// 加载材质
 	ResourceManager::loadTexture("Resources/textures/container2.png", "container_diffuse");
@@ -72,7 +73,10 @@ Object* LoadPresets::loadModel(modelType type, std::string name) {
 
 	// 载入小黄鸭
 	if (type == duck_model) {
-		model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
+		//model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
+		model = new Model(name, path + "wooden_display_shelves/wooden_display_shelves_01_1k.obj");
+
+		
 		model->position = glm::vec3(0.0f, 0.0f, -3.0f);
 		model->shininess = 64.0f;
 	}

@@ -79,7 +79,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		meshVector.x = mesh->mVertices[i].x;
 		meshVector.y = mesh->mVertices[i].y;
 		meshVector.z = mesh->mVertices[i].z;
-		vertex.position = std::move(meshVector);
+		vertex.position = meshVector;
 
 		// 处理法线方向
 		if (mesh->HasNormals()) {
@@ -87,7 +87,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			meshNormal.x = mesh->mNormals[i].x;
 			meshNormal.y = mesh->mNormals[i].y;
 			meshNormal.z = mesh->mNormals[i].z;
-			vertex.normal = std::move(meshNormal);
+			vertex.normal = meshNormal;
 		}
 
 		// 处理纹理映射(只使用第一组纹理坐标)
@@ -96,21 +96,21 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			glm::vec2 meshTexCoord;
 			meshTexCoord.x = mesh->mTextureCoords[0][i].x;
 			meshTexCoord.y = mesh->mTextureCoords[0][i].y;
-			vertex.texCoords = std::move(meshTexCoord);
+			vertex.texCoords = meshTexCoord;
 
 			// 切线方向
 			glm::vec3 meshTangent;
 			meshTangent.x = mesh->mTangents[i].x;
 			meshTangent.y = mesh->mTangents[i].y;
 			meshTangent.z = mesh->mTangents[i].z;
-			vertex.tangent = std::move(meshTangent);
+			vertex.tangent = meshTangent;
 
 			// 副切线方向(法线叉乘切线)
 			glm::vec3 meshBitangent;
 			meshBitangent.x = mesh->mBitangents[i].x;
 			meshBitangent.y = mesh->mBitangents[i].y;
 			meshBitangent.z = mesh->mBitangents[i].z;
-			vertex.bitangent = std::move(meshBitangent);
+			vertex.bitangent = meshBitangent;
 		} else {
 			vertex.texCoords = glm::vec2(0.0f);
 		}

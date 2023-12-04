@@ -24,22 +24,6 @@ enum PostProcessing;
 
 // 引擎类
 class SiriusEngine {
-	/*-----------------*/
-public:
-	unsigned int planeVAO;
-
-	glm::vec3 lightPos;
-
-	unsigned int cubeVAO;
-	unsigned int cubeVBO;
-
-	Texture woodTexture;
-
-	void renderScene(Shader& shader);
-	void renderCube();
-
-	/*-----------------*/
-
 public:
 	unsigned int width, height;
 	GLFWwindow* window;
@@ -70,12 +54,11 @@ public:
 	bool isObjectCoordinateShown;	// 展示物体坐标
 	bool isMSAAOn;					// MSAA抗锯齿
 	bool isGammaOn;					// Gamma矫正
+	bool isHDROn;					// HDR光度改善
 
 	int postProcessing;	// 后期特效
 
 	glm::vec3 clearColor;	// 屏幕背景颜色
-
-	Shader shader;
 
 public:
 	// 构造函数

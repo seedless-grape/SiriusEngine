@@ -1,6 +1,7 @@
 #include "mesh.h"
 
 #include "Core/shadow.h"
+#include <iostream>
 
 Mesh::Mesh(std::vector<Vertex> _vertices,
 		   std::vector<unsigned int> _indices,
@@ -15,7 +16,7 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 	// 纹理映射目标
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
-	//unsigned int normalNr = 1;
+	unsigned int normalNr = 1;
 	//unsigned int heightNr = 1;
 
 	// 将纹理数组中的所有纹理都映射
@@ -31,8 +32,8 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 			number = std::to_string(diffuseNr++);
 		else if (name == "textureSpecular")
 			number = std::to_string(specularNr++);
-		//else if (name == "textureNormal")
-		//	number = std::to_string(normalNr++);
+		else if (name == "textureNormal")
+			number = std::to_string(normalNr++);
 		//else if (name == "textureHeight")
 		//	number = std::to_string(heightNr++);
 
