@@ -1,7 +1,9 @@
+
 #ifndef MESH_H_
 #define MESH_H_
 
-/* Íø¸ñÄ£ĞÍ */
+/* ç½‘æ ¼æ¨¡å‹ */
+
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,49 +15,54 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+
 #include "Core/shader.h"
 #include "Core/texture.h"
 
 #include <vector>
 #include <string>
 
-// Ó°Ïì¶¥µãµÄ×î´ó¹Ç÷ÀÊı
+// å½±å“é¡¶ç‚¹çš„æœ€å¤§éª¨éª¼æ•°
 #define MAX_BONE_INFLUENCE 4
 
-// ¶¥µãÊôĞÔ½á¹¹Ìå
-struct Vertex {
-	glm::vec3 position; // Î»ÖÃ×ø±ê
-	glm::vec3 normal; // ·¨Ïß·½Ïò
-	glm::vec2 texCoords; // ÎÆÀí×ø±ê
-	glm::vec3 tangent; // ÇĞÏß·½Ïò
-	glm::vec3 bitangent; // ¸±ÇĞÏß·½Ïò
 
-	int mBoneIDs[MAX_BONE_INFLUENCE]; // Ó°Ïì¸Ã¶¥µãµÄ¹Ç÷ÀË÷Òı
-	float mWeights[MAX_BONE_INFLUENCE]; // Ó°Ïì¸Ã¶¥µãµÄ¹Ç÷ÀÓ°ÏìÈ¨ÖØ
+
+// é¡¶ç‚¹å±æ€§ç»“æ„ä½“
+struct Vertex {
+	glm::vec3 position; // ä½ç½®åæ ‡
+	glm::vec3 normal; // æ³•çº¿æ–¹å‘
+	glm::vec2 texCoords; // çº¹ç†åæ ‡
+	glm::vec3 tangent; // åˆ‡çº¿æ–¹å‘
+	glm::vec3 bitangent; // å‰¯åˆ‡çº¿æ–¹å‘
+
+	int mBoneIDs[MAX_BONE_INFLUENCE]; // å½±å“è¯¥é¡¶ç‚¹çš„éª¨éª¼ç´¢å¼•
+	float mWeights[MAX_BONE_INFLUENCE]; // å½±å“è¯¥é¡¶ç‚¹çš„éª¨éª¼å½±å“æƒé‡
 };
 
-// Íø¸ñÀà
+
+// ç½‘æ ¼ç±»
 class Mesh {
 public:
-	// Íø¸ñÊı¾İ
-	std::vector<Vertex> vertices; // ¶¥µã
-	std::vector<unsigned int> indices; // Í¼ĞÎ(Èı½ÇĞÎ)Ë÷Òı
-	std::vector<Texture> textures; // ÎÆÀí
+	// ç½‘æ ¼æ•°æ®
+	std::vector<Vertex> vertices; // é¡¶ç‚¹
+	std::vector<unsigned int> indices; // å›¾å½¢(ä¸‰è§’å½¢)ç´¢å¼•
+	std::vector<Texture> textures; //  çº¹ç†
 
 public:
-	// ¹¹Ôìº¯Êı
+	// æ„é€ å‡½æ•°
 	Mesh(std::vector<Vertex> _vertices,
 		 std::vector<unsigned int> _indices,
+
 		 std::vector<Texture> _textures);
 
-	// Íø¸ñ»æÖÆ
+	// ç½‘æ ¼ç»˜åˆ¶
 	void draw(Shader& shader);
 
 private:
-	// äÖÈ¾Êı¾İ
+	// æ¸²æŸ“æ•°æ®
 	unsigned int VAO, VBO, EBO;
 
-	// äÖÈ¾Íø¸ñÍ¼ĞÎ
+	// æ¸²æŸ“ç½‘æ ¼å›¾å½¢
 	void setupMesh();
 };
 

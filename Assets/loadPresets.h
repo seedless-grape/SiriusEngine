@@ -1,4 +1,4 @@
-/* ÔØÈëÔ¤ÉèÎïÌå */
+/* è½½å…¥é¢„è®¾ç‰©ä½“ */
 
 #ifndef LOAD_PRESETS_H_
 #define LOAD_PRESETS_H_
@@ -9,29 +9,35 @@
 
 enum objectType {
     White_Box, Wooden_Box
+
 };
 
 enum modelType {
     duck_model
+
 };
 
-// ¼ÓÔØÔ¤ÉèÎïÌå
+// åŠ è½½é¢„è®¾ç‰©ä½“
 class LoadPresets {
 public:
-    // Ô¤¼ÓÔØ²ÄÖÊ¡¢×ÅÉ«Æ÷
+
+    // é¢„åŠ è½½
     static void preLoad();
 
-    // ¼ÓÔØµã¹âÔ´
+    // åŠ è½½ç‚¹å…‰æº
     static PointLight* loadPointLight();
 
-    // ¼ÓÔØÌì¿ÕºĞ
+    // åŠ è½½å¤©ç©ºç›’
     static Object* loadSkybox();
 
-    // ¼ÓÔØÁ¢·½Ìå
+    // åŠ è½½ç«‹æ–¹ä½“
+
     static Object* loadCube(objectType type, std::string name);
 
-    // ¼ÓÔØÄ£ĞÍ
+
+    // åŠ è½½æ¨¡å‹
     static Object* loadModel(modelType type, std::string name);
+
 };
 
 #endif
