@@ -1,4 +1,4 @@
-/* äÖÈ¾¹ÜÏß */
+/* æ¸²æŸ“ç®¡çº¿ */
 
 #ifndef RENDERER_H_
 #define RENDERER_H_
@@ -10,36 +10,40 @@
 #include "texture.h"
 #include "shader.h"
 
-// Ç°ÏòÉùÃ÷
+// å‰å‘å£°æ˜
 class Object;
 class DirLight;
 class PointLight;
 
-// äÖÈ¾ºóÆÚÌØĞ§ÊôĞÔ
+// æ¸²æŸ“åæœŸç‰¹æ•ˆå±æ€§
 enum PostProcessing {
 	original, inverse, grayscale, sharpen, blur, edgeDetection, postProcessingCount
 };
 
-// »ù´¡äÖÈ¾Àà
+// åŸºç¡€æ¸²æŸ“ç±»
 class Renderer {
 public:
 	Renderer(const Shader& shader);
 
 	virtual ~Renderer() = default;
 
-	// äÖÈ¾
+
+	// æ¸²æŸ“
 	virtual void render(const Object& object, bool drawCoordinate = true, bool gamma = false) = 0;
+
 
 	virtual void render(const PointLight& pointLight, bool gamma = false);
 
-	// ¸üĞÂäÖÈ¾Æ÷
+	// æ›´æ–°æ¸²æŸ“å™¨
 	void updateRenderer(glm::mat4 spaceMatrix, glm::vec3 viewPos,
 						const DirLight& dirLight,
 						const std::vector<PointLight*>& pointLights);
 
 public:
-	// ºóÆÚÌØĞ§
+	// åæœŸç‰¹æ•ˆ
 	int postProcessing;
+
+
 	Shader objectShader;
 
 protected:
@@ -50,10 +54,10 @@ protected:
 
 	virtual void initRenderData() {};
 
-	// ×ø±ê»æÖÆÊı¾İ
+	// åæ ‡ç»˜åˆ¶æ•°æ®
 	void initCoordinateRenderData();
 
-	// »æÖÆ×ø±ê
+	// ç»˜åˆ¶åæ ‡
 	void renderCoordinate();
 };
 
