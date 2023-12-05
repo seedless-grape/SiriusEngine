@@ -12,7 +12,7 @@ enum objectType {
 };
 
 enum modelType {
-    duck_model, background_model
+    plant_model, background_model, horse_model
 };
 
 // 加载预设物体
