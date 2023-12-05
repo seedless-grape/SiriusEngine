@@ -53,13 +53,13 @@ SiriusEngine::~SiriusEngine() {
 }
 
 void SiriusEngine::init() {
-    // 预加载(模型、材质、着色器)
-    LoadPresets::preLoad();
+    // 预加载材质、着色器
+    LoadPresets::preLoadShaderTexture();
 
     // 模型与模型阴影渲染
-    Object* objectModel;
-    //objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
+    LoadPresets::preLoadModel(sceneObjects);
     //sceneObjects.push_back(objectModel);
+
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 

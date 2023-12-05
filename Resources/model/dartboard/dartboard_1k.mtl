@@ -1,0 +1,14 @@
+# Blender 4.0.1 MTL File: 'dartboard_1k.blend'
+# www.blender.org
+
+newmtl dartboard
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/dartboard_diff_1k.jpg
+map_Ns textures/dartboard_rough_1k.jpg
+map_Ks textures/dartboard_metal_1k.jpg
+map_Bump -bm 1.000000 textures/dartboard_nor_gl_1k.jpg
