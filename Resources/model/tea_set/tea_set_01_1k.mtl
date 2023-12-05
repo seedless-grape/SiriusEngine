@@ -1,0 +1,15 @@
+# Blender 4.0.1 MTL File: 'tea_set_01_1k.blend'
+# www.blender.org
+
+newmtl tea_set_01
+Ka 1.000000 1.000000 1.000000
+Kd 0.782980 0.782980 0.782980
+Ks 0.290000 0.290000 0.290000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/tea_set_01_diff_1k.jpg
+map_Ns textures/tea_set_01_rough_1k.jpg
+map_Ks textures/tea_set_01_metal_1k.jpg
+map_Bump -bm 1.000000 textures/tea_set_01_nor_gl_1k.jpg
