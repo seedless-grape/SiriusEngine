@@ -71,10 +71,10 @@ Object* LoadPresets::loadModel(modelType type, std::string name) {
 	Object* model = nullptr;
 	std::string path = "Resources/model/";
 
-	// ÔØÈëĞ¡»ÆÑ¼
-	if (type == duck_model) {
+	// ÔØÈëÅèÔÔ
+	if (type == plant_model) {
 		//model = new Model(name, path + "duck/rubber_duck_toy_1k.obj");
-		model = new Model(name, path + "wooden_display_shelves/wooden_display_shelves_01_1k.obj");
+		model = new Model(name, path + "potted_plant/potted_plant_04_2k.obj");
 
 		
 		model->position = glm::vec3(0.0f, 0.0f, -3.0f);
@@ -84,6 +84,12 @@ Object* LoadPresets::loadModel(modelType type, std::string name) {
 	// ÔØÈë±³¾°°å
 	if (type == background_model) {
 		model = new Model(name, path + "background/background.obj");
+		model->shininess = 64.0f;
+	}
+
+	// ÔØÈëÂíµñËÜ
+	if (type == horse_model) {
+		model = new Model(name, path + "horse/horse_statue_01_1k.obj");
 		model->shininess = 64.0f;
 	}
 

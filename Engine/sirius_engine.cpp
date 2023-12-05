@@ -58,8 +58,8 @@ void SiriusEngine::init() {
 
     // 模型与模型阴影渲染
     Object* objectModel;
-    objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
-    sceneObjects.push_back(objectModel);
+    //objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
+    //sceneObjects.push_back(objectModel);
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
