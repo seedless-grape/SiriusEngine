@@ -174,6 +174,7 @@ void GUI::renderSceneInspector() {
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 80.0f, ImGui::GetCursorPos().y));
             if (ImGui::Button(u8"Ìí¼ÓÎïÌå", ImVec2(80.0f, 0.0f))) {
                 Object* obj = LoadPresets::loadModel((modelType)addIndex, ResourceManager::presetsObjects[addIndex]);
+                obj->position = siriusEngine.camera.position + glm::normalize(siriusEngine.camera.front);
                 siriusEngine.sceneObjects.push_back(obj);
                 siriusEngine.currentSelectedObjectIndex = siriusEngine.sceneObjects.size() - 1;
             }

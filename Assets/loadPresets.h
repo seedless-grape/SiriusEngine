@@ -12,14 +12,17 @@ enum objectType {
 };
 
 enum modelType {
-    plant_model, background_model, horse_model
+    plant_model, background_model, horse_model, shelf_model, cat_statue, marble_bust, wooden_elephant,
+    ceramic_vase_01, ceramic_vase_02, ceramic_vase_03, duck, garden_gnome, lubricant_spray, cabinet,
+    white_table, white_chair, black_chair, basket, pear, apple, kiwi, avocado, dartboard, chess_set, tea_set
 };
+
 
 // 加载预设物体
 class LoadPresets {
 public:
     // 预加载材质、着色器
-    static void preLoad();
+    static void preLoadShaderTexture();
 
     // 加载点光源
     static PointLight* loadPointLight();
@@ -32,6 +35,15 @@ public:
 
     // 加载模型
     static Object* loadModel(modelType type, std::string name);
+
+public:
+    // 场景预加载
+
+    // 预加载场景模型
+    static void preLoadModel(std::vector<Object*>& sceneObjects);
+
+    // 预加载场景光照
+    //static void preLoadLight(std::vector<Light*>& sceneLights);
 };
 
 #endif
