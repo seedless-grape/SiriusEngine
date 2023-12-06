@@ -145,10 +145,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 								 "textureNormal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-		// 读取顶点位移贴图
+		// 读取粗糙度贴图
 		std::vector<Texture> heightMaps =
-			loadMaterialTextures(material, aiTextureType_AMBIENT,
-								 "textureHeight");
+			loadMaterialTextures(material, aiTextureType_SHININESS,
+								 "textureRough");
 	}
 
 	// 将上面处理的信息用于构建model的mesh
