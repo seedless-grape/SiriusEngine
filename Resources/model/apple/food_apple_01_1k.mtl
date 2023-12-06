@@ -8,6 +8,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Ks textures/pure_black.png
 map_Kd textures/food_apple_01_diff_1k.jpg
 map_Ns textures/food_apple_01_rough_1k.jpg
 map_Bump -bm 1.000000 textures/food_apple_01_nor_gl_1k.jpg

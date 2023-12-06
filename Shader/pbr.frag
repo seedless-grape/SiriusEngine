@@ -69,6 +69,19 @@ vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 view
 float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
+    // 反射率
+    vec3 albedo;
+    if (gamma)
+        albedo = pow(texture(textureDiffuse1, fs_in.texCoords).rgb, vec3(2.2));
+    else
+        albedo = texture(textureDiffuse1, fs_in.texCoords).rgb;
+
+    // 金属度
+    float metallic = texture(textureSpecular1, fs_in.texCoords).r;
+
+    // 粗糙度
+    
+
     vec3 norm = texture(textureNormal1, fs_in.texCoords).rgb;
     norm = normalize(norm * 2.0 - 1.0);   
     norm = normalize(fs_in.TBN * norm);

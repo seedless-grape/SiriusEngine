@@ -9,5 +9,6 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd textures/food_kiwi_01_diff_1k.jpg
+map_Ks textures/pure_black.png
 map_Ns textures/food_kiwi_01_rough_1k.jpg
 map_Bump -bm 1.000000 textures/food_kiwi_01_nor_gl_1k.jpg

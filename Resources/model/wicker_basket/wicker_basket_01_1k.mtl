@@ -9,5 +9,6 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd textures/wicker_basket_01_diff_1k.jpg
+map_Ks textures/pure_black.png
 map_Ns textures/wicker_basket_01_rough_1k.jpg
 map_Bump -bm 1.000000 textures/wicker_basket_01_nor_gl_1k.jpg
