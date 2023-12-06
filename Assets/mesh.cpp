@@ -15,7 +15,7 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 	unsigned int normalNr = 1;
-	//unsigned int heightNr = 1;
+	unsigned int roughNr = 1;
 
 	// 将纹理数组中的所有纹理都映射
 	unsigned int i;
@@ -32,8 +32,8 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 			number = std::to_string(specularNr++);
 		else if (name == "textureNormal")
 			number = std::to_string(normalNr++);
-		//else if (name == "textureHeight")
-		//	number = std::to_string(heightNr++);
+		else if (name == "textureRough")
+			number = std::to_string(roughNr++);
 
 		// 传入GPU，绑定纹理
 		shader.setInt((name + number).c_str(), i);

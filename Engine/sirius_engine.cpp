@@ -58,7 +58,6 @@ void SiriusEngine::init() {
 
     // 模型与模型阴影渲染
     LoadPresets::preLoadModel(sceneObjects);
-    //sceneObjects.push_back(objectModel);
 
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
@@ -72,7 +71,13 @@ void SiriusEngine::init() {
     // 点光源
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
+    pointLight->position = glm::vec3(0.370f, 0.295f, -11.920f);
     scenePointLights.push_back(pointLight);
+
+    // 定向光
+    dirLight.direction = glm::vec3(-0.540f, -1.225f, -1.000f);
+    dirLight.ambient = glm::vec3(0.1f);
+    dirLight.diffuse = glm::vec3(0.6f);
 
     // 选中物体
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
