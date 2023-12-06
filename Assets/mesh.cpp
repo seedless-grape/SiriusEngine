@@ -5,25 +5,27 @@
 
 Mesh::Mesh(std::vector<Vertex> _vertices,
 		   std::vector<unsigned int> _indices,
+
 		   std::vector<Texture> _textures) :
+
 	vertices(_vertices), indices(_indices), textures(_textures) {
 	setupMesh();
 }
 
 void Mesh::draw(Shader& shader, Shadow* shadow) {
-	// ÎÆÀíÓ³ÉäÄ¿±ê
+	// çº¹ç†æ˜ å°„ç›®æ ‡
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 	unsigned int normalNr = 1;
 	unsigned int roughNr = 1;
 
-	// ½«ÎÆÀíÊı×éÖĞµÄËùÓĞÎÆÀí¶¼Ó³Éä
+	// å°†çº¹ç†æ•°ç»„ä¸­çš„æ‰€æœ‰çº¹ç†éƒ½æ˜ å°„
 	unsigned int i;
 	for (i = 0; i < textures.size(); i++) {
-		// ¼¤»î¶ÔÓ¦µÄÎÆÀíµ¥Ôª
+		// æ¿€æ´»å¯¹åº”çš„çº¹ç†å•å…ƒ
 		glActiveTexture(GL_TEXTURE0 + i);
 
-		// »ñÈ¡ÎÆÀíĞòºÅºÍÎÆÀíÀàĞÍ
+		// è·å–çº¹ç†åºå·å’Œçº¹ç†ç±»å‹
 		std::string number;
 		std::string name = textures[i].type;
 		if (name == "textureDiffuse")
@@ -35,12 +37,12 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 		else if (name == "textureRough")
 			number = std::to_string(roughNr++);
 
-		// ´«ÈëGPU£¬°ó¶¨ÎÆÀí
+		// ä¼ å…¥GPUï¼Œç»‘å®šçº¹ç†
 		shader.setInt((name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
 
-	// °ó¶¨´«µİÒõÓ°²ÄÖÊ
+	// ï¿½ó¶¨´ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½
 	if (shadow) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		shader.setInt("shadowMap", i);
@@ -51,56 +53,67 @@ void Mesh::draw(Shader& shader, Shadow* shadow) {
 	}
 
 
-	// »æÖÆÍø¸ñ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
 				   GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	// ½«ÎÆÀí¼¤»îÉèÖÃ»Ø¹éÎªÄ¬ÈÏÖµ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»Ø¹ï¿½ÎªÄ¬ï¿½ï¿½Öµ
 	glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::shadowDraw(Shader& shader) {
-	// ½«ÎÆÀíÊı×éÖĞµÄÂş·´ÉäÎÆÀíÓ³Éä
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		// »ñÈ¡ÎÆÀíĞòºÅºÍÎÆÀíÀàĞÍ
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		std::string name = textures[i].type;
 		if (name == "textureDiffuse") {
 			glActiveTexture(GL_TEXTURE0);
 
-			// °ó¶¨ÎÆÀí
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 			break;
 		}
 	}
 
-	// »æÖÆÍø¸ñ
+	// æ˜¯å¦å¼€å¯é˜´å½±
+	if (shadow) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		shader.setInt("shadowMap", i);
+
+		glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
+	} else {
+		shader.setBool("shadowOn", false);
+	}
+
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
 				   GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	// ½«ÎÆÀí¼¤»îÉèÖÃ»Ø¹éÎªÄ¬ÈÏÖµ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»Ø¹ï¿½ÎªÄ¬ï¿½ï¿½Öµ
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glActiveTexture(GL_TEXTURE0);
 
 }
 
 void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
-	// ÎÆÀíÓ³ÉäÄ¿±ê
+	// ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½Ä¿ï¿½ï¿½
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 	//unsigned int normalNr = 1;
 	//unsigned int heightNr = 1;
 
-	// ½«ÎÆÀíÊı×éÖĞµÄËùÓĞÎÆÀí¶¼Ó³Éä
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
 	unsigned int i;
 	for (i = 0; i < textures.size(); i++) {
-		// ¼¤»î¶ÔÓ¦µÄÎÆÀíµ¥Ôª
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôª
 		glActiveTexture(GL_TEXTURE0 + i);
 
-		// »ñÈ¡ÎÆÀíĞòºÅºÍÎÆÀíÀàĞÍ
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		std::string number;
 		std::string name = textures[i].type;
 		if (name == "textureDiffuse")
@@ -112,81 +125,153 @@ void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
 		//else if (name == "textureHeight")
 		//	number = std::to_string(heightNr++);
 
-		// ´«ÈëGPU£¬°ó¶¨ÎÆÀí
+		// ï¿½ï¿½ï¿½ï¿½GPUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		shader.setInt((name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
 
-	// °ó¶¨´«µİÒõÓ°²ÄÖÊ
+	// ï¿½ó¶¨´ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader.setInt("shadowMap", i);
 
 	glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
 
-	// »æÖÆÍø¸ñ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
 				   GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	// ½«ÎÆÀí¼¤»îÉèÖÃ»Ø¹éÎªÄ¬ÈÏÖµ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»Ø¹ï¿½ÎªÄ¬ï¿½ï¿½Öµ
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Mesh::shadowDraw(Shader& shader) {
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		std::string name = textures[i].type;
+		if (name == "textureDiffuse") {
+			glActiveTexture(GL_TEXTURE0);
+
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+			break;
+		}
+	}
+
+	// ç»˜åˆ¶ç½‘æ ¼
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
+				   GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// å°†çº¹ç†æ¿€æ´»è®¾ç½®å›å½’ä¸ºé»˜è®¤å€¼
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE0);
+
+}
+
+void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
+	// ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½Ä¿ï¿½ï¿½
+	unsigned int diffuseNr = 1;
+	unsigned int specularNr = 1;
+	//unsigned int normalNr = 1;
+	//unsigned int heightNr = 1;
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½ï¿½
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôª
+		glActiveTexture(GL_TEXTURE0 + i);
+
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		std::string number;
+		std::string name = textures[i].type;
+		if (name == "textureDiffuse")
+			number = std::to_string(diffuseNr++);
+		else if (name == "textureSpecular")
+			number = std::to_string(specularNr++);
+		//else if (name == "textureNormal")
+		//	number = std::to_string(normalNr++);
+		//else if (name == "textureHeight")
+		//	number = std::to_string(heightNr++);
+
+		// ï¿½ï¿½ï¿½ï¿½GPUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		shader.setInt((name + number).c_str(), i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
+	}
+
+	// ï¿½ó¶¨´ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader.setInt("shadowMap", i);
+
+	glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
+				   GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»Ø¹ï¿½ÎªÄ¬ï¿½ï¿½Öµ
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mesh::setupMesh() {
-	// ´´½¨VAO VBO EBO
+	// åˆ›å»ºVAO VBO EBO
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
-	// ½âÊÍ¶¥µãÊôĞÔ
+	// è§£é‡Šé¡¶ç‚¹å±æ€§
 	glBindVertexArray(VAO);
 
-	// ÔØÈëVBOÊı¾İ
+	// è½½å…¥VBOæ•°æ®
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
 				 &vertices[0], GL_STATIC_DRAW);
 
-	// ÔØÈëEBOÊı¾İ
+	// è½½å…¥EBOæ•°æ®
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
 				 &indices[0], GL_STATIC_DRAW);
 
-	// 0:½âÊÍ¶¥µã×ø±ê
+	// 0:è§£é‡Šé¡¶ç‚¹åæ ‡
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
-	// 1:½âÊÍ·¨Ïß·½Ïò
+	// 1:è§£é‡Šæ³•çº¿æ–¹å‘
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, normal));
 
-	// 2:½âÊÍÎÆÀí×ø±ê
+	// 2:è§£é‡Šçº¹ç†åæ ‡
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, texCoords));
 
-	// 3:½âÊÍÇĞÏß·½Ïò
+	// 3:è§£é‡Šåˆ‡çº¿æ–¹å‘
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, tangent));
 
-	// 4:½âÊÍ¸±ÇĞÏß·½Ïò
+	// 4:è§£é‡Šå‰¯åˆ‡çº¿æ–¹å‘
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, bitangent));
 
-	// 5:½âÊÍÓ°Ïì¸Ã¶¥µãµÄ¹Ç÷ÀË÷Òı
+	// 5:è§£é‡Šå½±å“è¯¥é¡¶ç‚¹çš„éª¨éª¼ç´¢å¼•
 	glEnableVertexAttribArray(5);
 	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(Vertex),
 						   (void*)offsetof(Vertex, mBoneIDs));
 
-	// 6:½âÊÍÓ°Ïì¸Ã¶¥µãµÄ¹Ç÷ÀµÄÈ¨ÖØ
+	// 6:è§£é‡Šå½±å“è¯¥é¡¶ç‚¹çš„éª¨éª¼çš„æƒé‡
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, mWeights));
 
-	// ½â°ó
+	// è§£ç»‘
 	glBindVertexArray(0);
 }
 

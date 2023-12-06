@@ -1,4 +1,4 @@
-/* тьхКт╓иХнОлЕ */
+/* Х╫╫Е┘╔И╒└Х╝╬Г┴╘Д╫⌠ */
 
 #ifndef LOAD_PRESETS_H_
 #define LOAD_PRESETS_H_
@@ -9,6 +9,11 @@
 
 enum objectType {
     White_Box, Wooden_Box
+
+};
+
+enum modelType {
+    duck_model, background_model
 };
 
 enum modelType {
@@ -18,32 +23,29 @@ enum modelType {
 };
 
 
-// ╪стьт╓иХнОлЕ
+// О©╫О©╫О©╫О©╫т╓О©╫О©╫О©╫О©╫О©╫О©╫
 class LoadPresets {
 public:
-    // т╓╪сть╡джй║╒веи╚фВ
+    // т╓О©╫О©╫О©╫ь╡О©╫О©╫й║О©╫О©╫О©╫и╚О©╫О©╫
     static void preLoadShaderTexture();
 
-    // ╪сть╣Ц╧Бт╢
+    // О©╫О©╫О©╫ь╣О©╫О©╫т╢
     static PointLight* loadPointLight();
 
-    // ╪стьлЛ©у╨п
+    // О©╫О©╫О©╫О©╫О©╫О©╫у╨О©╫
     static Object* loadSkybox();
 
-    // ╪стьа╒╥╫лЕ
+    // О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
     static Object* loadCube(objectType type, std::string name);
 
-    // ╪стьдёпм
+    // О©╫О©╫О©╫О©╫дёО©╫О©╫
     static Object* loadModel(modelType type, std::string name);
 
 public:
-    // Ё║╬╟т╓╪сть
+    // О©╫О©╫О©╫О©╫т╓О©╫О©╫О©╫О©╫
 
-    // т╓╪стьЁ║╬╟дёпм
+    // т╓О©╫О©╫О©╫ьЁО©╫О©╫О©╫дёО©╫О©╫
     static void preLoadModel(std::vector<Object*>& sceneObjects);
-
-    // т╓╪стьЁ║╬╟╧Буу
-    //static void preLoadLight(std::vector<Light*>& sceneLights);
 };
 
 #endif

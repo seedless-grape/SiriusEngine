@@ -21,7 +21,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
                            unsigned int _height) :
     window(_window), width(_width), height(_height),
     camera(), dirLight(), keysPressed(), keysProcessed(),
-    // ×´Ì¬»ú
+    // çŠ¶æ€æœº
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true), isHDROn(false),
     isFreeLookingModeOn(false), isObjectRotationModeOn(false),
@@ -41,51 +41,51 @@ SiriusEngine::~SiriusEngine() {
     delete skyboxRenderer;
     delete msaa;
 
-    // Çå¿ÕÆÁÄ»ÄÚÎïÌå
+    // æ¸…ç©ºå±å¹•å†…ç‰©ä½“
     for (unsigned int i = 0; i < sceneObjects.size(); i++)
         delete sceneObjects[i];
     sceneObjects.clear();
 
-    // Çå¿ÕÆÁÄ»ÄÚµã¹âÔ´
+    // æ¸…ç©ºå±å¹•å†…ç‚¹å…‰æº
     for (unsigned int i = 0; i < scenePointLights.size(); i++)
         delete scenePointLights[i];
     scenePointLights.clear();
 }
 
 void SiriusEngine::init() {
-    // Ô¤¼ÓÔØ²ÄÖÊ¡¢×ÅÉ«Æ÷
+    // Ô¤ï¿½ï¿½ï¿½Ø²ï¿½ï¿½Ê¡ï¿½ï¿½ï¿½É«ï¿½ï¿½
     LoadPresets::preLoadShaderTexture();
 
-    // Ä£ĞÍÓëÄ£ĞÍÒõÓ°äÖÈ¾
+    // Ä£ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½È¾
     LoadPresets::preLoadModel(sceneObjects);
 
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
-    // Ìì¿ÕºĞÓëµã¹âÔ´·½¿éäÖÈ¾
+    // ï¿½ï¿½Õºï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾
     skybox = LoadPresets::loadSkybox();
     skyboxRenderer = new SkyboxRenderer(ResourceManager::getShader("skybox"));
 
     cubeRenderer = new CubeRenderer(ResourceManager::getShader("light_cube"));
 
-    // µã¹âÔ´
+    // ç‚¹å…‰æº
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
     pointLight->position = glm::vec3(0.370f, 0.295f, -11.920f);
     scenePointLights.push_back(pointLight);
 
-    // ¶¨Ïò¹â
+    // å®šå‘å…‰
     dirLight.direction = glm::vec3(-0.540f, -1.225f, -1.000f);
     dirLight.ambient = glm::vec3(0.1f);
     dirLight.diffuse = glm::vec3(0.6f);
 
-    // Ñ¡ÖĞÎïÌå
+    // é€‰ä¸­ç‰©ä½“
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
 
-    // Ñ¡ÖĞµã¹âÔ´
+    // é€‰ä¸­ç‚¹å…‰æº
     currentSelectedPointLightIndex = scenePointLights.size() ? 0 : -1;
-
-    // ¿¹¾â³İ
+  
+    // æŠ—é”¯é½¿
     msaa = new MSAA();
     msaa->turnON(this->width, this->height);
 
@@ -93,7 +93,7 @@ void SiriusEngine::init() {
     hdr = new HDR();
     hdr->turnON(this->width, this->height);
 
-    // ÒõÓ°Ó³Éä
+    // é˜´å½±
     shadow = new Shadow();
 
     // gui
@@ -104,13 +104,13 @@ void SiriusEngine::init() {
 void SiriusEngine::render() {
     this->configureRenderSetup();
 
-    // Í¶Ó°±ä»»¾ØÕó
+    // æŠ•å½±å˜æ¢çŸ©é˜µ
     glm::mat4 projectionMatrix = camera.getProjectionMatrix(static_cast<float>(this->width),
                                                             static_cast<float>(this->height));
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
 
-    // ¸üĞÂäÖÈ¾¹ÜÏß
+    // æ›´æ–°æ¸²æŸ“ç®¡çº¿
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
                                  dirLight, scenePointLights);
 
@@ -125,58 +125,58 @@ void SiriusEngine::render() {
 
     skyboxRenderer->postProcessing = this->postProcessing;
 
-    // MSAAÖ¡ÆÁÄ»»º³å¿Õ¼äÅäÖÃ
+    // MSAAÖ¡ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
     if (isMSAAOn)
         msaa->configureMSAASceenSetup();
 
-    // HDRÖ¡ÆÁÄ»»º³å¿Õ¼äÅäÖÃ
+    // HDRÖ¡ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½
     if (isHDROn)
         hdr->configureHDRSceenSetup();
 
-    // Ìì¿ÕºĞ»æÖÆ
+    // ï¿½ï¿½ÕºĞ»ï¿½ï¿½ï¿½
     skybox->draw(*skyboxRenderer, nullptr, false, this->isGammaOn);
 
-    // ¹âÔ´·½¿é»æÖÆ
+    // å…‰æºæ–¹å—ç»˜åˆ¶
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
         if (scenePointLights[i]->enabled) {
             scenePointLights[i]->draw(*cubeRenderer, this->isGammaOn);
         }
     }
 
-    // ¿ªÆôÒõÓ°
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°
     if (shadow->isShadowOn) {
         modelRenderer->objectShader.setBool("shadowOn", true, true);
 
-        // BiasÓÅ»¯
+        // Biasï¿½Å»ï¿½
         if(shadow->isBias)
             modelRenderer->objectShader.setFloat("biasValue", 0.005f);
         else
             modelRenderer->objectShader.setFloat("biasValue", 0.000f);
 
-        // PCFÈíÒõÓ°
+        // PCFï¿½ï¿½ï¿½ï¿½Ó°
         if (shadow->isSoft)
             modelRenderer->objectShader.setBool("softShadow", true);
         else
             modelRenderer->objectShader.setBool("softShadow", false);
-
-        // ÕıÃæÌŞ³ıÓÅ»¯
+      
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ş³ï¿½ï¿½Å»ï¿½
         if (shadow->isCull) {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_FRONT);
         }
 
-		// ĞèÒª¼ÆËã¶¨Ïò¹â°ë¾¶
+		// ï¿½ï¿½Òªï¿½ï¿½ï¿½ã¶¨ï¿½ï¿½ï¿½ë¾¶
 		dirLight.updatePosition();
 
-		// »ñÈ¡²¢´«Èë¶¨Ïò¹âµÄ¿Õ¼ä×ø±ê×ª»»¾ØÕó
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ë¶¨ï¿½ï¿½ï¿½Ä¿Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
         shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
         modelRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
-
-        // °ó¶¨ÒõÓ°»º³åÇø
+      
+        // ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         shadow->bindShadowFBO();
 
-        // ÎïÌåÒõÓ°»æÖÆ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->shadowDraw(*modelShadowRenderer);
@@ -187,28 +187,28 @@ void SiriusEngine::render() {
                 glDisable(GL_CULL_FACE);
         }
 
-        // ½â°óÒõÓ°»º³åÇø£¬»Ö¸´Ä¬ÈÏ»º³åÇø
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½Ä¬ï¿½Ï»ï¿½ï¿½ï¿½ï¿½ï¿½
         shadow->unbindShadowFBO(0, this->width, this->height);
 
-        // ÎïÌå»æÖÆ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->draw(*modelRenderer, shadow, isObjectCoordinateShown, isGammaOn);
 
-    } else { // ²»¿ªÆôÒõÓ°
+    } else { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°
         modelRenderer->objectShader.setBool("shadowOn", false, true);
 
-        // ÎïÌå»æÖÆ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->draw(*modelRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
     }
 
-    // MSAAÖ¡»º³å¿Õ¼äĞ´ÈëÆÁÄ»¿Õ¼ä
+    // MSAAÖ¡ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Ğ´ï¿½ï¿½ï¿½ï¿½Ä»ï¿½Õ¼ï¿½
     if (isMSAAOn)
         msaa->render();
 
-    // HDRÖ¡»º³å¿Õ¼äĞ´ÈëÆÁÄ»¿Õ¼ä
+    // HDRÖ¡ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½Ğ´ï¿½ï¿½ï¿½ï¿½Ä»ï¿½Õ¼ï¿½
     if (isHDROn) {
         hdr->render();
     }
@@ -226,11 +226,11 @@ void SiriusEngine::updateSceen() {
 }
 
 void SiriusEngine::processKeyboardInput(float key) {
-    // ´°¿Ú¹Ø±Õ
+    // çª—å£å…³é—­
     if (keysPressed[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
 
-    // WASDÒÆ¶¯
+    // WASDç§»åŠ¨
     if (keysPressed[GLFW_KEY_W])
         camera.processKeyboard(FORWARD, key);
     if (keysPressed[GLFW_KEY_S])
@@ -240,17 +240,17 @@ void SiriusEngine::processKeyboardInput(float key) {
     if (keysPressed[GLFW_KEY_D])
         camera.processKeyboard(RIGHT, key);
 
-    // Space & CtrlÒÆ¶¯
+    // Space & Ctrlç§»åŠ¨
     if (keysPressed[GLFW_KEY_SPACE])
         camera.processKeyboard(UP, key);
     if (keysPressed[GLFW_KEY_LEFT_CONTROL])
         camera.processKeyboard(DOWN, key);
 
-    // ×ÔÓÉÊÓ½Ç
+    // è‡ªç”±è§†è§’
     this->isFreeLookingModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_RIGHT];
 
-    // ¾µÍ·Ğı×ª
+    // é•œå¤´æ—‹è½¬
     this->isObjectRotationModeOn =
         keysPressed[GLFW_MOUSE_BUTTON_LEFT] &&
         keysPressed[GLFW_KEY_LEFT_SHIFT];
@@ -281,7 +281,7 @@ void SiriusEngine::configureRenderSetup() {
     glClearColor(clearColor.r, clearColor.g, clearColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
-    // ºóÆÚ´¦Àí
+    // ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½
     if (isFaceCullingOn) {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -289,7 +289,7 @@ void SiriusEngine::configureRenderSetup() {
     } else
         glDisable(GL_CULL_FACE);
     
-    // Éî¶È/Ä£°å²âÊÔ
+    // ï¿½ï¿½ï¿½/Ä£ï¿½ï¿½ï¿½ï¿½ï¿½
     if (isDepthTestOn)
         glEnable(GL_DEPTH_TEST);
     else
@@ -298,8 +298,7 @@ void SiriusEngine::configureRenderSetup() {
         glEnable(GL_STENCIL_TEST);
     else
         glDisable(GL_STENCIL_TEST);
-
-    // ¿¹¾â³İ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½
     if (isMSAAOn && !msaa->enable)
         msaa->turnON(width, height);
     else if (!isMSAAOn && msaa->enable)

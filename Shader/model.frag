@@ -1,11 +1,11 @@
-/* Ä£ĞÍÆ¬¶Î×ÅÉ«Æ÷GLSL */
+/* æ¨¡å‹ç‰‡æ®µç€è‰²å™¨GLSL */
 
 #version 330 core
 
 #define MAX_POINT_LIGHTS 10
 #define GAMMA 2.2
 
-// ¶¨Ïò¹â
+// å®šå‘å…‰
 struct DirLight {
     bool enabled;
 
@@ -15,7 +15,7 @@ struct DirLight {
     vec3 specular;
 };
 
-// µã¹âÔ´
+// ç‚¹å…‰æº
 struct PointLight {
     bool enabled;
 
@@ -29,7 +29,7 @@ struct PointLight {
     vec3 specular;
 };
 
-// ÊäÈë
+// è¾“å…¥
 in VS_OUT {
     vec3 fragPos;
     vec2 texCoords;  
@@ -37,10 +37,10 @@ in VS_OUT {
     mat3 TBN; 
 } fs_in;
 
-// Êä³ö
-out vec4 fragColor; // Æ¬¶Î×ÅÉ«
+// è¾“å‡º
+out vec4 fragColor; // ç‰‡æ®µç€è‰²
 
-// È«¾Ö±äÁ¿
+// å…¨å±€å˜é‡
 uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
@@ -50,19 +50,19 @@ uniform vec3 objectColor;
 uniform int postProcessing;
 // uniform float shininess;
 
-uniform sampler2D textureDiffuse1;  // Âş·´Éä²ÄÖÊÌùÍ¼1
-uniform sampler2D textureSpecular1; // ¾µÃæ·´Éä²ÄÖÊÌùÍ¼1
+uniform sampler2D textureDiffuse1;  // æ¼«åå°„æè´¨è´´å›¾1
+uniform sampler2D textureSpecular1; // é•œé¢åå°„æè´¨è´´å›¾1
 uniform sampler2D textureNormal1;
 uniform sampler2D textureRough1;
 
-uniform sampler2D shadowMap;    // ÒõÓ°ÌùÍ¼
-uniform bool shadowOn;          // ÊÇ·ñ¿ªÆôÒõÓ°
-uniform bool softShadow;        // PCFÈíÒõÓ°
-uniform float biasValue;        // ÒõÓ°Æ«ÒÆÁ¿
+uniform sampler2D shadowMap;    // é˜´å½±è´´å›¾
+uniform bool shadowOn;          // æ˜¯å¦å¼€å¯é˜´å½±
+uniform bool softShadow;        // PCFè½¯é˜´å½±
+uniform float biasValue;        // é˜´å½±åç§»é‡
 
 uniform bool gamma;
 
-// º¯ÊıÇ°ÏòÉùÃ÷
+// å‡½æ•°å‰å‘å£°æ˜
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shininess);
 vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float shininess, float kernel[9]);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float shininess);
@@ -75,49 +75,48 @@ void main() {
     norm = normalize(fs_in.TBN * norm);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
     float shininess = texture(textureRough1, fs_in.texCoords).r * 32.0f;
-    
     vec3 result = vec3(0.0f);
     
-    if (postProcessing <= 2) {  // ·ÇºË´¦Àí
-        // ¶¨Ïò¹â
+    if (postProcessing <= 2) {  // éæ ¸å¤„ç†
+        // å®šå‘å…‰
         if (dirLight.enabled)
             result += CalcDirLight(dirLight, norm, viewDir, shininess);
 
-        // µã¹âÔ´
+        // ç‚¹å…‰æº
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
                 result += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir, shininess);
         }
         
-        // ·´Ïà
+        // åç›¸
         if (postProcessing == 1)
             fragColor = vec4(vec3(1.0f - objectColor * result), 1.0f);
-        // »Ò¶È
+        // ç°åº¦
         else if (postProcessing == 2) {
             fragColor = vec4(objectColor * result, 1.0f);
             float average = 0.2126 * fragColor.r + 0.7152 * fragColor.g + 0.0722 * fragColor.b;
             fragColor = vec4(average, average, average, 1.0);
         }
-        // ÎŞĞ§¹û
+        // æ— æ•ˆæœ
         else
             fragColor = vec4(objectColor * result, 1.0f);
-    } else {     // ºË´¦Àí
+    } else {     // æ ¸å¤„ç†
         float kernel[9];
-        // Èñ»¯
+        // é”åŒ–
         if (postProcessing == 3)
             kernel = float[](
                 -1, -1, -1,
                 -1,  9, -1,
                 -1, -1, -1
             );
-        // Ä£ºı
+        // æ¨¡ç³Š
         else if (postProcessing == 4)
             kernel = float[](
                 1.0 / 16, 2.0 / 16, 1.0 / 16,
                 2.0 / 16, 4.0 / 16, 2.0 / 16,
                 1.0 / 16, 2.0 / 16, 1.0 / 16  
             );
-        // ±ßÔµ
+        // è¾¹ç¼˜
         else if (postProcessing == 5)
             kernel = float[](
                 1,  1, 1,
@@ -126,11 +125,11 @@ void main() {
             );
 
         
-        // ¶¨Ïò¹â
+        // å®šå‘å…‰
         if (dirLight.enabled)
             result += CalcDirLightKernel(dirLight, norm, viewDir, shininess, kernel);
 
-        // µã¹âÔ´
+        // ç‚¹å…‰æº
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
                 result += CalcPointLightKernel(pointLights[i], norm, fs_in.fragPos, viewDir, shininess, kernel);
@@ -144,7 +143,7 @@ void main() {
         
 }
 
-// ¶¨Ïò¹â¼ÆËã
+// å®šå‘å…‰è®¡ç®—
 vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, float shininess) {
     vec3 lightDir = normalize(-light.direction);
 
@@ -166,21 +165,21 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, float shininess) {
     return ambient + (1.0f - shadow) * (diffuse + specular);
 }
 
-// ¶¨Ïò¹â¼ÓºË¼ÆËã
+// å®šå‘å…‰åŠ æ ¸è®¡ç®—
 vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float shininess, float kernel[9]) {
-    // ²ÉÑùÆ«ÒÆ
+    // é‡‡æ ·åç§»
     const float offset = 1.0 / 300.0;
     
     vec2 offsets[9] = vec2[](
-        vec2(-offset,  offset), // ×óÉÏ
-        vec2( 0.0f,    offset), // ÕıÉÏ
-        vec2( offset,  offset), // ÓÒÉÏ
-        vec2(-offset,  0.0f),   // ×ó
-        vec2( 0.0f,    0.0f),   // ÖĞ
-        vec2( offset,  0.0f),   // ÓÒ
-        vec2(-offset, -offset), // ×óÏÂ
-        vec2( 0.0f,   -offset), // ÕıÏÂ
-        vec2( offset, -offset)  // ÓÒÏÂ
+        vec2(-offset,  offset), // å·¦ä¸Š
+        vec2( 0.0f,    offset), // æ­£ä¸Š
+        vec2( offset,  offset), // å³ä¸Š
+        vec2(-offset,  0.0f),   // å·¦
+        vec2( 0.0f,    0.0f),   // ä¸­
+        vec2( offset,  0.0f),   // å³
+        vec2(-offset, -offset), // å·¦ä¸‹
+        vec2( 0.0f,   -offset), // æ­£ä¸‹
+        vec2( offset, -offset)  // å³ä¸‹
     );
 
     vec3 sampleTex[9];
@@ -209,7 +208,7 @@ vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float shininess
     return tempRes;
 }
 
-// µã¹âÔ´¼ÆËã
+// ç‚¹å…‰æºè®¡ç®—
 vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess) {
     vec3 lightDir = normalize(light.position - fragPos);
 
@@ -235,21 +234,21 @@ vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, flo
     return (ambient + diffuse + specular);
 }
 
-// µã¹âÔ´¼ÓºË¼ÆËã
+// ç‚¹å…‰æºåŠ æ ¸è®¡ç®—
 vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess, float kernel[9]) {
-    // ²ÉÑùÆ«ÒÆ
+    // é‡‡æ ·åç§»
     const float offset = 1.0 / 300.0;
     
     vec2 offsets[9] = vec2[](
-        vec2(-offset,  offset), // ×óÉÏ
-        vec2( 0.0f,    offset), // ÕıÉÏ
-        vec2( offset,  offset), // ÓÒÉÏ
-        vec2(-offset,  0.0f),   // ×ó
-        vec2( 0.0f,    0.0f),   // ÖĞ
-        vec2( offset,  0.0f),   // ÓÒ
-        vec2(-offset, -offset), // ×óÏÂ
-        vec2( 0.0f,   -offset), // ÕıÏÂ
-        vec2( offset, -offset)  // ÓÒÏÂ
+        vec2(-offset,  offset), // å·¦ä¸Š
+        vec2( 0.0f,    offset), // æ­£ä¸Š
+        vec2( offset,  offset), // å³ä¸Š
+        vec2(-offset,  0.0f),   // å·¦
+        vec2( 0.0f,    0.0f),   // ä¸­
+        vec2( offset,  0.0f),   // å³
+        vec2(-offset, -offset), // å·¦ä¸‹
+        vec2( 0.0f,   -offset), // æ­£ä¸‹
+        vec2( offset, -offset)  // å³ä¸‹
     );
 
     vec3 sampleTex[9];
@@ -283,22 +282,22 @@ vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDi
 }
 
 float CalcShadow(vec4 fragPosLightSpace) {
-    // Í¸ÊÓ·Ö¸î(½«²Ã¼ô¿Õ¼ä×ø±ê[-w,w]±ä»»³É[-1,1])
+    // é€è§†åˆ†å‰²(å°†è£å‰ªç©ºé—´åæ ‡[-w,w]å˜æ¢æˆ[-1,1])
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // ½«Éî¶ÈÖµ·¶Î§×ª»»ÖÁ[0, 1]
+    // å°†æ·±åº¦å€¼èŒƒå›´è½¬æ¢è‡³[0, 1]
     projCoords = projCoords * 0.5 + 0.5;
 
-    // »ñÈ¡µ±Ç°Æ¬ÔªµÄÉî¶ÈĞÅÏ¢£¬¾ÍÊÇzÖµ
+    // è·å–å½“å‰ç‰‡å…ƒçš„æ·±åº¦ä¿¡æ¯ï¼Œå°±æ˜¯zå€¼
     float currentDepth = projCoords.z;
-    // ÒõÓ°Æ«ÒÆ
+    // é˜´å½±åç§»
     float bias = biasValue;
 
     float shadow;
-    // PCFÈíÒõÓ°
+    // PCFè½¯é˜´å½±
     if (softShadow) {
         shadow = 0.0f;
         vec2 texelSize = 1.0f / textureSize(shadowMap, 0);
-        // ÒõÓ°ÌùÍ¼3x3·¶Î§ÄÚÈ¡Éî¶ÈĞÅÏ¢
+        // é˜´å½±è´´å›¾3x3èŒƒå›´å†…å–æ·±åº¦ä¿¡æ¯
         for(int x = -1; x <= 1; x++) {
             for(int y = -1; y <= 1; y++) {
                 float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x,y) * texelSize).r;
@@ -307,13 +306,13 @@ float CalcShadow(vec4 fragPosLightSpace) {
         }
         shadow /= 9.0f;
     } else {
-        // ´ÓÒõÓ°Í¼ÖĞ²É¼¯µ±Ç°Î»ÖÃµÄÉî¶ÈĞÅÏ¢(¸ÃĞÅÏ¢Îªµ±Ç°×ø±êÏÂµÄ×î½üÉî¶È)
+        // ä»é˜´å½±å›¾ä¸­é‡‡é›†å½“å‰ä½ç½®çš„æ·±åº¦ä¿¡æ¯(è¯¥ä¿¡æ¯ä¸ºå½“å‰åæ ‡ä¸‹çš„æœ€è¿‘æ·±åº¦)
         float closestDepth = texture(shadowMap, projCoords.xy).r; 
-        // µ±Ç°Æ¬ÔªµÄÉî¶ÈĞÅÏ¢´óÓÚÒõÓ°Í¼ÖĞµÄÉî¶ÈĞÅÏ¢(¼ÓÉÏÒ»¸öÆ«ÒÆÁ¿)Ê±£¬²úÉúÒõÓ°
+        // å½“å‰ç‰‡å…ƒçš„æ·±åº¦ä¿¡æ¯å¤§äºé˜´å½±å›¾ä¸­çš„æ·±åº¦ä¿¡æ¯(åŠ ä¸Šä¸€ä¸ªåç§»é‡)æ—¶ï¼Œäº§ç”Ÿé˜´å½±
         shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
     }
 
-    // ½â¾ö³¬³ö¹âÔ¶Æ½ÃæµÄ×ÅÉ«
+    // è§£å†³è¶…å‡ºå…‰è¿œå¹³é¢çš„ç€è‰²
     if(projCoords.z > 1.0)
         shadow = 0.0;
     return shadow;
