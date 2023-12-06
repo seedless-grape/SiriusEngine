@@ -4,16 +4,16 @@
 #include <fstream>
 #include <sstream>
 
-
 // 预加载
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Shader> ResourceManager::shaders;
 
 // 载入预设物体名
 std::vector<std::string> ResourceManager::presetsObjects = {
-
-	u8"小黄鸭"
-
+	u8"����", u8"������", u8"������", u8"��Ʒ��", u8"è����", u8"��ͷ����",
+	u8"����ľ��", u8"�մ�ƿA", u8"�մ�ƿB", u8"�մ�ƿC", u8"С��Ѽ", u8"��԰С����",
+	u8"�����", u8"ľ����", u8"����", u8"����", u8"����", u8"ľ��", u8"����",
+	u8"ƻ��", u8"�����", u8"����", u8"���", u8"����", u8"���"
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
@@ -110,7 +110,6 @@ std::string ResourceManager::getSourceCodeFromPath(const char* shaderPath,
 
 	return shaderCode;
 }
-
 
 Texture ResourceManager::loadTextureFromFile(const char* file) {
 	// 创建纹理对象

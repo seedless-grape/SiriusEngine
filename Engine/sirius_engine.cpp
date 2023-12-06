@@ -53,17 +53,16 @@ SiriusEngine::~SiriusEngine() {
 }
 
 void SiriusEngine::init() {
+    // Ԥ���ز��ʡ���ɫ��
+    LoadPresets::preLoadShaderTexture();
 
-    LoadPresets::preLoad();
+    // ģ����ģ����Ӱ��Ⱦ
+    LoadPresets::preLoadModel(sceneObjects);
 
-    Object* objectModel;
-    objectModel = LoadPresets::loadModel(duck_model, u8"小黄鸭");
-
-    sceneObjects.push_back(objectModel);
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
-
+    // ��պ�����Դ������Ⱦ
     skybox = LoadPresets::loadSkybox();
     skyboxRenderer = new SkyboxRenderer(ResourceManager::getShader("skybox"));
 
@@ -72,23 +71,29 @@ void SiriusEngine::init() {
     // 点光源
     PointLight* pointLight;
     pointLight = LoadPresets::loadPointLight();
+    pointLight->position = glm::vec3(0.370f, 0.295f, -11.920f);
     scenePointLights.push_back(pointLight);
 
+    // 定向光
+    dirLight.direction = glm::vec3(-0.540f, -1.225f, -1.000f);
+    dirLight.ambient = glm::vec3(0.1f);
+    dirLight.diffuse = glm::vec3(0.6f);
 
     // 选中物体
     currentSelectedObjectIndex = sceneObjects.size() ? 0 : -1;
 
     // 选中点光源
     currentSelectedPointLightIndex = scenePointLights.size() ? 0 : -1;
-
-    // �����
+  
+    // 抗锯齿
     msaa = new MSAA();
     msaa->turnON(this->width, this->height);
 
     // HDR
     hdr = new HDR();
     hdr->turnON(this->width, this->height);
-  
+
+    // 阴影
     shadow = new Shadow();
 
     // gui
@@ -101,10 +106,9 @@ void SiriusEngine::render() {
 
     // 投影变换矩阵
     glm::mat4 projectionMatrix = camera.getProjectionMatrix(static_cast<float>(this->width),
-
+                                                            static_cast<float>(this->height));
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
-
 
     // 更新渲染管线
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
@@ -125,11 +129,12 @@ void SiriusEngine::render() {
     if (isMSAAOn)
         msaa->configureMSAASceenSetup();
 
+    // HDR֡��Ļ����ռ�����
     if (isHDROn)
         hdr->configureHDRSceenSetup();
-                                                            
-    skybox->draw(*skyboxRenderer, nullptr, false, this->isGammaOn);
 
+    // ��պл���
+    skybox->draw(*skyboxRenderer, nullptr, false, this->isGammaOn);
 
     // 光源方块绘制
     for (unsigned int i = 0; i < scenePointLights.size(); i++) {
@@ -153,7 +158,7 @@ void SiriusEngine::render() {
             modelRenderer->objectShader.setBool("softShadow", true);
         else
             modelRenderer->objectShader.setBool("softShadow", false);
-
+      
         // �����޳��Ż�
         if (shadow->isCull) {
             glEnable(GL_CULL_FACE);
@@ -167,7 +172,7 @@ void SiriusEngine::render() {
 		glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
         shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
         modelRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
-
+      
         // ����Ӱ������
         shadow->bindShadowFBO();
 
@@ -293,7 +298,6 @@ void SiriusEngine::configureRenderSetup() {
         glEnable(GL_STENCIL_TEST);
     else
         glDisable(GL_STENCIL_TEST);
-
     // �����
     if (isMSAAOn && !msaa->enable)
         msaa->turnON(width, height);

@@ -4,7 +4,6 @@
 #include "Library/stb_image.h"
 #include "resource_manager.h"
 
-
 #include <iostream>
 
 Model::Model(std::string name, std::string const& path, bool gamma) :
@@ -30,35 +29,34 @@ void Model::shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordin
 		mesh.shadowModelDraw(renderer.objectShader, shadow);
 }
 
-
 void Model::loadModel(std::string const& path) {
-	// 加载场景对象——Assimp数据结构的根对象
+	// åŠ è½½åœºæ™¯å¯¹è±¡â€”â€”Assimpæ•°æ®ç»“æž„çš„æ ¹å¯¹è±¡
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate
 											 | aiProcess_FlipUVs
 											 | aiProcess_CalcTangentSpace);
 
-	// 如果加载的场景对象根结点为空或返回的数据不完整(mflags)
+	// å¦‚æžœåŠ è½½çš„åœºæ™¯å¯¹è±¡æ ¹ç»“ç‚¹ä¸ºç©ºæˆ–è¿”å›žçš„æ•°æ®ä¸å®Œæ•´(mflags)
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 		return;
 	}
 
-	// 记录模型文件路径
+	// è®°å½•æ¨¡åž‹æ–‡ä»¶è·¯å¾„
 	directory = path.substr(0, path.find_last_of('/'));
 
-	// 递归处理结点
+	// é€’å½’å¤„ç†ç»“ç‚¹
 	processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
-	// 处理结点中的所有网格
+	// å¤„ç†ç»“ç‚¹ä¸­çš„æ‰€æœ‰ç½‘æ ¼
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.push_back(processMesh(mesh, scene));
 	}
 
-	// 递归子结点
+	// é€’å½’å­ç»“ç‚¹
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
 		processNode(node->mChildren[i], scene);
 	}
@@ -70,18 +68,18 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 	std::vector<Texture> textures;
 
-	// 处理顶点、法线和纹理
+	// å¤„ç†é¡¶ç‚¹ã€æ³•çº¿å’Œçº¹ç†
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
 
-		// 处理顶点位置
+		// å¤„ç†é¡¶ç‚¹ä½ç½®
 		glm::vec3 meshVector;
 		meshVector.x = mesh->mVertices[i].x;
 		meshVector.y = mesh->mVertices[i].y;
 		meshVector.z = mesh->mVertices[i].z;
 		vertex.position = meshVector;
 
-		// 处理法线方向
+		// å¤„ç†æ³•çº¿æ–¹å‘
 		if (mesh->HasNormals()) {
 			glm::vec3 meshNormal;
 			meshNormal.x = mesh->mNormals[i].x;
@@ -90,22 +88,21 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			vertex.normal = meshNormal;
 		}
 
-		// 处理纹理映射(只使用第一组纹理坐标)
-		if (mesh->mTextureCoords[0]) { // 确认当前网格有纹理
-			// 纹理坐标
+		// å¤„ç†çº¹ç†æ˜ å°„(åªä½¿ç”¨ç¬¬ä¸€ç»„çº¹ç†åæ ‡)
+		if (mesh->mTextureCoords[0]) { // ç¡®è®¤å½“å‰ç½‘æ ¼æœ‰çº¹ç†
+			// çº¹ç†åæ ‡
 			glm::vec2 meshTexCoord;
 			meshTexCoord.x = mesh->mTextureCoords[0][i].x;
 			meshTexCoord.y = mesh->mTextureCoords[0][i].y;
 			vertex.texCoords = meshTexCoord;
 
-			// 切线方向
 			glm::vec3 meshTangent;
 			meshTangent.x = mesh->mTangents[i].x;
 			meshTangent.y = mesh->mTangents[i].y;
 			meshTangent.z = mesh->mTangents[i].z;
 			vertex.tangent = meshTangent;
 
-			// 副切线方向(法线叉乘切线)
+			// å‰¯åˆ‡çº¿æ–¹å‘(æ³•çº¿å‰ä¹˜åˆ‡çº¿)
 			glm::vec3 meshBitangent;
 			meshBitangent.x = mesh->mBitangents[i].x;
 			meshBitangent.y = mesh->mBitangents[i].y;
@@ -118,21 +115,21 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		vertices.push_back(vertex);
 	}
 
-	// 处理构成三角形的顶点(以三个顶点索引为单位构建一个三角形)
+	// å¤„ç†æž„æˆä¸‰è§’å½¢çš„é¡¶ç‚¹(ä»¥ä¸‰ä¸ªé¡¶ç‚¹ç´¢å¼•ä¸ºå•ä½æž„å»ºä¸€ä¸ªä¸‰è§’å½¢)
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
-		// 一般face.mNumIndices都是3，对应构成一个三角形的三个顶点
+		// ä¸€èˆ¬face.mNumIndiceséƒ½æ˜¯3ï¼Œå¯¹åº”æž„æˆä¸€ä¸ªä¸‰è§’å½¢çš„ä¸‰ä¸ªé¡¶ç‚¹
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
 
-	// 处理材质
-	if (mesh->mMaterialIndex >= 0) { // 如果模型包含材质包
-		// 从材质仓库中读出mesh对应的材质
+	// å¤„ç†æè´¨
+	if (mesh->mMaterialIndex >= 0) { // å¦‚æžœæ¨¡åž‹åŒ…å«æè´¨åŒ…
+		// ä»Žæè´¨ä»“åº“ä¸­è¯»å‡ºmeshå¯¹åº”çš„æè´¨
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 
-		// 读取漫反射材质贴图
+		// è¯»å–æ¼«åå°„æè´¨è´´å›¾
 		std::vector<Texture> diffuseMaps =
 
 			loadMaterialTextures(material, aiTextureType_DIFFUSE,
@@ -140,30 +137,27 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 
-		// 读取镜面反射材质贴图
+		// è¯»å–é•œé¢åå°„æè´¨è´´å›¾
 		std::vector<Texture> specularMaps =
 
 			loadMaterialTextures(material, aiTextureType_SPECULAR,
 								 "textureSpecular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-
-		// 读取法线贴图
+		// ¶ÁÈ¡·¨ÏßÌùÍ¼
 		std::vector<Texture> normalMaps =
 
 			loadMaterialTextures(material, aiTextureType_HEIGHT,
 								 "textureNormal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-
-		// 读取顶点位移贴图
+    
+		// ¶ÁÈ¡´Ö²Ú¶ÈÌùÍ¼
 		std::vector<Texture> heightMaps =
-
-			loadMaterialTextures(material, aiTextureType_AMBIENT,
-								 "textureHeight");
+			loadMaterialTextures(material, aiTextureType_SHININESS,
+								 "textureRough");
 	}
 
-	// 将上面处理的信息用于构建model的mesh
+	// å°†ä¸Šé¢å¤„ç†çš„ä¿¡æ¯ç”¨äºŽæž„å»ºmodelçš„mesh
 	return Mesh(vertices, indices, textures);
 }
 
@@ -177,22 +171,21 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
 		aiString str;
 		mat->GetTexture(type, i, &str);
 
-		// 检查该模型是否已经加载过了
+		// æ£€æŸ¥è¯¥æ¨¡åž‹æ˜¯å¦å·²ç»åŠ è½½è¿‡äº†
 		bool hasLoaded = false;
 
-		// 遍历已加载模型数组，若检测到已经加载过，则直接加入避免重复加载
+		// ±éÀúÒÑ¼ÓÔØÄ£ÐÍÊý×é£¬Èô¼ì²âµ½ÒÑ¾­¼ÓÔØ¹ý£¬ÔòÖ±½Ó¼ÓÈë±ÜÃâÖØ¸´¼ÓÔØ
 		if (ResourceManager::hasTexture(str.C_Str())) {
 			textures.push_back(ResourceManager::getTexture(str.C_Str()));
 			hasLoaded = true;
-
 		}
 
-		// 如果该模型没有被加载过，则加载
+		// å¦‚æžœè¯¥æ¨¡åž‹æ²¡æœ‰è¢«åŠ è½½è¿‡ï¼Œåˆ™åŠ è½½
 		if (!hasLoaded) {
 
 			Texture tex;
 			tex = ResourceManager::loadTexture((directory + '/' + str.C_Str()).c_str(), str.C_Str());
-
+      
 			tex.type = typeName;
 			tex.path = str.C_Str();
 			textures.push_back(tex);
@@ -204,10 +197,10 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat,
 ModelRenderer::ModelRenderer(const Shader& shader) : Renderer(shader) {}
 
 void ModelRenderer::render(const Object& object, bool drawCoordinate, bool gamma) {
-	// model�任
+	// model±ä»»
 	glm::mat4 modelMatrix;
 
-	// �������
+	// ×ø±ê»æÖÆ
 	if (object.selected && drawCoordinate) {
 		this->coordinateShader.use();
 		modelMatrix = glm::mat4(1.0f);

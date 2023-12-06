@@ -16,78 +16,75 @@
 #include "Core/light.h"
 #include "Assets/model.h"
 
-// ºóÆÚÌØĞ§
+// åæœŸç‰¹æ•ˆ
 enum PostProcessing;
 
-// ºóÆÚÌØĞ§
-enum PostProcessing;
-
-// ÒıÇæÀà
+// å¼•æ“ç±»
 class SiriusEngine {
 public:
 	unsigned int width, height;
 	GLFWwindow* window;
 
-	std::vector<Object*> sceneObjects;			// ÏÖÓĞÎïÌå±í
-	std::vector<PointLight*> scenePointLights;	// ÏÖÓĞµã¹âÔ´±í
-	Object* skybox;								// Ìì¿ÕºĞ
-	Shadow* shadow;								// ÒõÓ°
+	std::vector<Object*> sceneObjects;			// ç°æœ‰ç‰©ä½“è¡¨
+	std::vector<PointLight*> scenePointLights;	// ç°æœ‰ç‚¹å…‰æºè¡¨
+	Object* skybox;								// å¤©ç©ºç›’
+	Shadow* shadow;								// é˜´å½±
 
 	Camera camera;
 	DirLight dirLight;
 
-	int currentSelectedObjectIndex;		// µ±Ç°Ñ¡ÖĞÎïÌåË÷Òı
-	int currentAddObjectIndex;			// µ±Ç°Ìí¼ÓÎïÌåË÷Òı
-	int currentSelectedPointLightIndex;	// µ±Ç°Ñ¡ÖĞµã¹âÔ´Ë÷Òı
+	int currentSelectedObjectIndex;		// å½“å‰é€‰ä¸­ç‰©ä½“ç´¢å¼•
+	int currentAddObjectIndex;			// å½“å‰æ·»åŠ ç‰©ä½“ç´¢å¼•
+	int currentSelectedPointLightIndex;	// å½“å‰é€‰ä¸­ç‚¹å…‰æºç´¢å¼•
 
 	bool keysPressed[1024];
 	bool keysProcessed[1024];
 
-	// ×´Ì¬»ú
-	bool isDepthTestOn;				// Éî¶È²âÊÔ
-	bool isStencilTestOn;			// Ä£°å²âÊÔ
-	bool isFaceCullingOn;			// ±³ÃæÌŞ³ı
-	bool isMouseControlOn;			// Êó±êÒÆ¶¯
-	bool isScrollControlOn;			// ¹öÂÖ²Ù×÷
-	bool isFreeLookingModeOn;		// ×ÔÓÉÊÓ½Ç
-	bool isObjectRotationModeOn;	// ¾µÍ·Ğı×ª
-	bool isObjectCoordinateShown;	// Õ¹Ê¾ÎïÌå×ø±ê
-	bool isMSAAOn;					// MSAA¿¹¾â³İ
-	bool isGammaOn;					// Gamma½ÃÕı
-	bool isHDROn;					// HDR¹â¶È¸ÄÉÆ
+	// çŠ¶æ€æœº
+	bool isDepthTestOn;				// æ·±åº¦æµ‹è¯•
+	bool isStencilTestOn;			// æ¨¡æ¿æµ‹è¯•
+	bool isFaceCullingOn;			// èƒŒé¢å‰”é™¤
+	bool isMouseControlOn;			// é¼ æ ‡ç§»åŠ¨
+	bool isScrollControlOn;			// æ»šè½®æ“ä½œ
+	bool isFreeLookingModeOn;		// è‡ªç”±è§†è§’
+	bool isObjectRotationModeOn;	// é•œå¤´æ—‹è½¬
+	bool isObjectCoordinateShown;	// å±•ç¤ºç‰©ä½“åæ ‡
+	bool isMSAAOn;					// MSAAæŠ—é”¯é½¿
+	bool isGammaOn;					// GammaçŸ«æ­£
+	bool isHDROn;					// HDRå…‰åº¦æ”¹å–„
 
-	int postProcessing;	// ºóÆÚÌØĞ§
+	int postProcessing;	// åæœŸç‰¹æ•ˆ
 
-	glm::vec3 clearColor;	// ÆÁÄ»±³¾°ÑÕÉ«
+	glm::vec3 clearColor;	// å±å¹•èƒŒæ™¯é¢œè‰²
 
 public:
-	// ¹¹Ôìº¯Êı
+	// æ„é€ å‡½æ•°
 	SiriusEngine(GLFWwindow* _window, unsigned int _width,
 				 unsigned int _height);
 
-	// Îö¹¹º¯Êı
+	// ææ„å‡½æ•°
 	~SiriusEngine();
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	void init();
 
-	// ´¦ÀíÍâÉèÊäÈë
+	// å¤„ç†å¤–è®¾è¾“å…¥
 	void processKeyboardInput(float key);
 
 	void processMouseInput(float xoffset, float yoffset);
 
 	void processScrollInput(float offset);
 
-	// ¸üĞÂÑ¡ÖĞÎïÌå
+	// æ›´æ–°é€‰ä¸­ç‰©ä½“
 	void updateSelected(float key);
 
 	void render();
 
-	// ¸üĞÂÆÁÄ»·Ö±æÂÊ
+	// æ›´æ–°å±å¹•åˆ†è¾¨ç‡
 	void updateSceen();
 
 private:
-	// ÅäÖÃäÖÈ¾
+	// é…ç½®æ¸²æŸ“
 	void configureRenderSetup();
 };
 

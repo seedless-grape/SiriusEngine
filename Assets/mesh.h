@@ -4,7 +4,6 @@
 
 /* 网格模型 */
 
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -15,7 +14,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-
 #include "Core/shader.h"
 #include "Core/texture.h"
 
@@ -25,8 +23,6 @@
 // 影响顶点的最大骨骼数
 #define MAX_BONE_INFLUENCE 4
 
-
-
 // 顶点属性结构体
 struct Vertex {
 	glm::vec3 position; // 位置坐标
@@ -34,11 +30,6 @@ struct Vertex {
 	glm::vec2 texCoords; // 纹理坐标
 	glm::vec3 tangent; // 切线方向
 	glm::vec3 bitangent; // 副切线方向
-
-	int mBoneIDs[MAX_BONE_INFLUENCE]; // 影响该顶点的骨骼索引
-	float mWeights[MAX_BONE_INFLUENCE]; // 影响该顶点的骨骼影响权重
-};
-
 
 class Shadow;
 
@@ -56,7 +47,6 @@ public:
 		 std::vector<unsigned int> _indices,
 
 		 std::vector<Texture> _textures);
-
 
 	// �������
 	void draw(Shader& shader, Shadow* shadow);

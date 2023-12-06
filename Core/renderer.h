@@ -27,9 +27,10 @@ public:
 
 	virtual ~Renderer() = default;
 
-
 	// 渲染
 	virtual void render(const Object& object, bool drawCoordinate = true, bool gamma = false) = 0;
+
+	virtual void render(const PointLight& pointLight, bool gamma = false);
 
 
 	virtual void render(const PointLight& pointLight, bool gamma = false);
@@ -42,8 +43,6 @@ public:
 public:
 	// 后期特效
 	int postProcessing;
-
-
 	Shader objectShader;
 
 protected:

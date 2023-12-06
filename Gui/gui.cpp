@@ -13,7 +13,7 @@
 #include <iostream>
 #include <sstream>
 
-// ³£Á¿
+// å¸¸é‡
 const char* IMGUI_FONT_FAMILY = "Resources/fonts/SimHei.ttf";
 const float IMGUI_FONT_SIZE = 16.0f;
 
@@ -29,7 +29,7 @@ const float IMGUI_DRAG_SPEED_SUPER_FAST = 1.0f;
 const ImVec2 IMGUI_ITEM_SPACING = ImVec2(8.0f, 8.0f);
 const ImVec2 IMGUI_INFO_VIEW_SIZE = ImVec2(200.0f, 58.0f);
 
-// Ç°ÏòÉùÃ÷
+// å‰å‘å£°æ˜
 float ImGuiGetItemWidth();
 void HelpMarker(const char* desc);
 
@@ -54,12 +54,12 @@ GUI::~GUI() {
 void GUI::initStyle() {
     ImGuiIO& io = ImGui::GetIO();
 
-    // ×ÖÌå
+    // å­—ä½“
     const float dpi = 2.0f;
     ImGui::GetIO().FontGlobalScale = 1 / dpi;
     ImGui::GetIO().Fonts->AddFontFromFileTTF(IMGUI_FONT_FAMILY, IMGUI_FONT_SIZE * dpi, nullptr, ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
 
-    // ²Ëµ¥À¸ÑùÊ½
+    // èœå•æ æ ·å¼
     ImGui::GetStyle().FrameRounding = IMGUI_FRAME_CORNER_SIZE;
     ImGui::GetStyle().ItemSpacing = IMGUI_ITEM_SPACING;
 }
@@ -80,21 +80,21 @@ void GUI::render() {
 
 void GUI::renderSceneInspector() {
     ImGui::SetNextWindowBgAlpha(imguiWindowBgAlpha);
-    ImGui::Begin(u8"Ö÷²Ëµ¥");
+    ImGui::Begin(u8"ä¸»èœå•");
     {
-        // ÎïÌåÉèÖÃ²Ëµ¥
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // ÎïÌåÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«begin
-        if (ImGui::CollapsingHeader(u8"ÎïÌåÉèÖÃ", ImGuiTreeNodeFlags_DefaultOpen)) {
+        // ç‰©ä½“è®¾ç½®èœå•
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // ç‰©ä½“è®¾ç½®é€‰é¡¹æ çš„é¢œè‰²begin
+        if (ImGui::CollapsingHeader(u8"ç‰©ä½“è®¾ç½®", ImGuiTreeNodeFlags_DefaultOpen)) {
           
-            ImGui::PushID(u8"ÎïÌåÉèÖÃ");
+            ImGui::PushID(u8"ç‰©ä½“è®¾ç½®");
 
-            // µ±Ç°Ñ¡ÖĞµÄÎïÌå
+            // å½“å‰é€‰ä¸­çš„ç‰©ä½“
             int& selectIndex = siriusEngine.currentSelectedObjectIndex;
 
             if (selectIndex >= 0) {
                 Object* currentObject = siriusEngine.sceneObjects[selectIndex];
 
-                // µ±Ç°Ñ¡ÖĞÎïÌåÑ¡Ôñ¿ò
+                // å½“å‰é€‰ä¸­ç‰©ä½“é€‰æ‹©æ¡†
                 ImGui::PushItemWidth(ImGui::GetWindowSize().x - 100.0f);
                 std::stringstream ss;
                 ss << selectIndex + 1 << ". " << currentObject->name;
@@ -113,36 +113,36 @@ void GUI::renderSceneInspector() {
 
                 ImGui::SameLine();
 
-                // ÊÇ·ñÏÔÊ¾ÎïÌå
+                // æ˜¯å¦æ˜¾ç¤ºç‰©ä½“
                 ImGui::Checkbox("##enableObject", &currentObject->enabled);
 
                 ImGui::SameLine();
 
-                // ÖØÖÃÎïÌå
-                if (ImGui::Button(u8"ÖØÖÃ")) {
+                // é‡ç½®ç‰©ä½“
+                if (ImGui::Button(u8"é‡ç½®")) {
                     currentObject->reset();
                 }
 
                 ImGui::Separator();
 
-                // ×´Ì¬ÊıÖµ
-                ImGui::DragFloat3(u8"Î»ÖÃ", glm::value_ptr(currentObject->position), IMGUI_DRAG_SPEED_SLOW, 0.0f, 0.0f, "%.3f");
-                ImGui::DragFloat3(u8"Ğı×ª", glm::value_ptr(currentObject->rotation), IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.2f");
-                ImGui::DragFloat3(u8"Ëõ·Å", glm::value_ptr(currentObject->scale), IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
-                ImGui::ColorEdit3(u8"ÑÕÉ«", glm::value_ptr(currentObject->color));
+                // çŠ¶æ€æ•°å€¼
+                ImGui::DragFloat3(u8"ä½ç½®", glm::value_ptr(currentObject->position), IMGUI_DRAG_SPEED_SLOW, 0.0f, 0.0f, "%.3f");
+                ImGui::DragFloat3(u8"æ—‹è½¬", glm::value_ptr(currentObject->rotation), IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.2f");
+                ImGui::DragFloat3(u8"ç¼©æ”¾", glm::value_ptr(currentObject->scale), IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
+                ImGui::ColorEdit3(u8"é¢œè‰²", glm::value_ptr(currentObject->color));
                 
-                // ÊÇ·ñÏÔÊ¾×ø±êÖá
-                ImGui::Checkbox(u8"×ø±êÖá", &siriusEngine.isObjectCoordinateShown);
+                // æ˜¯å¦æ˜¾ç¤ºåæ ‡è½´
+                ImGui::Checkbox(u8"åæ ‡è½´", &siriusEngine.isObjectCoordinateShown);
 
                 ImGui::SameLine();
 
-                // É¾³ıµ±Ç°ÎïÌå
+                // åˆ é™¤å½“å‰ç‰©ä½“
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.44f, 0.17f, 0.17f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.70f, 0.27f, 0.27f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.85f, 0.31f, 0.31f, 1.0f));
                 ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 80.0f, ImGui::GetCursorPos().y));
 
-                if (ImGui::Button(u8"É¾³ıÎïÌå", ImVec2(80.0f, 0.0f))) {
+                if (ImGui::Button(u8"åˆ é™¤ç‰©ä½“", ImVec2(80.0f, 0.0f))) {
                     if (selectIndex >= 0) {
                         delete siriusEngine.sceneObjects[selectIndex];
                         siriusEngine.sceneObjects.erase(siriusEngine.sceneObjects.begin() + selectIndex);
@@ -155,7 +155,7 @@ void GUI::renderSceneInspector() {
 
             ImGui::Separator();
 
-            // Ìí¼ÓÖ¸¶¨ÎïÌå
+            // æ·»åŠ æŒ‡å®šç‰©ä½“
             int& addIndex = siriusEngine.currentAddObjectIndex;
             ImGui::PushItemWidth(ImGui::GetWindowSize().x - 120.0f);
             if (ImGui::BeginCombo("##presetsObjectCombo", ResourceManager::presetsObjects[addIndex].c_str())) {
@@ -172,93 +172,94 @@ void GUI::renderSceneInspector() {
             ImGui::SameLine();
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 80.0f, ImGui::GetCursorPos().y));
-            if (ImGui::Button(u8"Ìí¼ÓÎïÌå", ImVec2(80.0f, 0.0f))) {
+            if (ImGui::Button(u8"æ·»åŠ ç‰©ä½“", ImVec2(80.0f, 0.0f))) {
                 Object* obj = LoadPresets::loadModel((modelType)addIndex, ResourceManager::presetsObjects[addIndex]);
+                obj->position = siriusEngine.camera.position + glm::normalize(siriusEngine.camera.front);
                 siriusEngine.sceneObjects.push_back(obj);
                 siriusEngine.currentSelectedObjectIndex = siriusEngine.sceneObjects.size() - 1;
             }
 
             ImGui::PopID();
         }
-        ImGui::PopStyleColor(1);    // ÎïÌåÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«end
+        ImGui::PopStyleColor(1);    // ç‰©ä½“è®¾ç½®é€‰é¡¹æ çš„é¢œè‰²end
 
-        // Ïà»úÉèÖÃÑ¡ÏîÀ¸
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // Ïà»úÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«begin
-        if (ImGui::CollapsingHeader(u8"Ïà»úÉèÖÃ", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::PushID(u8"Ïà»úÉèÖÃ");
+        // ç›¸æœºè®¾ç½®é€‰é¡¹æ 
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // ç›¸æœºè®¾ç½®é€‰é¡¹æ çš„é¢œè‰²begin
+        if (ImGui::CollapsingHeader(u8"ç›¸æœºè®¾ç½®", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::PushID(u8"ç›¸æœºè®¾ç½®");
 
-            // Ïà»ú×´Ì¬ÊıÖµ
-            ImGui::DragFloat3(u8"Î»ÖÃ", glm::value_ptr(siriusEngine.camera.position), IMGUI_DRAG_SPEED_SLOW);
+            // ç›¸æœºçŠ¶æ€æ•°å€¼
+            ImGui::DragFloat3(u8"ä½ç½®", glm::value_ptr(siriusEngine.camera.position), IMGUI_DRAG_SPEED_SLOW);
             ImGui::PushItemWidth(ImGuiGetItemWidth());
-            ImGui::DragFloat(u8"Æ«º½½Ç", &siriusEngine.camera.yaw, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
+            ImGui::DragFloat(u8"åèˆªè§’", &siriusEngine.camera.yaw, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
             ImGui::SameLine();
-            ImGui::DragFloat(u8"¸©Ñö½Ç", &siriusEngine.camera.pitch, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
+            ImGui::DragFloat(u8"ä¿¯ä»°è§’", &siriusEngine.camera.pitch, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
             ImGui::PopItemWidth();
 
-            ImGui::Text(u8"Ïà»úÇ°³¯Ïò: (%.3f, %.3f, %.3f)",
+            ImGui::Text(u8"ç›¸æœºå‰æœå‘: (%.3f, %.3f, %.3f)",
                         siriusEngine.camera.front.x, siriusEngine.camera.front.y,
                         siriusEngine.camera.front.z);
 
-            // ÊÓÍ¼×´Ì¬ÊıÖµ
+            // è§†å›¾çŠ¶æ€æ•°å€¼
             ImGui::Separator();
 
             if (siriusEngine.camera.projectionType == PERSPECTIVE) {
-                ImGui::SliderFloat(u8"ÊÓ³¡½Ç", &siriusEngine.camera.zoom, ZOOM_MIN, ZOOM_MAX, "%.1f");
+                ImGui::SliderFloat(u8"è§†åœºè§’", &siriusEngine.camera.zoom, ZOOM_MIN, ZOOM_MAX, "%.1f");
             } else {
-                ImGui::SliderFloat(u8"ÊÓÒ°·¶Î§", &siriusEngine.camera.ortho, ORTHO_MIN, ORTHO_MAX, "%.2f");
+                ImGui::SliderFloat(u8"è§†é‡èŒƒå›´", &siriusEngine.camera.ortho, ORTHO_MIN, ORTHO_MAX, "%.2f");
             }
 
             ImGui::PushItemWidth(ImGuiGetItemWidth());
-            ImGui::DragFloat(u8"½üÆ½Ãæ", &siriusEngine.camera.near, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
+            ImGui::DragFloat(u8"è¿‘å¹³é¢", &siriusEngine.camera.near, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
             ImGui::SameLine();
-            ImGui::DragFloat(u8"½üÆ½Ãæ", &siriusEngine.camera.far, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
+            ImGui::DragFloat(u8"è¿‘å¹³é¢", &siriusEngine.camera.far, IMGUI_DRAG_SPEED_FAST, 0.0f, 0.0f, "%.1f");
             ImGui::PopItemWidth();
             ImGui::SameLine();
-            HelpMarker(u8"½ü / Ô¶Æ½Ãæ");
+            HelpMarker(u8"è¿‘ / è¿œå¹³é¢");
 
-            ImGui::RadioButton(u8"Í¸ÊÓ", (int*)&siriusEngine.camera.projectionType, 0);
+            ImGui::RadioButton(u8"é€è§†", (int*)&siriusEngine.camera.projectionType, 0);
             ImGui::SameLine();
-            ImGui::RadioButton(u8"Õı½»", (int*)&siriusEngine.camera.projectionType, 1);
+            ImGui::RadioButton(u8"æ­£äº¤", (int*)&siriusEngine.camera.projectionType, 1);
 
             ImGui::Separator();
 
-            // ¿ØÖÆ×´Ì¬ÊıÖµ
+            // æ§åˆ¶çŠ¶æ€æ•°å€¼
             ImGui::PushItemWidth(ImGuiGetItemWidth());
-            ImGui::DragFloat(u8"Ïà»úËÙ¶È", &siriusEngine.camera.movementSpeed, IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
+            ImGui::DragFloat(u8"ç›¸æœºé€Ÿåº¦", &siriusEngine.camera.movementSpeed, IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
             ImGui::SameLine();
-            ImGui::DragFloat(u8"Êó±êÁéÃô¶È", &siriusEngine.camera.mouseSensitivity, IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
+            ImGui::DragFloat(u8"é¼ æ ‡çµæ•åº¦", &siriusEngine.camera.mouseSensitivity, IMGUI_DRAG_SPEED_MEDIUM, 0.0f, 0.0f, "%.2f");
             ImGui::PopItemWidth();
 
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f - 50.0f, ImGui::GetCursorPos().y));
-            if (ImGui::Button(u8"ÖØÖÃÏà»ú×´Ì¬")) {
+            if (ImGui::Button(u8"é‡ç½®ç›¸æœºçŠ¶æ€")) {
                 siriusEngine.camera.reset();
             }
 
             ImGui::PopID();
         }
-        ImGui::PopStyleColor(1);    // Ïà»úÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«end
+        ImGui::PopStyleColor(1);    // ç›¸æœºè®¾ç½®é€‰é¡¹æ çš„é¢œè‰²end
 
-        // ¹âÕÕÉèÖÃÑ¡ÏîÀ¸
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // ¹âÕÕÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«begin
-        if (ImGui::CollapsingHeader(u8"¹âÕÕÉèÖÃ", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::PushID(u8"¹âÕÕÉèÖÃ");
+        // å…‰ç…§è®¾ç½®é€‰é¡¹æ 
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));  // å…‰ç…§è®¾ç½®é€‰é¡¹æ çš„é¢œè‰²begin
+        if (ImGui::CollapsingHeader(u8"å…‰ç…§è®¾ç½®", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::PushID(u8"å…‰ç…§è®¾ç½®");
 
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-			if (ImGui::BeginTabBar(u8"¹âÕÕÑùÊ½Ìõ", tab_bar_flags)) {
+			if (ImGui::BeginTabBar(u8"å…‰ç…§æ ·å¼æ¡", tab_bar_flags)) {
 				int& selectIndex = siriusEngine.currentSelectedPointLightIndex;
 				if (selectIndex >= 0) {
                     PointLight* currentPointLight = siriusEngine.scenePointLights[selectIndex];
 					
-                    // µ±Ç°Ñ¡ÖĞµã¹âÔ´Ñ¡Ôñ¿ò
-                    if (ImGui::BeginTabItem(u8"µã¹âÔ´")) {
+                    // å½“å‰é€‰ä¸­ç‚¹å…‰æºé€‰æ‹©æ¡†
+                    if (ImGui::BeginTabItem(u8"ç‚¹å…‰æº")) {
 						ImGui::PushItemWidth(ImGui::GetWindowSize().x - 100.0f);
 						std::stringstream ss;
-						ss << selectIndex + 1 << u8". µã¹âÔ´";
+						ss << selectIndex + 1 << u8". ç‚¹å…‰æº";
 						if (ImGui::BeginCombo("##scenePointLightsCombo", ss.str().c_str())) {
 							for (unsigned int i = 0; i < siriusEngine.scenePointLights.size(); ++i) {
 								bool selected = (i == siriusEngine.currentSelectedPointLightIndex);
 								std::stringstream ss;
-								ss << i + 1 << u8". µã¹âÔ´";
+								ss << i + 1 << u8". ç‚¹å…‰æº";
 								if (ImGui::Selectable(ss.str().c_str(), selected)) {
 									siriusEngine.currentSelectedPointLightIndex = i;
 								}
@@ -270,13 +271,13 @@ void GUI::renderSceneInspector() {
 						ImGui::SameLine();
 						ImGui::Checkbox("##enablePointLight", &currentPointLight->enabled);
 						ImGui::SameLine();
-						if (ImGui::Button(u8"ÖØÖÃ")) {
+						if (ImGui::Button(u8"é‡ç½®")) {
 							currentPointLight->reset();
 						}
 
-                        // Ìí¼Óµã¹âÔ´
+                        // æ·»åŠ ç‚¹å…‰æº
                         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f - 120.0f, ImGui::GetCursorPos().y));
-                        if (ImGui::Button(u8"Ìí¼Óµã¹âÔ´", ImVec2(100.0f, 0.0f))) {
+                        if (ImGui::Button(u8"æ·»åŠ ç‚¹å…‰æº", ImVec2(100.0f, 0.0f))) {
                             PointLight* light = LoadPresets::loadPointLight();
                             siriusEngine.scenePointLights.push_back(light);
                             siriusEngine.currentSelectedPointLightIndex = siriusEngine.scenePointLights.size() - 1;
@@ -284,13 +285,13 @@ void GUI::renderSceneInspector() {
 
                         ImGui::SameLine();
 
-                        // É¾³ıµ±Ç°µã¹âÔ´
+                        // åˆ é™¤å½“å‰ç‚¹å…‰æº
                         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.44f, 0.17f, 0.17f, 1.0f));
                         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.70f, 0.27f, 0.27f, 1.0f));
                         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.85f, 0.31f, 0.31f, 1.0f));
                         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 20.0f, ImGui::GetCursorPos().y));
 
-                        if (ImGui::Button(u8"É¾³ıµã¹âÔ´", ImVec2(100.0f, 0.0f))) {
+                        if (ImGui::Button(u8"åˆ é™¤ç‚¹å…‰æº", ImVec2(100.0f, 0.0f))) {
                             if (selectIndex >= 0) {
                                 delete siriusEngine.scenePointLights[selectIndex];
                                 siriusEngine.scenePointLights.erase(siriusEngine.scenePointLights.begin() + selectIndex);
@@ -302,43 +303,43 @@ void GUI::renderSceneInspector() {
 
 						ImGui::Separator();
 
-						ImGui::ColorEdit3(u8"»·¾³¹â", glm::value_ptr(currentPointLight->ambient));
-						ImGui::ColorEdit3(u8"Âş·´Éä", glm::value_ptr(currentPointLight->diffuse));
-						ImGui::ColorEdit3(u8"¾µÃæ·´Éä", glm::value_ptr(currentPointLight->specular));
+						ImGui::ColorEdit3(u8"ç¯å¢ƒå…‰", glm::value_ptr(currentPointLight->ambient));
+						ImGui::ColorEdit3(u8"æ¼«åå°„", glm::value_ptr(currentPointLight->diffuse));
+						ImGui::ColorEdit3(u8"é•œé¢åå°„", glm::value_ptr(currentPointLight->specular));
 
-						ImGui::DragFloat3(u8"¹âË¥¼õÒò×Ó", glm::value_ptr(currentPointLight->attenuationFactors), IMGUI_DRAG_SPEED_SUPER_SLOW, 0.0f, 1.0f);
+						ImGui::DragFloat3(u8"å…‰è¡°å‡å› å­", glm::value_ptr(currentPointLight->attenuationFactors), IMGUI_DRAG_SPEED_SUPER_SLOW, 0.0f, 1.0f);
 						ImGui::SameLine();
-						HelpMarker(u8"¹âË¥¼õÒò×ÓÏµÊı°üº¬: ³£ÊıÏî£¬Ò»´ÎÏî£¬¶ş´ÎÏî");
+						HelpMarker(u8"å…‰è¡°å‡å› å­ç³»æ•°åŒ…å«: å¸¸æ•°é¡¹ï¼Œä¸€æ¬¡é¡¹ï¼ŒäºŒæ¬¡é¡¹");
 
 						ImGui::Separator();
 
-						ImGui::DragFloat3(u8"Î»ÖÃ", glm::value_ptr(currentPointLight->position), IMGUI_DRAG_SPEED_SLOW);
+						ImGui::DragFloat3(u8"ä½ç½®", glm::value_ptr(currentPointLight->position), IMGUI_DRAG_SPEED_SLOW);
 
 						ImGui::EndTabItem();
 					}
                 }
 
-                if (ImGui::BeginTabItem(u8"¶¨Ïò¹â")) {
+                if (ImGui::BeginTabItem(u8"å®šå‘å…‰")) {
                     DirLight& dirLight = siriusEngine.dirLight;
 
-                    ImGui::Text(u8"ÏÔÊ¾¶¨Ïò¹â");
+                    ImGui::Text(u8"æ˜¾ç¤ºå®šå‘å…‰");
                     ImGui::SameLine();
                     ImGui::Checkbox("##enableDirectionalLight", &dirLight.enabled);
                     ImGui::SameLine();
-                    if (ImGui::Button(u8"ÖØÖÃ")) {
+                    if (ImGui::Button(u8"é‡ç½®")) {
                         dirLight.reset();
                     }
 
                     ImGui::Separator();
 
-                    ImGui::ColorEdit3(u8"»·¾³¹â", glm::value_ptr(dirLight.ambient));
-                    ImGui::ColorEdit3(u8"Âş·´Éä", glm::value_ptr(dirLight.diffuse));
-                    ImGui::ColorEdit3(u8"¾µÃæ·´Éä", glm::value_ptr(dirLight.specular));
+                    ImGui::ColorEdit3(u8"ç¯å¢ƒå…‰", glm::value_ptr(dirLight.ambient));
+                    ImGui::ColorEdit3(u8"æ¼«åå°„", glm::value_ptr(dirLight.diffuse));
+                    ImGui::ColorEdit3(u8"é•œé¢åå°„", glm::value_ptr(dirLight.specular));
 
                     ImGui::Separator();
 
-                    ImGui::DragFloat3(u8"·½Ïò", glm::value_ptr(dirLight.direction), IMGUI_DRAG_SPEED_SLOW);
-                    ImGui::SliderFloat(u8"°ë¾¶", &dirLight.radius, DIR_RADIUS_MIN, DIR_RADIUS_MAX, "%.1f");
+                    ImGui::DragFloat3(u8"æ–¹å‘", glm::value_ptr(dirLight.direction), IMGUI_DRAG_SPEED_SLOW);
+                    ImGui::SliderFloat(u8"åŠå¾„", &dirLight.radius, DIR_RADIUS_MIN, DIR_RADIUS_MAX, "%.1f");
 
                     ImGui::EndTabItem();
                 }
@@ -347,7 +348,7 @@ void GUI::renderSceneInspector() {
 
             ImGui::PopID();
         }
-        ImGui::PopStyleColor(1);    // ¹âÕÕÉèÖÃÑ¡ÏîÀ¸µÄÑÕÉ«end
+        ImGui::PopStyleColor(1);    // å…‰ç…§è®¾ç½®é€‰é¡¹æ çš„é¢œè‰²end
     }
     ImGui::End();
 }
@@ -387,40 +388,40 @@ void GUI::renderExtraView() {
 
         // OpenGL
         if (ImGui::CollapsingHeader("OpenGL", ImGuiTreeNodeFlags_DefaultOpen)) {
-            // °æ±¾
+            // ç‰ˆæœ¬
             int majorVersion, minorVersion, revisionNumber;
             glfwGetVersion(&majorVersion, &minorVersion, &revisionNumber);
-            ImGui::Text(u8"°æ±¾: %d.%d.%d", majorVersion, minorVersion, revisionNumber);
+            ImGui::Text(u8"ç‰ˆæœ¬: %d.%d.%d", majorVersion, minorVersion, revisionNumber);
 
-            // ÆÁÄ»ÑÕÉ«
+            // å±å¹•é¢œè‰²
             ImGui::ColorEdit3("Clear Color", glm::value_ptr(siriusEngine.clearColor));
 
-            // Ñ¡Ïî
-            ImGui::Checkbox(u8"Éî¶È²âÊÔ", &siriusEngine.isDepthTestOn);
+            // é€‰é¡¹
+            ImGui::Checkbox(u8"æ·±åº¦æµ‹è¯•", &siriusEngine.isDepthTestOn);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"Ä£°å²âÊÔ", &siriusEngine.isStencilTestOn);
+            ImGui::Checkbox(u8"æ¨¡æ¿æµ‹è¯•", &siriusEngine.isStencilTestOn);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"±³ÃæÌŞ³ı", &siriusEngine.isFaceCullingOn);
-            const char* postProcessingNames[postProcessingCount] = {u8"ÎŞÌØĞ§", u8"·´Ïà", u8"»Ò¶È", u8"Èñ»¯", u8"Ä£ºı", u8"±ßÔµ"};
+            ImGui::Checkbox(u8"èƒŒé¢å‰”é™¤", &siriusEngine.isFaceCullingOn);
+            const char* postProcessingNames[postProcessingCount] = {u8"æ— ç‰¹æ•ˆ", u8"åç›¸", u8"ç°åº¦", u8"é”åŒ–", u8"æ¨¡ç³Š", u8"è¾¹ç¼˜"};
             const char* postProcessingName = (siriusEngine.postProcessing >= 0 && siriusEngine.postProcessing < postProcessingCount) ?
-                postProcessingNames[siriusEngine.postProcessing] : u8"Î´Öª";
-            ImGui::SliderInt(u8"ºóÆÚÌØĞ§", &siriusEngine.postProcessing, 0, postProcessingCount - 1, postProcessingName);
-            ImGui::Checkbox(u8"MSAA¿¹¾â³İ", &siriusEngine.isMSAAOn);
+                postProcessingNames[siriusEngine.postProcessing] : u8"æœªçŸ¥";
+            ImGui::SliderInt(u8"åæœŸç‰¹æ•ˆ", &siriusEngine.postProcessing, 0, postProcessingCount - 1, postProcessingName);
+            ImGui::Checkbox(u8"MSAAæŠ—é”¯é½¿", &siriusEngine.isMSAAOn);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"Gamma½ÃÕı", &siriusEngine.isGammaOn);
+            ImGui::Checkbox(u8"GammaçŸ«æ­£", &siriusEngine.isGammaOn);
             ImGui::Checkbox(u8"hdr", &siriusEngine.isHDROn);
 
             ImGui::Separator();  
 
-            ImGui::Text(u8"ÒõÓ°");
+            ImGui::Text(u8"é˜´å½±");
             ImGui::SameLine();
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 70.0f, ImGui::GetCursorPos().y));
-            ImGui::Checkbox(u8"¿ªÆô", &siriusEngine.shadow->isShadowOn);
-            ImGui::Checkbox(u8"biasÓÅ»¯", &siriusEngine.shadow->isBias);
+            ImGui::Checkbox(u8"å¼€å¯", &siriusEngine.shadow->isShadowOn);
+            ImGui::Checkbox(u8"biasä¼˜åŒ–", &siriusEngine.shadow->isBias);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"ÕıÃæÌŞ³ıÓÅ»¯", &siriusEngine.shadow->isCull);
+            ImGui::Checkbox(u8"æ­£é¢å‰”é™¤ä¼˜åŒ–", &siriusEngine.shadow->isCull);
             ImGui::SameLine();
-            ImGui::Checkbox(u8"PCFÈíÒõÓ°", &siriusEngine.shadow->isSoft);
+            ImGui::Checkbox(u8"PCFè½¯é˜´å½±", &siriusEngine.shadow->isSoft);
         }
 
         // ImGui

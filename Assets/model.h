@@ -24,24 +24,16 @@
 #include <iostream>
 #include <vector>
 
-
 // 模型类
 class Model : public Object {
 public:
+    std::vector<Mesh> meshes; // ģ������
+    std::string directory; // ģ���ļ�·��
 
-    std::vector<Mesh> meshes; // 网格数组
-    std::string directory; // 模型目录
-
-    std::vector<TextureS> texturesLoaded; // 记录已加载的模型
-    std::vector<Mesh> meshes; // 模型网格
-    std::string directory; // 模型文件路径
-    bool gammaCorrection; // ？
-
-    // 构造函数
+    // ���캯��
     Model(std::string name, std::string const& path, bool gamma = false);
 
-
-    // 绘制模型
+    // ����ģ��
     void draw(Renderer& renderer, Shadow* shadow = nullptr, bool drawCoordinate = true, bool gamma = false) override;
 
     // ��Ӱ����
@@ -49,7 +41,6 @@ public:
 
     // ��Ӱģ�ͻ���
     void shadowModelDraw(Renderer& renderer, Shadow* shadow, bool drawCoordinate = true, bool gamma = false) override;
-
 
 private:
     // 加载模型
@@ -66,18 +57,15 @@ private:
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat,
                                               aiTextureType type,
                                               std::string typeName);
-
 };
 
 // ģ����Ⱦ��
 class ModelRenderer : public Renderer {
 public:
-    // ����/��������
     ModelRenderer(const Shader& shader);
 
     ~ModelRenderer() override = default;
 
-    // ��Ⱦ
     void render(const Object& object, bool drawCoordinate = true, bool gamma = false) override;
 };
 
