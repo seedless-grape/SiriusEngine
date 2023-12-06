@@ -48,11 +48,12 @@ uniform int pointLightsNum;
 
 uniform vec3 objectColor;
 uniform int postProcessing;
-uniform float shininess;
+// uniform float shininess;
 
 uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
 uniform sampler2D textureNormal1;
+uniform sampler2D textureRough1;
 
 uniform sampler2D shadowMap;    // 阴影贴图
 uniform bool shadowOn;          // 是否开启阴影
@@ -62,10 +63,10 @@ uniform float biasValue;        // 阴影偏移量
 uniform bool gamma;
 
 // 函数前向声明
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
-vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float kernel[9]);
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float kernel[9]);
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shininess);
+vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float shininess, float kernel[9]);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float shininess);
+vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float shininess, float kernel[9]);
 float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
@@ -73,18 +74,19 @@ void main() {
     norm = normalize(norm * 2.0 - 1.0);   
     norm = normalize(fs_in.TBN * norm);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
-
+    float shininess = texture(textureRough1, fs_in.texCoords).r * 32.0f;
+    
     vec3 result = vec3(0.0f);
     
     if (postProcessing <= 2) {  // 非核处理
         // 定向光
         if (dirLight.enabled)
-            result += CalcDirLight(dirLight, norm, viewDir);
+            result += CalcDirLight(dirLight, norm, viewDir, shininess);
 
         // 点光源
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
-                result += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir);
+                result += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir, shininess);
         }
         
         // 反相
@@ -126,12 +128,12 @@ void main() {
         
         // 定向光
         if (dirLight.enabled)
-            result += CalcDirLightKernel(dirLight, norm, viewDir, kernel);
+            result += CalcDirLightKernel(dirLight, norm, viewDir, shininess, kernel);
 
         // 点光源
         for (int i = 0; i < pointLightsNum; i++) {
             if (pointLights[i].enabled)
-                result += CalcPointLightKernel(pointLights[i], norm, fs_in.fragPos, viewDir, kernel);
+                result += CalcPointLightKernel(pointLights[i], norm, fs_in.fragPos, viewDir, shininess, kernel);
         }
 
         fragColor = vec4(objectColor * result, 1.0f);
@@ -143,7 +145,7 @@ void main() {
 }
 
 // 定向光计算
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, float shininess) {
     vec3 lightDir = normalize(-light.direction);
 
     // diffuse
@@ -165,7 +167,7 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
 }
 
 // 定向光加核计算
-vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float kernel[9]) {
+vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float shininess, float kernel[9]) {
     // 采样偏移
     const float offset = 1.0 / 300.0;
     
@@ -208,7 +210,7 @@ vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float kernel[9]
 }
 
 // 点光源计算
-vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir) {
+vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess) {
     vec3 lightDir = normalize(light.position - fragPos);
 
     // diffuse
@@ -234,7 +236,7 @@ vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir) {
 }
 
 // 点光源加核计算
-vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float kernel[9]) {
+vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess, float kernel[9]) {
     // 采样偏移
     const float offset = 1.0 / 300.0;
     
