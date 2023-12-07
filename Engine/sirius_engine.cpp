@@ -12,6 +12,7 @@
 GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
+ModelRenderer* modelPBRRenderer;
 ShadowRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
@@ -24,7 +25,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true), isHDROn(false),
-    isFreeLookingModeOn(false), isObjectRotationModeOn(false),
+    isFreeLookingModeOn(false), isObjectRotationModeOn(false), isPBROn(false),
     isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(false),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
@@ -60,6 +61,7 @@ void SiriusEngine::init() {
     LoadPresets::preLoadModel(sceneObjects);
 
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    modelPBRRenderer = new ModelRenderer(ResourceManager::getShader("pbr"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
     // ��պ�����Դ������Ⱦ
@@ -110,18 +112,25 @@ void SiriusEngine::render() {
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
 
+    // PBR
+    ModelRenderer* currentRenderer;
+    if (isPBROn)
+        currentRenderer = modelPBRRenderer;
+    else
+        currentRenderer = modelRenderer;
+
     // 更新渲染管线
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
                                  dirLight, scenePointLights);
 
-    modelRenderer->updateRenderer(spaceMatrix, camera.position,
+    currentRenderer->updateRenderer(spaceMatrix, camera.position,
                                   dirLight, scenePointLights);
 
     skyboxRenderer->updateRenderer(skyboxSpaceMatrix);
 
     cubeRenderer->postProcessing = this->postProcessing;
 
-    modelRenderer->postProcessing = this->postProcessing;
+    currentRenderer->postProcessing = this->postProcessing;
 
     skyboxRenderer->postProcessing = this->postProcessing;
 
@@ -143,40 +152,39 @@ void SiriusEngine::render() {
         }
     }
 
-    // ������Ӱ
+    // 阴影
     if (shadow->isShadowOn) {
-        modelRenderer->objectShader.setBool("shadowOn", true, true);
+        currentRenderer->objectShader.setBool("shadowOn", true, true);
 
-        // Bias�Ż�
+        // Bia
         if(shadow->isBias)
-            modelRenderer->objectShader.setFloat("biasValue", 0.005f);
+            currentRenderer->objectShader.setFloat("biasValue", 0.005f);
         else
-            modelRenderer->objectShader.setFloat("biasValue", 0.000f);
+            currentRenderer->objectShader.setFloat("biasValue", 0.000f);
 
-        // PCF����Ӱ
+        // PCF
         if (shadow->isSoft)
-            modelRenderer->objectShader.setBool("softShadow", true);
+            currentRenderer->objectShader.setBool("softShadow", true);
         else
-            modelRenderer->objectShader.setBool("softShadow", false);
-      
-        // �����޳��Ż�
+            currentRenderer->objectShader.setBool("softShadow", false);
+
+        // 正面剔除
         if (shadow->isCull) {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_FRONT);
         }
 
-		// ��Ҫ���㶨���뾶
+		// 定向光计算位置
 		dirLight.updatePosition();
 
-		// ��ȡ�����붨���Ŀռ�����ת������
+		// 光照位置空间
 		glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
         shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
-        modelRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
-      
-        // ����Ӱ������
+        currentRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
+
         shadow->bindShadowFBO();
 
-        // ������Ӱ����
+        // 渲染阴影
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
                 sceneObjects[i]->shadowDraw(*modelShadowRenderer);
@@ -187,28 +195,26 @@ void SiriusEngine::render() {
                 glDisable(GL_CULL_FACE);
         }
 
-        // �����Ӱ���������ָ�Ĭ�ϻ�����
         shadow->unbindShadowFBO(0, this->width, this->height);
 
-        // �������
+        // 渲染物体
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
-                sceneObjects[i]->draw(*modelRenderer, shadow, isObjectCoordinateShown, isGammaOn);
+                sceneObjects[i]->draw(*currentRenderer, shadow, isObjectCoordinateShown, isGammaOn);
+    } else { // 不开启阴影，直接渲染
+        currentRenderer->objectShader.setBool("shadowOn", false, true);
 
-    } else { // ��������Ӱ
-        modelRenderer->objectShader.setBool("shadowOn", false, true);
-
-        // �������
+        // 渲染物体
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
-                sceneObjects[i]->draw(*modelRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
+                sceneObjects[i]->draw(*currentRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
     }
 
-    // MSAA֡����ռ�д����Ļ�ռ�
+    // MSAA֡
     if (isMSAAOn)
         msaa->render();
 
-    // HDR֡����ռ�д����Ļ�ռ�
+    // HDR֡
     if (isHDROn) {
         hdr->render();
     }

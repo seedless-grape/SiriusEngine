@@ -9,6 +9,7 @@ void LoadPresets::preLoadShaderTexture() {
 	ResourceManager::loadShader("Shader/light_cube.vert", "Shader/light_cube.frag", nullptr, "light_cube");
 	ResourceManager::loadShader("Shader/object.vert", "Shader/object.frag", nullptr, "object");
 	ResourceManager::loadShader("Shader/model.vert", "Shader/model.frag", nullptr, "model");
+	ResourceManager::loadShader("Shader/pbr.vert", "Shader/pbr.frag", nullptr, "pbr");
 	ResourceManager::loadShader("Shader/coordinate.vert", "Shader/coordinate.frag", nullptr, "coordinate");
 	ResourceManager::loadShader("Shader/skybox.vert", "Shader/skybox.frag", nullptr, "skybox");
 	ResourceManager::loadShader("Shader/msaa.vert", "Shader/msaa.frag", nullptr, "msaa");

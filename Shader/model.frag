@@ -48,12 +48,11 @@ uniform int pointLightsNum;
 
 uniform vec3 objectColor;
 uniform int postProcessing;
-// uniform float shininess;
 
 uniform sampler2D textureDiffuse1;  // 漫反射材质贴图1
 uniform sampler2D textureSpecular1; // 镜面反射材质贴图1
-uniform sampler2D textureNormal1;
-uniform sampler2D textureRough1;
+uniform sampler2D textureNormal1;   // 法线贴图1
+uniform sampler2D textureRough1;    // 粗糙度贴图1
 
 uniform sampler2D shadowMap;    // 阴影贴图
 uniform bool shadowOn;          // 是否开启阴影

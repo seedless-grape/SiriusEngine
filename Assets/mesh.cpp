@@ -100,52 +100,6 @@ void Mesh::shadowDraw(Shader& shader) {
 
 }
 
-void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
-	// ����ӳ��Ŀ��
-	unsigned int diffuseNr = 1;
-	unsigned int specularNr = 1;
-	//unsigned int normalNr = 1;
-	//unsigned int heightNr = 1;
-
-	// �����������е�����������ӳ��
-	unsigned int i;
-	for (i = 0; i < textures.size(); i++) {
-		// �����Ӧ��������Ԫ
-		glActiveTexture(GL_TEXTURE0 + i);
-
-		// ��ȡ������ź���������
-		std::string number;
-		std::string name = textures[i].type;
-		if (name == "textureDiffuse")
-			number = std::to_string(diffuseNr++);
-		else if (name == "textureSpecular")
-			number = std::to_string(specularNr++);
-		//else if (name == "textureNormal")
-		//	number = std::to_string(normalNr++);
-		//else if (name == "textureHeight")
-		//	number = std::to_string(heightNr++);
-
-		// ����GPU��������
-		shader.setInt((name + number).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
-	}
-
-	// �󶨴�����Ӱ����
-	glActiveTexture(GL_TEXTURE0 + i);
-	shader.setInt("shadowMap", i);
-
-	glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
-
-	// ��������
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
-				   GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	// �������������ûع�ΪĬ��ֵ
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 void Mesh::shadowDraw(Shader& shader) {
 	// �����������е�����������ӳ��
 	for (unsigned int i = 0; i < textures.size(); i++) {
@@ -173,48 +127,35 @@ void Mesh::shadowDraw(Shader& shader) {
 }
 
 void Mesh::shadowModelDraw(Shader& shader, Shadow* shadow) {
-	// ����ӳ��Ŀ��
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
-	//unsigned int normalNr = 1;
-	//unsigned int heightNr = 1;
 
-	// �����������е�����������ӳ��
-	unsigned int i;
+  unsigned int i;
 	for (i = 0; i < textures.size(); i++) {
-		// �����Ӧ��������Ԫ
+
 		glActiveTexture(GL_TEXTURE0 + i);
 
-		// ��ȡ������ź���������
 		std::string number;
 		std::string name = textures[i].type;
 		if (name == "textureDiffuse")
 			number = std::to_string(diffuseNr++);
 		else if (name == "textureSpecular")
 			number = std::to_string(specularNr++);
-		//else if (name == "textureNormal")
-		//	number = std::to_string(normalNr++);
-		//else if (name == "textureHeight")
-		//	number = std::to_string(heightNr++);
 
-		// ����GPU��������
 		shader.setInt((name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].ID);
 	}
 
-	// �󶨴�����Ӱ����
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader.setInt("shadowMap", i);
 
 	glBindTexture(GL_TEXTURE_2D, shadow->getDepthMap());
 
-	// ��������
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()),
 				   GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	// �������������ûع�ΪĬ��ֵ
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -260,16 +201,6 @@ void Mesh::setupMesh() {
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, bitangent));
-
-	// 5:解释影响该顶点的骨骼索引
-	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(Vertex),
-						   (void*)offsetof(Vertex, mBoneIDs));
-
-	// 6:解释影响该顶点的骨骼的权重
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-						  (void*)offsetof(Vertex, mWeights));
 
 	// 解绑
 	glBindVertexArray(0);

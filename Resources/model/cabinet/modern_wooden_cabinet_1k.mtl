@@ -9,5 +9,6 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd textures/modern_wooden_cabinet_diff_1k.jpg
+map_Ks textures/pure_black.png
 map_Ns textures/modern_wooden_cabinet_rough_1k.jpg
 map_Bump -bm 1.000000 textures/modern_wooden_cabinet_nor_gl_1k.jpg
