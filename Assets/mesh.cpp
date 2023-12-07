@@ -176,16 +176,6 @@ void Mesh::setupMesh() {
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 						  (void*)offsetof(Vertex, bitangent));
 
-	// 5:解释影响该顶点的骨骼索引
-	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, MAX_BONE_INFLUENCE, GL_INT, sizeof(Vertex),
-						   (void*)offsetof(Vertex, mBoneIDs));
-
-	// 6:解释影响该顶点的骨骼的权重
-	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, MAX_BONE_INFLUENCE, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-						  (void*)offsetof(Vertex, mWeights));
-
 	// 解绑
 	glBindVertexArray(0);
 }

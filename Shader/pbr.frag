@@ -61,15 +61,21 @@ uniform float biasValue;        // 阴影偏移量
 
 uniform bool gamma;
 
+const float PI = 3.14159265359;
+
 // 函数前向声明
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shininess);
-vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float shininess, float kernel[9]);
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float shininess);
-vec3 CalcPointLightKernel(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, float shininess, float kernel[9]);
+float DistributionGGX(vec3 normal, vec3 halfwayDir, float roughness);
+float GeometrySchlickGGX(float NdotV, float roughness);
+float GeometrySmith(vec3 normal, vec3 viewDir, vec3 lightDir, float roughness);
+vec3 FresnelSchlick(float cosTheta, vec3 F0);
+
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 F0, vec3 albedo, float roughness, float metallic);
+// vec3 CalcDirLightKernel(DirLight light, vec3 normal, vec3 viewDir, float shininess, float kernel[9]);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 F0, vec3 albedo, float roughness, float metallic);
 float CalcShadow(vec4 fragPosLightSpace);
 
 void main() {
-    // 反射率
+    // 反射率颜色
     vec3 albedo;
     if (gamma)
         albedo = pow(texture(textureDiffuse1, fs_in.texCoords).rgb, vec3(2.2));
@@ -80,218 +86,172 @@ void main() {
     float metallic = texture(textureSpecular1, fs_in.texCoords).r;
 
     // 粗糙度
-    
+    float roughness = texture(textureRough1, fs_in.texCoords).r;
 
+    // 法线
     vec3 norm = texture(textureNormal1, fs_in.texCoords).rgb;
     norm = normalize(norm * 2.0 - 1.0);   
     norm = normalize(fs_in.TBN * norm);
+
+    // 视线
     vec3 viewDir = normalize(viewPos - fs_in.fragPos);
-    float shininess = texture(textureRough1, fs_in.texCoords).r * 32.0f;
-    
-    vec3 result = vec3(0.0f);
-    
-    if (postProcessing <= 2) {  // 非核处理
-        // 定向光
-        if (dirLight.enabled)
-            result += CalcDirLight(dirLight, norm, viewDir, shininess);
 
-        // 点光源
-        for (int i = 0; i < pointLightsNum; i++) {
-            if (pointLights[i].enabled)
-                result += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir, shininess);
-        }
-        
-        // 反相
-        if (postProcessing == 1)
-            fragColor = vec4(vec3(1.0f - objectColor * result), 1.0f);
-        // 灰度
-        else if (postProcessing == 2) {
-            fragColor = vec4(objectColor * result, 1.0f);
-            float average = 0.2126 * fragColor.r + 0.7152 * fragColor.g + 0.0722 * fragColor.b;
-            fragColor = vec4(average, average, average, 1.0);
-        }
-        // 无效果
-        else
-            fragColor = vec4(objectColor * result, 1.0f);
-    } else {     // 核处理
-        float kernel[9];
-        // 锐化
-        if (postProcessing == 3)
-            kernel = float[](
-                -1, -1, -1,
-                -1,  9, -1,
-                -1, -1, -1
-            );
-        // 模糊
-        else if (postProcessing == 4)
-            kernel = float[](
-                1.0 / 16, 2.0 / 16, 1.0 / 16,
-                2.0 / 16, 4.0 / 16, 2.0 / 16,
-                1.0 / 16, 2.0 / 16, 1.0 / 16  
-            );
-        // 边缘
-        else if (postProcessing == 5)
-            kernel = float[](
-                1,  1, 1,
-                1, -8, 1,
-                1,  1, 1  
-            );
+    // 入射反射率：电介质（如塑料）使用0.04；金属使用反射率颜色
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo, metallic);
 
-        
-        // 定向光
-        if (dirLight.enabled)
-            result += CalcDirLightKernel(dirLight, norm, viewDir, shininess, kernel);
+    // 反射光
+    vec3 Lo = vec3(0.2f) * albedo;     // 初始一个环境光照
 
-        // 点光源
-        for (int i = 0; i < pointLightsNum; i++) {
-            if (pointLights[i].enabled)
-                result += CalcPointLightKernel(pointLights[i], norm, fs_in.fragPos, viewDir, shininess, kernel);
-        }
-
-        fragColor = vec4(objectColor * result, 1.0f);
+    // 点光源计算
+    for (int i = 0; i < pointLightsNum; i++) {
+        Lo += CalcPointLight(pointLights[i], norm, fs_in.fragPos, viewDir, F0, albedo, roughness, metallic);
     }
 
+    // 定向光源计算
+    Lo += CalcDirLight(dirLight, norm, fs_in.fragPos, viewDir, F0, albedo, roughness, metallic);
+
+    // gamma
     if (gamma)
-        fragColor.rgb = pow(fragColor.rgb, vec3(1.0/GAMMA));
-        
+        Lo = pow(Lo, vec3(1.0f / GAMMA));
+
+    // 后处理
+    if (postProcessing == 1)
+        fragColor = vec4(vec3(1.0f - Lo), 1.0f);
+    else if (postProcessing == 2) {
+        fragColor = vec4(Lo, 1.0f);
+        float average = 0.2126 * fragColor.r + 0.7152 * fragColor.g + 0.0722 * fragColor.b;
+        fragColor = vec4(average, average, average, 1.0);
+    }
+    else
+        fragColor = vec4(Lo, 1.0f);
+
+}
+
+// GGX法线分布函数
+float DistributionGGX(vec3 normal, vec3 halfwayDir, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(normal, halfwayDir), 0.0f);
+    float NdotH2 = NdotH * NdotH;
+
+    float nom = a2;
+    float denom = (NdotH2 * (a2 - 1.0f) + 1.0f);
+    denom = PI * denom * denom;
+
+    return nom / denom;
+}
+
+// Schlick GGX几何项近似
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0f);
+    float k = (r * r) / 8.0f;
+    
+    float nom = NdotV;
+    float denom = NdotV * (1.0f - k) + k;
+
+    return nom / denom;
+}
+
+// Smith几何自遮挡函数
+float GeometrySmith(vec3 normal, vec3 viewDir, vec3 lightDir, float roughness) {
+    float NdotV = max(dot(normal, viewDir), 0.0f);
+    float NdotL = max(dot(normal, lightDir), 0.0f);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+// fresnel项Schlick近似
+vec3 FresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0f - F0) * pow(clamp(1.0f - cosTheta, 0.0f, 1.0f), 5.0f);
 }
 
 // 定向光计算
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, float shininess) {
-    vec3 lightDir = normalize(-light.direction);
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 F0, vec3 albedo, float roughness, float metallic) {
+    vec3 lightDir = normalize(-light.direction);        // 入射角
+    vec3 halfwayDir = normalize(lightDir + viewDir);    // 反射半角
+    vec3 radiance = light.diffuse;                      // radiance
 
-    // diffuse
-    float diff = max(dot(norm, lightDir), 0.0f);
+    // 法线分布函数
+    float NDF = DistributionGGX(normal, halfwayDir, roughness);
+    // 几何自遮挡
+    float G = GeometrySmith(normal, viewDir, lightDir, roughness);
+    // fresnel项
+    vec3 F = FresnelSchlick(max(dot(halfwayDir, viewDir), 0.0f), F0);
 
-    // specular
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
+    // BRDF镜面项分子
+    vec3 numerator = NDF * G * F;   
+    // BRDF镜面项分母
+    float denominator = 4.0f * max(dot(normal, viewDir), 0.0f) * max(dot(normal, lightDir), 0.0f) + 0.0001;
+    // BRDF镜面项
+    vec3 specular = numerator / denominator;
+    
+    vec3 Ks = F;                // 镜面反射率
+    vec3 Kd = vec3(1.0f) - Ks;  // 漫反射率
+    Kd *= 1.0f - metallic;      // 金属率
 
-    // shadow
+    float NdotL = max(dot(normal, lightDir), 0.0f);
+
     float shadow = shadowOn ? CalcShadow(fs_in.fragPosLightSpace) : 0.0f;
 
-    // result
-    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords));
-
-    return ambient + (1.0f - shadow) * (diffuse + specular);
+    // BRDF
+    return (Kd * albedo / PI + specular) * radiance * NdotL * (1.0f - shadow);
 }
 
-// 定向光加核计算
-vec3 CalcDirLightKernel(DirLight light, vec3 norm, vec3 viewDir, float shininess, float kernel[9]) {
-    // 采样偏移
-    const float offset = 1.0 / 300.0;
-    
-    vec2 offsets[9] = vec2[](
-        vec2(-offset,  offset), // 左上
-        vec2( 0.0f,    offset), // 正上
-        vec2( offset,  offset), // 右上
-        vec2(-offset,  0.0f),   // 左
-        vec2( 0.0f,    0.0f),   // 中
-        vec2( offset,  0.0f),   // 右
-        vec2(-offset, -offset), // 左下
-        vec2( 0.0f,   -offset), // 正下
-        vec2( offset, -offset)  // 右下
-    );
-
-    vec3 sampleTex[9];
-
-    vec3 lightDir = normalize(-light.direction);
-
-    // diffuse
-    float diff = max(dot(norm, lightDir), 0.0f);
-
-    // specular
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
-    
-    // result
-    for(int i = 0; i < 9; i++) {
-        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
-        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
-        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords + offsets[i]));
-        sampleTex[i] = ambient + diffuse + specular;
-    }
-
-    vec3 tempRes = vec3(0.0f);
-    for (int i = 0; i < 9; i++)
-        tempRes += sampleTex[i] * kernel[i];
-
-    return tempRes;
-}
-
-// 点光源计算
-vec3 CalcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess) {
+// 计算点光源的radiance
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 F0, vec3 albedo, float roughness, float metallic) {
+    // 入射角
     vec3 lightDir = normalize(light.position - fragPos);
 
-    // diffuse
-    float diff = max(dot(norm, lightDir), 0.0f);
-
-    // specular
+    // 反射半角
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
-    
-    // attenuation
+
+    // 光源距离
     float distance = length(light.position - fragPos);
-    float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    
-    // result
-    vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords));
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
 
-    return (ambient + diffuse + specular);
-}
-
-// 点光源加核计算
-vec3 CalcPointLightKernel(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, float shininess, float kernel[9]) {
-    // 采样偏移
-    const float offset = 1.0 / 300.0;
-    
-    vec2 offsets[9] = vec2[](
-        vec2(-offset,  offset), // 左上
-        vec2( 0.0f,    offset), // 正上
-        vec2( offset,  offset), // 右上
-        vec2(-offset,  0.0f),   // 左
-        vec2( 0.0f,    0.0f),   // 中
-        vec2( offset,  0.0f),   // 右
-        vec2(-offset, -offset), // 左下
-        vec2( 0.0f,   -offset), // 正下
-        vec2( offset, -offset)  // 右下
-    );
-
-    vec3 sampleTex[9];
-
-    vec3 lightDir = normalize(light.position - fragPos);
-
-    // diffuse
-    float diff = max(dot(norm, lightDir), 0.0f);
-
-    // specular
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0f), shininess);
-    
     // attenuation
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    
-    // result
-    for(int i = 0; i < 9; i++) {
-        vec3 ambient = light.ambient * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
-        vec3 diffuse = light.diffuse * diff * vec3(texture(textureDiffuse1, fs_in.texCoords + offsets[i]));
-        vec3 specular = light.specular * spec * vec3(texture(textureSpecular1, fs_in.texCoords + offsets[i]));
-        sampleTex[i] = (ambient + diffuse + specular) * attenuation;
-    }
+    float attenuation = 1.0 / (distance * distance);
 
-    vec3 tempRes = vec3(0.0f);
-    for (int i = 0; i < 9; i++)
-        tempRes += sampleTex[i] * kernel[i];
+    // radiance
+    vec3 radiance = light.diffuse * attenuation;
 
-    return tempRes;
+    // Cook-Torrance BRDF
+
+    // 法线分布函数
+    float NDF = DistributionGGX(normal, halfwayDir, roughness);
+
+    // 几何自遮挡
+    float G = GeometrySmith(normal, viewDir, lightDir, roughness);
+
+    // fresnel项
+    vec3 F = FresnelSchlick(max(dot(halfwayDir, viewDir), 0.0f), F0);
+
+    // BRDF镜面项分子
+    vec3 numerator = NDF * G * F;
+
+    // BRDF镜面项分母
+    float denominator = 4.0f * max(dot(normal, viewDir), 0.0f) * max(dot(normal, lightDir), 0.0f) + 0.0001;
+
+    // BRDF镜面项
+    vec3 specular = numerator / denominator;
+
+    // 镜面反射率（等同于fresnel）
+    vec3 Ks = F;
+
+    // 能量守恒：漫射光和镜面反射光不能高于1.0（除非表面发光）
+    // 因此漫反射分量Kd应等于1.0-Ks
+    vec3 Kd = vec3(1.0f) - Ks;
+
+    // Kd乘以1-金属度使得只有非金属具有漫射照
+    // 如果部分是金属，则为线性混合（纯金属没有漫射光）
+    Kd *= 1.0f - metallic;
+
+    float NdotL = max(dot(normal, lightDir), 0.0f);
+
+    // BRDF
+    return (Kd * albedo / PI + specular) * radiance * NdotL;
 }
 
 float CalcShadow(vec4 fragPosLightSpace) {

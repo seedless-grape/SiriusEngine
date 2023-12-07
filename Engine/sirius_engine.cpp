@@ -12,6 +12,7 @@
 GUI* gui;
 CubeRenderer* cubeRenderer;
 ModelRenderer* modelRenderer;
+ModelRenderer* modelPBRRenderer;
 ShadowRenderer* modelShadowRenderer;
 SkyboxRenderer* skyboxRenderer;
 MSAA* msaa;
@@ -24,7 +25,7 @@ SiriusEngine::SiriusEngine(GLFWwindow* _window, unsigned int _width,
     // 状态机
     isDepthTestOn(true), isStencilTestOn(false), isFaceCullingOn(false),
     isMouseControlOn(true), isScrollControlOn(true), isHDROn(false),
-    isFreeLookingModeOn(false), isObjectRotationModeOn(false),
+    isFreeLookingModeOn(false), isObjectRotationModeOn(false), isPBROn(false),
     isObjectCoordinateShown(true), isMSAAOn(false), isGammaOn(false),
     postProcessing(original),
     currentSelectedObjectIndex(-1),
@@ -60,6 +61,7 @@ void SiriusEngine::init() {
     LoadPresets::preLoadModel(sceneObjects);
 
     modelRenderer = new ModelRenderer(ResourceManager::getShader("model"));
+    modelPBRRenderer = new ModelRenderer(ResourceManager::getShader("pbr"));
     modelShadowRenderer = new ShadowRenderer(ResourceManager::getShader("shadow"));
 
     // 天空盒与点光源方块渲染
@@ -110,18 +112,25 @@ void SiriusEngine::render() {
     glm::mat4 spaceMatrix = projectionMatrix * camera.getViewMatrix();
     glm::mat4 skyboxSpaceMatrix = projectionMatrix * glm::mat4(glm::mat3(camera.getViewMatrix()));
 
+    // 渲染模式
+    ModelRenderer* currentRenderer;
+    if (isPBROn)
+        currentRenderer = modelPBRRenderer;
+    else
+        currentRenderer = modelRenderer;
+
     // 更新渲染管线
     cubeRenderer->updateRenderer(spaceMatrix, camera.position,
                                  dirLight, scenePointLights);
 
-    modelRenderer->updateRenderer(spaceMatrix, camera.position,
+    currentRenderer->updateRenderer(spaceMatrix, camera.position,
                                   dirLight, scenePointLights);
 
     skyboxRenderer->updateRenderer(skyboxSpaceMatrix);
 
     cubeRenderer->postProcessing = this->postProcessing;
 
-    modelRenderer->postProcessing = this->postProcessing;
+    currentRenderer->postProcessing = this->postProcessing;
 
     skyboxRenderer->postProcessing = this->postProcessing;
 
@@ -145,19 +154,19 @@ void SiriusEngine::render() {
 
     // 开启阴影
     if (shadow->isShadowOn) {
-        modelRenderer->objectShader.setBool("shadowOn", true, true);
+        currentRenderer->objectShader.setBool("shadowOn", true, true);
 
         // Bias优化
         if(shadow->isBias)
-            modelRenderer->objectShader.setFloat("biasValue", 0.005f);
+            currentRenderer->objectShader.setFloat("biasValue", 0.005f);
         else
-            modelRenderer->objectShader.setFloat("biasValue", 0.000f);
+            currentRenderer->objectShader.setFloat("biasValue", 0.000f);
 
         // PCF软阴影
         if (shadow->isSoft)
-            modelRenderer->objectShader.setBool("softShadow", true);
+            currentRenderer->objectShader.setBool("softShadow", true);
         else
-            modelRenderer->objectShader.setBool("softShadow", false);
+            currentRenderer->objectShader.setBool("softShadow", false);
 
         // 正面剔除优化
         if (shadow->isCull) {
@@ -171,7 +180,7 @@ void SiriusEngine::render() {
 		// 获取并传入定向光的空间坐标转换矩阵
 		glm::mat4 dirLightSpaceMatrix = dirLight.getLightSpaceMatrix();
         shadow->setLightSpaceMatrix(dirLightSpaceMatrix);
-        modelRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
+        currentRenderer->objectShader.setMat4("lightSpaceMatrix", dirLightSpaceMatrix, true);
 
         // 绑定阴影缓冲区
         shadow->bindShadowFBO();
@@ -193,15 +202,15 @@ void SiriusEngine::render() {
         // 物体绘制
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
-                sceneObjects[i]->draw(*modelRenderer, shadow, isObjectCoordinateShown, isGammaOn);
+                sceneObjects[i]->draw(*currentRenderer, shadow, isObjectCoordinateShown, isGammaOn);
 
     } else { // 不开启阴影
-        modelRenderer->objectShader.setBool("shadowOn", false, true);
+        currentRenderer->objectShader.setBool("shadowOn", false, true);
 
         // 物体绘制
         for (unsigned int i = 0; i < sceneObjects.size(); i++)
             if (sceneObjects[i]->enabled)
-                sceneObjects[i]->draw(*modelRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
+                sceneObjects[i]->draw(*currentRenderer, nullptr, isObjectCoordinateShown, this->isGammaOn);
     }
 
     // MSAA帧缓冲空间写入屏幕空间

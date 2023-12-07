@@ -279,6 +279,7 @@ void GUI::renderSceneInspector() {
                         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f - 120.0f, ImGui::GetCursorPos().y));
                         if (ImGui::Button(u8"添加点光源", ImVec2(100.0f, 0.0f))) {
                             PointLight* light = LoadPresets::loadPointLight();
+                            light->position = siriusEngine.camera.position + glm::normalize(siriusEngine.camera.front);
                             siriusEngine.scenePointLights.push_back(light);
                             siriusEngine.currentSelectedPointLightIndex = siriusEngine.scenePointLights.size() - 1;
                         }
@@ -357,9 +358,11 @@ void GUI::renderExtraView() {
     // Extra Options
     // ---------------------------------------
     ImGui::SetNextWindowBgAlpha(imguiWindowBgAlpha);
+    
     ImGui::Begin("Extra Options");
     {
         // GLFW
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));
         if (ImGui::CollapsingHeader("GLFW", ImGuiTreeNodeFlags_DefaultOpen)) {
             // window size
             ImGui::Text("Window Size: ");
@@ -376,17 +379,19 @@ void GUI::renderExtraView() {
             ImGui::SameLine();
 
             // mouse control
-            ImGui::Checkbox("Mouse", &siriusEngine.isMouseControlOn);
+            ImGui::Checkbox(u8"鼠标", &siriusEngine.isMouseControlOn);
             ImGui::SameLine();
-            ImGui::Checkbox("Scroll", &siriusEngine.isScrollControlOn);
+            ImGui::Checkbox(u8"滚轮", &siriusEngine.isScrollControlOn);
             ImGui::SameLine();
             HelpMarker("[Rotate Object] Hold CTRL + Hold Mouse Left Button\n"
                        "[Look Around] Hold Mouse Right Button\n"
                        "[Move Camera] Press W/A/S/D/Shift/Space\n"
                        "[Change Fov] Hold Mouse Right Button + Scroll");
         }
+        ImGui::PopStyleColor(1);
 
         // OpenGL
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));
         if (ImGui::CollapsingHeader("OpenGL", ImGuiTreeNodeFlags_DefaultOpen)) {
             // 版本
             int majorVersion, minorVersion, revisionNumber;
@@ -422,9 +427,17 @@ void GUI::renderExtraView() {
             ImGui::Checkbox(u8"正面剔除优化", &siriusEngine.shadow->isCull);
             ImGui::SameLine();
             ImGui::Checkbox(u8"PCF软阴影", &siriusEngine.shadow->isSoft);
+
+            ImGui::Separator();
+            ImGui::Text(u8"渲染模式");
+            ImGui::SameLine();
+            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2.0f + 70.0f, ImGui::GetCursorPos().y));
+            ImGui::Checkbox(u8"PBR", &siriusEngine.isPBROn);
         }
+        ImGui::PopStyleColor(1);
 
         // ImGui
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.55f, 0.53f, 0.31f, 1.0f));
         if (ImGui::CollapsingHeader("ImGui", ImGuiTreeNodeFlags_DefaultOpen)) {
             // version
             ImGui::Text("Version: %s", ImGui::GetVersion());
@@ -439,6 +452,7 @@ void GUI::renderExtraView() {
             ImGui::SameLine();
             ImGui::Checkbox("About ImGui", &imguiShowAbout);
         }
+        ImGui::PopStyleColor(1);
     }
     ImGui::End();
 }

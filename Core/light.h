@@ -93,19 +93,16 @@ class PointLight : public Light {
 public:
 	// 着色点与光源距离光照强度衰减系数
 	glm::vec3 attenuationFactors;
-	//float constant; // 常数项
-	//float linear; // 一次项
-	//float quadratic; // 二次项
 
 public:
 	PointLight(glm::vec3 _position = POINT_LIGHT_POSITION,
-			   glm::vec3 _ambient = AMBIENT,
+			   glm::vec3 _ambient = glm::vec3(0.0f),
 			   glm::vec3 _diffuse = DIFFUSE,
 			   glm::vec3 _specular = SPECULAR,
 			   glm::vec3 _attenuationFactors = ATTENUATION_FACTORS);
 
 	PointLight(float x, float y, float z,
-			   glm::vec3 _ambient = AMBIENT,
+			   glm::vec3 _ambient = glm::vec3(0.0f),
 			   glm::vec3 _diffuse = DIFFUSE,
 			   glm::vec3 _specular = SPECULAR,
 			   glm::vec3 _attenuationFactors = ATTENUATION_FACTORS);

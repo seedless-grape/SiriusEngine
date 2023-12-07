@@ -52,6 +52,7 @@ public:
 	bool isMSAAOn;					// MSAA抗锯齿
 	bool isGammaOn;					// Gamma矫正
 	bool isHDROn;					// HDR光度改善
+	bool isPBROn;					// Blinn-Phong & PBR渲染
 
 	int postProcessing;	// 后期特效
 

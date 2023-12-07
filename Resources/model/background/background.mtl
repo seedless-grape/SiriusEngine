@@ -39,6 +39,7 @@ map_Bump -bm 1.000000 textures/white_sandstone_blocks_02_nor_gl_1k.jpg
 
 newmtl bottomwall_front
 Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
@@ -50,6 +51,7 @@ map_Bump -bm 1.000000 textures/wood_floor_nor_gl_1k.jpg
 
 newmtl bottomwall_left
 Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
@@ -68,6 +70,7 @@ d 1.000000
 illum 2
 map_Kd textures/white_sandstone_blocks_02_diff_1k.jpg
 map_Ns textures/white_sandstone_blocks_02_rough_1k.jpg
+map_Ks textures/pure_black.png
 map_Bump -bm 1.000000 textures/white_sandstone_blocks_02_nor_gl_1k.jpg
 
 newmtl leftwall_in
@@ -78,10 +81,13 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd textures/beige_wall_001_diff_1k.jpg
+map_Ks textures/pure_black.png
 map_Ns textures/beige_wall_001_rough_1k.jpg
+map_Bump -bm 1.000000 textures/beige_wall_001_nor_gl_1k.jpg
 
 newmtl leftwall_out
 Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
