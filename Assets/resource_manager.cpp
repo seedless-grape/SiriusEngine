@@ -4,16 +4,16 @@
 #include <fstream>
 #include <sstream>
 
-// ¾²Ì¬±äÁ¿³õÊ¼»¯
+// é¢„åŠ è½½
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Shader> ResourceManager::shaders;
 
-// ÔØÈëÔ¤ÉèÎïÌåÃû
+// è½½å…¥é¢„è®¾ç‰©ä½“å
 std::vector<std::string> ResourceManager::presetsObjects = {
-	u8"ÅèÔÔ", u8"±³¾°°å", u8"ÂíµñËÜ", u8"ÎïÆ·¼Ü", u8"Ã¨µñÏñ", u8"ÈËÍ·µñÏñ",
-	u8"´óÏóÄ¾µñ", u8"ÌÕ´ÉÆ¿A", u8"ÌÕ´ÉÆ¿B", u8"ÌÕ´ÉÆ¿C", u8"Ğ¡»ÆÑ¼", u8"»¨Ô°Ğ¡¾«Áé",
-	u8"ÅçÆá¹Ş", u8"Ä¾³÷¹ñ", u8"°××À", u8"°×ÒÎ", u8"ºÚÒÎ", u8"Ä¾Àº", u8"Àæ×Ó",
-	u8"Æ»¹û", u8"ÆæÒì¹û", u8"öùÀæ", u8"±ê°Ğ", u8"ÆåÅÌ", u8"²è¾ß"
+	u8"ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½Æ·ï¿½ï¿½", u8"Ã¨ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½",
+	u8"ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½", u8"ï¿½Õ´ï¿½Æ¿A", u8"ï¿½Õ´ï¿½Æ¿B", u8"ï¿½Õ´ï¿½Æ¿C", u8"Ğ¡ï¿½ï¿½Ñ¼", u8"ï¿½ï¿½Ô°Ğ¡ï¿½ï¿½ï¿½ï¿½",
+	u8"ï¿½ï¿½ï¿½ï¿½ï¿½", u8"Ä¾ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½", u8"Ä¾ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½",
+	u8"Æ»ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½ï¿½", u8"ï¿½ï¿½ï¿½"
 };
 
 Shader ResourceManager::loadShader(const char* vertexFile,
@@ -67,7 +67,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	if (geometryFile != nullptr)
 		std::cout << "  ---> " << geometryFile << std::endl;
 
-	// ´ÓÎÄ¼şÖĞ¼ÓÔØ×ÅÉ«Æ÷´úÂë
+	// ä»æ–‡ä»¶ä¸­åŠ è½½ç€è‰²å™¨ä»£ç 
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
@@ -81,7 +81,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vertexFile,
 	const char* fragmentSource = fragmentCode.c_str();
 	const char* geometrySource = geometryCode.c_str();
 
-	// ´´½¨×ÅÉ«Æ÷¶ÔÏó
+	// åˆ›å»ºç€è‰²å™¨å¯¹è±¡
 	Shader shader;
 	shader.compile(vertexSource, fragmentSource,
 				   geometryFile != nullptr ? geometrySource : nullptr);
@@ -112,20 +112,20 @@ std::string ResourceManager::getSourceCodeFromPath(const char* shaderPath,
 }
 
 Texture ResourceManager::loadTextureFromFile(const char* file) {
-	// ´´½¨ÎÆÀí¶ÔÏó
+	// åˆ›å»ºçº¹ç†å¯¹è±¡
 	Texture texture;
 
-	// ¼ÓÔØÍ¼Æ¬
+	// ç”Ÿæˆçº¹ç†
 	texture.generate(file);
 
 	return texture;
 }
 
 Texture ResourceManager::loadTextureFromFile(const std::vector<std::string>& files) {
-	// ´´½¨ÎÆÀí¶ÔÏó
+	// åˆ›å»ºçº¹ç†å¯¹è±¡
 	Texture texture;
 
-	// ¼ÓÔØÍ¼Æ¬
+	// ç”Ÿæˆçº¹ç†
 	texture.generate(files);
 
 	return texture;
